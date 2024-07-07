@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  # ui:
+  #   build:
+  #     context: ./packages/pnft-market-ui
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./packages/pnft-market-ui:/app
+  #   depends_on:
+  #     - etherium-node
+  # environment:
+  # - REACT_APP_CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
+
+  etherium-node:
+    build:
+      context: .
+    ports:
+      - "8545:8545"
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  # etherium-deploy:
+  #   build:
+  #     context: ./packages/pnft-market-etherium
+  #     dockerfile: Dockerfile.deploy
+  #   depends_on:
+  #     - etherium-node
+  #   volumes:
+  #     - ./packages/pnft-market-etherium:/app
+  # command: |
+  # sleep 10 &&
+  # npx hardhat run --network localhost scripts/deploy.js &&
+  # export CONTRACT_ADDRESS=$(npx hardhat read-address --network localhost)

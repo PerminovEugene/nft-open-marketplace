@@ -1,39 +1,17 @@
-import { buildModule } from "@nomicfoundation/hardhat-ignition/modules";
-
-// const PnftModule = buildModule("PnftModule", (m) => {
-//   const pnft = m.contract("Pnft");
-
-//   return { pnft };
-// });
-
-// export default PnftModule;
-
-const PnftModule = buildModule("PnftModule", (m) => {
-  const mnemonic =
-    "test test test test test test test test test test test junk";
-  const hdNode = ethers.utils.HDNode.fromMnemonic(mnemonic);
-
-  const wallet = ethers.Wallet.fromMnemonic(mnemonic).connect(ethers.provider);
-
-  // const pnft = m.contract("Pnft", ownerAddress);
-
-  const Contract = await ethers.getContractFactory("Pnft", wallet);
-  const contract = await Contract.deploy(); // параметры конструктора, если они нужны
-  console.log("Contract deployed to:", contract.address);
-
-  return { pnft };
-});
-
-export default PnftModule;
-
-import { ContractFactory, HDNodeWallet, Wallet } from "ethers";
-import { artifacts } from "hardhat";
+import { ContractFactory, HDNodeWallet, Wallet, getAddress } from "ethers";
+import { artifacts, ethers } from "hardhat";
 import { Pnft } from "../typechain-types";
 
 export function getDeployerWallet(): HDNodeWallet {
   const mnemonic =
     "test test test test test test test test test test test junk"; // TODO move to env
-  return Wallet.fromPhrase(mnemonic);
+
+  // const provider = new ethers.provider.connect();
+
+  const provider = new ethers.JsonRpcProvider("http://blockchain:8545");
+  // TODO use Infura for prod
+
+  return Wallet.fromPhrase(mnemonic, provider);
 }
 
 export async function deploy(deployerWallet: HDNodeWallet): Promise<Pnft> {
@@ -44,10 +22,11 @@ export async function deploy(deployerWallet: HDNodeWallet): Promise<Pnft> {
   const contractOwnerWallet = deployerWallet;
 
   // Deploy an instance of the contract
-  console.log("Deploying contract Pnft... lol");
+  console.log("Deploying contract Pnft...");
+  deployerWallet.connect(ethers.provider);
+  console.log("Owner address :", contractOwnerWallet.address);
   const contract = (await factory.deploy(
-    // "Pnft.eth",
-    contractOwnerWallet.address
+    getAddress(contractOwnerWallet.address)
   )) as Pnft;
   console.log("contract address -> ", await contract.getAddress());
 
@@ -71,8 +50,10 @@ export async function mintFixtureNfts(
 ) {
   console.log("Minting fixtures...");
   const nftOwnerAddress = await deployerWallet.getAddress();
-  contract.mint(nftOwnerAddress, "url-1"); // TODO change to url
-  contract.mint(nftOwnerAddress, "url-2"); // TODO change to url
+  contract.mint(
+    nftOwnerAddress,
+    "QmRH3uGyLmRp9BziGBc1XMMLu8fjXuWe5jtpVCGR9CnVQK"
+  ); // TODO change to env
 }
 
 // LOCAL DEV ONLY

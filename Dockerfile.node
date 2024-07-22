@@ -5,7 +5,6 @@ WORKDIR /app
 COPY yarn.lock .
 COPY package.json .
 
-# Копируем package.json пакета
 COPY packages/pnft-market-etherium/package.json ./packages/pnft-market-etherium/
 
 RUN yarn install

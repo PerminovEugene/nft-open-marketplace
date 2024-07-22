@@ -4,10 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "compile": "./node_modules/.bin/hardhat compile",
+    "compile": "hardhat compile",
     "test": "./node_modules/.bin/hardhat test",
     "node": "npx hardhat node",
-    "deploy:local": "./node_modules/.bin/hardhat ignition deploy ./ignition/modules/Lock.ts --network localhost"
+    "predeploy:local": "npm run compile",
+    "deploy:local": "npx hardhat run scripts/deploy.ts"
   },
   "author": "",
   "license": "ISC",

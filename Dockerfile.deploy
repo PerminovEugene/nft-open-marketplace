@@ -6,15 +6,10 @@ COPY yarn.lock .
 COPY package.json .
 
 COPY packages/pnft-market-etherium/package.json ./packages/pnft-market-etherium/
+# COPY packages/pnft-market-etherium/hardhat.config.ts ./packages/pnft-market-etherium/
 
 RUN yarn install
 
 WORKDIR /app/packages/pnft-market-etherium
 
 RUN yarn install
-
-EXPOSE 8545
-
-RUN npm run compile
-
-CMD ["npm", "run", "deploy:local"]

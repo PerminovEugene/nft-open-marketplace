@@ -6,6 +6,11 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       loggingEnabled: true,
+      accounts: {
+        count: 10,
+        mnemonic: "test test test test test test test test test test test junk", // TODO to env
+      },
+      chainId: 1337,
     },
   },
 };

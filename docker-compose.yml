@@ -12,6 +12,8 @@ services:
       - /app/node_modules
     networks:
       - hardhat-net
+    env_file:
+      - .env
 
   deploy-blockchain:
     build:
@@ -24,6 +26,8 @@ services:
     volumes:
       - ./packages/pnft-market-etherium:/app/packages/pnft-market-etherium
     command: "yarn run deploy:local"
+    env_file:
+      - .env
 
   ui:
     build:
@@ -37,6 +41,8 @@ services:
     depends_on:
       - deploy-blockchain
     command: "npm run dev"
+    env_file:
+      - .env
 
 networks:
   hardhat-net:

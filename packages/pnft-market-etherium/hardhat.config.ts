@@ -2,8 +2,6 @@ import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import envConfig from "./scripts/config";
 
-console.log("---->", envConfig);
-
 const config: HardhatUserConfig = {
   solidity: "0.8.24",
   networks: {

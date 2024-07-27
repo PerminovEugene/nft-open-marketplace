@@ -48,7 +48,13 @@ export async function mintFixtureNfts(
   console.log("Mint nfts...");
   const nftOwnerAddress = await deployerWallet.getAddress();
   for (const cid of envConfig.testNftUrls) {
-    await contract.mint(nftOwnerAddress, cid);
+    let nonce = await deployerWallet?.provider?.getTransactionCount(
+      deployerWallet.address
+    );
+
+    const tx = await contract.mint(nftOwnerAddress, cid, { nonce });
+    console.log(`Minted ${cid} with nonce: ${nonce}`);
+    await tx.wait();
   }
 }
 

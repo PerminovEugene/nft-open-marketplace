@@ -8,7 +8,7 @@
     "test": "./node_modules/.bin/hardhat test",
     "node": "npx hardhat node",
     "predeploy:local": "npm run compile",
-    "deploy:local": "npx hardhat run scripts/deploy.ts"
+    "deploy:local": "npx hardhat run scripts/deploy-dev-local-node.ts"
   },
   "author": "",
   "license": "ISC",

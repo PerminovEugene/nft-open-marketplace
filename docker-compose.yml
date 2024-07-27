@@ -1,22 +1,6 @@
 version: "3.8"
 
 services:
-  ui:
-    build:
-      context: .
-      dockerfile: ./Dockerfile.ui
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./packages/pnft-market-ui:/app/packages/pnft-market-ui
-      - /app/node_modules
-    depends_on:
-      - blockchain
-    command: "npm run dev"
-
-    # environment:
-    # - REACT_APP_CONTRACT_ADDRESS=${CONTRACT_ADDRESS}
-
   blockchain:
     build:
       context: .
@@ -39,10 +23,20 @@ services:
       - hardhat-net
     volumes:
       - ./packages/pnft-market-etherium:/app/packages/pnft-market-etherium
-      # - .:/app
-      # - /app/node_modules
     command: "yarn run deploy:local"
-    # command: tail -F package.json
+
+  ui:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.ui
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./packages/pnft-market-ui:/app/packages/pnft-market-ui
+      - /app/node_modules
+    depends_on:
+      - deploy-blockchain
+    command: "npm run dev"
 
 networks:
   hardhat-net:

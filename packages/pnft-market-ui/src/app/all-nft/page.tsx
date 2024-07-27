@@ -2,6 +2,7 @@
 
 import { MetaMaskProvider } from "@metamask/sdk-react";
 import { ConnectWalletButton } from "./connect-wallet-button";
+import { NftList } from "./nft-list";
 
 export default function Home() {
   return (
@@ -15,12 +16,13 @@ export default function Home() {
           communicationServerUrl: process.env.REACT_APP_COMM_SERVER_URL,
           checkInstallationImmediately: false, // This will automatically connect to MetaMask on page load
           dappMetadata: {
-            name: "Demo React App",
+            name: "PNFT",
             url: window.location.host,
           },
         }}
       >
         <ConnectWalletButton />
+        <NftList />
       </MetaMaskProvider>
     </main>
   );

@@ -6,7 +6,6 @@ COPY yarn.lock .
 COPY package.json .
 
 COPY packages/pnft-market-etherium/package.json ./packages/pnft-market-etherium/
-# COPY packages/pnft-market-etherium/hardhat.config.ts ./packages/pnft-market-etherium/
 
 RUN yarn install
 

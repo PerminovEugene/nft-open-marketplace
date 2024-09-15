@@ -11,7 +11,7 @@ contract Pnft is ERC721URIStorage, Ownable {
 
     function mint(address owner, string memory tokenURI)
       public
-      onlyOwner
+      onlyOwner // Since I am the only person who will post nft - onlyOwner modificator is fine, but for public marketplace it should be deleted
       returns (uint256)
     {
       uint256 tokenId = _nextTokenId++;

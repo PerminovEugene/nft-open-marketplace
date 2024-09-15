@@ -10,18 +10,17 @@ event NftListed(address seller, uint256 tokenId, uint256 price);
 event NftUnlisted(address owner, uint256 tokenId);
 
 interface MarketErrors {
+  // list 
   error MarketNonexistentToken(uint256 tokenId);
   error MarketListingAlreadyExist(uint256 tokenId);
   error MarketSenderIsNotNftOwner(uint256 tokenId);
   error MarketNftManagementIsNotApproved(uint256 tokenId);
+
+  error MarketListingDoesNotExist(uint256 tokenId);
+  error MarketListingIsNotActive(uint256 tokenId);
 }
 
 contract Market is Ownable {
-    enum ListingType {
-      Direct,
-      Auction
-    }
-
     struct Listing {
       uint tokenId;
       uint256 price;
@@ -70,8 +69,12 @@ contract Market is Ownable {
       uint256 tokenId
     ) public {
       Listing memory currentListing = listings[tokenId];
-      require(currentListing.price > 0, "Listing does not exist");
-      require(currentListing.isActive, "Listing is note active");
+      if (currentListing.price == 0) {
+        revert MarketErrors.MarketListingDoesNotExist(tokenId);
+      }
+      if (!currentListing.isActive) {
+        revert MarketErrors.MarketListingIsNotActive(tokenId);
+      }
 
       _checkNftOwnership(tokenId);
 
@@ -86,7 +89,6 @@ contract Market is Ownable {
       payable
     {
       Listing storage listing = listings[tokenId];
-      require(listing.isActive, "NFT is not for sale");
       require(msg.value == listing.price, "Incorrect price sent");
 
       IERC721 nftContract = IERC721(_nftContractAddress);
@@ -94,6 +96,9 @@ contract Market is Ownable {
       address currentOwner = nftContract.ownerOf(tokenId);
       require(currentOwner != msg.sender, 'Buyer already owns token');
 
+      if (!listing.isActive) {
+        revert MarketErrors.MarketListingIsNotActive(tokenId);
+      }
       listing.isActive = false;
 
       nftContract.safeTransferFrom(currentOwner, msg.sender, tokenId);
@@ -103,6 +108,18 @@ contract Market is Ownable {
       emit NftPurchased(msg.sender, tokenId, msg.value);
 
       delete listings[tokenId];
+    }
+
+    function makeListingActive(uint16 tokenId) public {
+      _checkNftOwnership(tokenId);
+      Listing storage listing = listings[tokenId];
+      listing.isActive = true;
+    }
+
+    function makeListingInactive(uint16 tokenId) public {
+      _checkNftOwnership(tokenId);
+      Listing storage listing = listings[tokenId];
+      listing.isActive = false;
     }
 
     function setMarketFeePercent(uint16 newFee) public onlyOwner {

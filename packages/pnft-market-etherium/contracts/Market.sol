@@ -18,6 +18,9 @@ interface MarketErrors {
 
   error MarketListingDoesNotExist(uint256 tokenId);
   error MarketListingIsNotActive(uint256 tokenId);
+
+  error IncorrectFundsSent(uint256 tokenId, uint256 price);
+  error CanNotBuyFromYourself();
 }
 
 contract Market is Ownable {
@@ -28,10 +31,12 @@ contract Market is Ownable {
       bool isActive;
     }
 
-    address private _nftContractAddress;
-    uint16 private _marketplaceFeePercent;
+    address public _nftContractAddress;
+    uint16 public _marketplaceFeePercent;
 
     mapping(uint256 => Listing) public listings;
+
+    mapping(address => uint) public pendingWithdrawals;
 
     constructor(address initialOwner, address nftContractAddress) Ownable(initialOwner) {
       _nftContractAddress = nftContractAddress;
@@ -89,12 +94,19 @@ contract Market is Ownable {
       payable
     {
       Listing storage listing = listings[tokenId];
-      require(msg.value == listing.price, "Incorrect price sent");
+      if (listing.price == 0) {
+        revert MarketErrors.MarketListingDoesNotExist(tokenId);
+      }
+      if (msg.value != listing.price) { // TODO OR Do we need to check <= ?
+        revert MarketErrors.IncorrectFundsSent(tokenId, listing.price);
+      }
 
-      IERC721 nftContract = IERC721(_nftContractAddress);
+      IERC721 nftContract = IERC721(_nftContractAddress); // should it be contract private variable?
 
       address currentOwner = nftContract.ownerOf(tokenId);
-      require(currentOwner != msg.sender, 'Buyer already owns token');
+      if (currentOwner == msg.sender) {
+        revert MarketErrors.CanNotBuyFromYourself();
+      }
 
       if (!listing.isActive) {
         revert MarketErrors.MarketListingIsNotActive(tokenId);
@@ -103,7 +115,7 @@ contract Market is Ownable {
 
       nftContract.safeTransferFrom(currentOwner, msg.sender, tokenId);
       
-      _distributeFunds(currentOwner, msg.value, listing.marketPlaceFee);
+      _distributeFunds(currentOwner, listing.marketPlaceFee);
 
       emit NftPurchased(msg.sender, tokenId, msg.value);
 
@@ -128,10 +140,19 @@ contract Market is Ownable {
       _marketplaceFeePercent = newFee;
     }
 
-    function _distributeFunds(address seller, uint256 price, uint256 marketPlaceFee) private {
-      uint256 sellerPart = price - marketPlaceFee;
-      payable(seller).transfer(sellerPart);
-      payable(owner()).transfer(marketPlaceFee);
+    function withdraw() public {
+      uint amount = pendingWithdrawals[msg.sender];
+      // Remember to zero the pending refund before
+      // sending to prevent reentrancy attacks
+      pendingWithdrawals[msg.sender] = 0;
+      payable(msg.sender).transfer(amount);
+    }
+
+    function _distributeFunds(address seller, uint256 marketPlaceFee) private {
+      uint256 sellerPart = msg.value - marketPlaceFee;
+
+      pendingWithdrawals[seller] += sellerPart;
+      pendingWithdrawals[owner()] += marketPlaceFee;
     }
 
     function _checkNftApproval(uint256 tokenId) view private {

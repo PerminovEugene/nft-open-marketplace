@@ -8,6 +8,7 @@ import "hardhat/console.sol";
 event NftPurchased(address buyer, uint256 tokenId, uint256 price);
 event NftListed(address seller, uint256 tokenId, uint256 price);
 event NftUnlisted(address owner, uint256 tokenId);
+event MarketFeePercentChanged(uint256 newFeePercent);
 
 interface MarketErrors {
   // list 
@@ -21,6 +22,8 @@ interface MarketErrors {
 
   error IncorrectFundsSent(uint256 tokenId, uint256 price);
   error CanNotBuyFromYourself();
+
+  error InvalidMarketFeePercent(uint16 newFeePercent);
 }
 
 contract Market is Ownable {
@@ -56,7 +59,7 @@ contract Market is Ownable {
 
       _checkNftApproval(tokenId);
       
-      uint256 marketplaceFee = price * _marketplaceFeePercent;
+      uint256 marketplaceFee = price * _marketplaceFeePercent / 100;
 
       Listing memory newListing = Listing({
         tokenId: tokenId,
@@ -134,10 +137,13 @@ contract Market is Ownable {
       listing.isActive = false;
     }
 
-    function setMarketFeePercent(uint16 newFee) public onlyOwner {
-      require(newFee > 0, 'Fee should be higher then 0');
-      require(newFee < 100, 'Fee should be less or equal 100');
-      _marketplaceFeePercent = newFee;
+    function setMarketFeePercent(uint16 newFeePercent) public onlyOwner {
+      if (newFeePercent > 100) {
+        revert MarketErrors.InvalidMarketFeePercent(newFeePercent);
+      }
+
+      _marketplaceFeePercent = newFeePercent;
+      emit MarketFeePercentChanged(newFeePercent);
     }
 
     function withdraw() public {
@@ -157,7 +163,8 @@ contract Market is Ownable {
 
     function _checkNftApproval(uint256 tokenId) view private {
       address approvedAddress = IERC721(_nftContractAddress).getApproved(tokenId);
-      if (approvedAddress != address(this)) {
+      bool isApprovedForAll = IERC721(_nftContractAddress).isApprovedForAll(msg.sender, address(this));
+      if (approvedAddress != address(this) && !isApprovedForAll) {
         revert MarketErrors.MarketNftManagementIsNotApproved(tokenId);
       }
     }

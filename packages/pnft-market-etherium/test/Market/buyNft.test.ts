@@ -1,7 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import { faker } from "@faker-js/faker";
-import { getMintedTokenId } from "../utils/pnft-helpers";
+import { mintAndApprove } from "../utils/pnft-helpers";
 import { deployMarket } from "./deploy";
 import { ethers } from "hardhat";
 import { ERC721Events } from "../utils/enums";
@@ -9,7 +8,7 @@ import { ERC721Events } from "../utils/enums";
 describe("Market", function () {
   let tokenId = 1;
 
-  describe.only("Buy nft", function () {
+  describe("Buy nft", function () {
     it("Should throw when listing does not exist", async function () {
       const { owner, pnft, market } = await loadFixture(deployMarket);
       pnft.connect(owner);
@@ -22,26 +21,11 @@ describe("Market", function () {
     it("Should throw when value sent to the contract is not enough", async function () {
       const { owner, other, pnft, market } = await loadFixture(deployMarket);
 
-      // mint and get tokenId
-      const mintTx = await pnft
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
-      const minted = await mintTx.wait();
-      const logs = minted?.logs;
-      const tokenId = getMintedTokenId(pnft, logs);
-
-      // approve minted nft
-      const marketContractAddres = await market.getAddress();
-      const approveTx = await pnft
-        .connect(owner)
-        .approve(marketContractAddres, BigInt(tokenId));
-      await approveTx.wait();
-
+      const buyingPrice = ethers.parseEther("0.9999999999");
       const sellingPrice = ethers.parseEther("1.0");
 
+      const tokenId = await mintAndApprove(market, pnft, owner);
       await market.connect(owner).listNft(tokenId, sellingPrice);
-
-      const buyingPrice = ethers.parseEther("0.9999999999");
 
       await expect(
         market.connect(other).buyNft(tokenId, { value: buyingPrice })
@@ -53,22 +37,8 @@ describe("Market", function () {
     it("Should throw when buyer already owns token", async function () {
       const { owner, pnft, market } = await loadFixture(deployMarket);
 
-      // mint and get tokenId
-      const mintTx = await pnft
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
-      const minted = await mintTx.wait();
-      const logs = minted?.logs;
-      const tokenId = getMintedTokenId(pnft, logs);
-
-      // approve minted nft
-      const marketContractAddres = await market.getAddress();
-      const approveTx = await pnft
-        .connect(owner)
-        .approve(marketContractAddres, BigInt(tokenId));
-      await approveTx.wait();
-
       const sellingPrice = ethers.parseEther("1.0");
+      const tokenId = await mintAndApprove(market, pnft, owner);
 
       await market.connect(owner).listNft(tokenId, sellingPrice);
 
@@ -80,22 +50,8 @@ describe("Market", function () {
     it("Should throw when listing is not active", async function () {
       const { owner, other, pnft, market } = await loadFixture(deployMarket);
 
-      // mint and get tokenId
-      const mintTx = await pnft
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
-      const minted = await mintTx.wait();
-      const logs = minted?.logs;
-      const tokenId = getMintedTokenId(pnft, logs);
-
-      // approve minted nft
-      const marketContractAddres = await market.getAddress();
-      const approveTx = await pnft
-        .connect(owner)
-        .approve(marketContractAddres, BigInt(tokenId));
-      await approveTx.wait();
-
       const sellingPrice = ethers.parseEther("1.0");
+      const tokenId = await mintAndApprove(market, pnft, owner);
 
       await market.connect(owner).listNft(tokenId, sellingPrice);
       await market.connect(owner).makeListingInactive(tokenId);
@@ -112,23 +68,8 @@ describe("Market", function () {
         deployMarket
       );
 
-      // mint and get tokenId
-      const mintTx = await pnft
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
-      const minted = await mintTx.wait();
-      const logs = minted?.logs;
-      const tokenId = getMintedTokenId(pnft, logs);
-
-      // approve minted nft
-      const marketContractAddres = await market.getAddress();
-      const approveTx = await pnft
-        .connect(owner)
-        .approve(marketContractAddres, BigInt(tokenId));
-      await approveTx.wait();
-
       const sellingPrice = ethers.parseEther("1.0");
-
+      const tokenId = await mintAndApprove(market, pnft, owner);
       await market.connect(owner).listNft(tokenId, sellingPrice);
 
       await expect(
@@ -156,22 +97,64 @@ describe("Market", function () {
       expect(ethers.formatUnits(amount, "ether")).to.eql("1.0");
 
       // check updated pendingWithdrawals
-      const pendingOwnerWithdrawals = await market.pendingWithdrawals(
+      const pendingOwnerWithdrawal = await market.pendingWithdrawals(
         owner.address
       );
-      const pendingBuyerWithdrawals = await market.pendingWithdrawals(
+      const pendingBuyerWithdrawal = await market.pendingWithdrawals(
         buyer.address
       );
-      expect(ethers.formatUnits(pendingOwnerWithdrawals, "ether")).to.eql(
-        "1.0"
-      );
-      expect(ethers.formatUnits(pendingBuyerWithdrawals, "ether")).to.eql(
-        "0.0"
-      );
+      expect(ethers.formatUnits(pendingOwnerWithdrawal, "ether")).to.eql("1.0");
+      expect(ethers.formatUnits(pendingBuyerWithdrawal, "ether")).to.eql("0.0");
     });
 
-    it("Should check that pendingWithdrawals are cumulatively updated", async function () {
-      const { pnft, owner } = await loadFixture(deployMarket);
+    it("Should check that pendingWithdrawals are cumulatively updated and market fee correctly calculated", async function () {
+      const { owner, buyer, pnft, market } = await loadFixture(deployMarket);
+      const ownerConnection = market.connect(owner);
+      const buyerConnection = market.connect(buyer);
+
+      const tokenId = await mintAndApprove(market, pnft, owner);
+      const marketPlaceFeePercent = 15;
+      await ownerConnection.setMarketFeePercent(BigInt(marketPlaceFeePercent));
+
+      // approve for all
+      const marketContractAddres = await market.getAddress();
+      await pnft.connect(buyer).setApprovalForAll(marketContractAddres, true);
+      await pnft.connect(owner).setApprovalForAll(marketContractAddres, true);
+
+      const sellingPrice = ethers.parseEther("1.0");
+      await ownerConnection.listNft(tokenId, sellingPrice);
+      await buyerConnection.buyNft(tokenId, { value: sellingPrice });
+
+      const sellingPrice2 = ethers.parseEther("10.0");
+      await buyerConnection.listNft(tokenId, sellingPrice2);
+      await ownerConnection.buyNft(tokenId, { value: sellingPrice2 });
+
+      const sellingPrice3 = ethers.parseEther("100.0");
+      await ownerConnection.listNft(tokenId, sellingPrice3);
+      await buyerConnection.buyNft(tokenId, { value: sellingPrice3 });
+
+      // check updated ownership
+      const newOwner = await pnft.connect(owner).ownerOf(tokenId);
+      const expectedNewOwner = await buyer.getAddress();
+      expect(newOwner).to.eql(expectedNewOwner);
+
+      // check updated contract balance and pendingWithdrawals
+      const amount = await ethers.provider.getBalance(market.target);
+      expect(ethers.formatUnits(amount, "ether")).to.eql("111.0");
+
+      // check updated pendingWithdrawals
+      const pendingOwnerWithdrawal = await market.pendingWithdrawals(
+        owner.address
+      );
+      const pendingBuyerWithdrawal = await market.pendingWithdrawals(
+        buyer.address
+      );
+      expect(ethers.formatUnits(pendingOwnerWithdrawal, "ether")).to.eql(
+        "102.5" // 100 + 1 + 15% * 10
+      );
+      expect(ethers.formatUnits(pendingBuyerWithdrawal, "ether")).to.eql(
+        "8.5" // 10 * (100 - 15)%
+      );
     });
   });
 });

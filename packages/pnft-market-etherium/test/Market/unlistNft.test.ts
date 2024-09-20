@@ -35,7 +35,7 @@ describe("Market", function () {
       await approveTx.wait();
 
       await market.connect(owner).listNft(tokenId, 1000);
-      await market.connect(owner).makeListingInactive(tokenId);
+      await market.connect(owner).changeListingActiveStatus(tokenId, false);
 
       await expect(market.connect(owner).unlistNft(tokenId))
         .to.be.revertedWithCustomError(market, "MarketListingIsNotActive")

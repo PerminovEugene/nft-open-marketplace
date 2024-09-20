@@ -54,7 +54,7 @@ describe("Market", function () {
       const tokenId = await mintAndApprove(market, pnft, owner);
 
       await market.connect(owner).listNft(tokenId, sellingPrice);
-      await market.connect(owner).makeListingInactive(tokenId);
+      await market.connect(owner).changeListingActiveStatus(tokenId, false);
 
       await expect(
         market.connect(other).buyNft(tokenId, { value: sellingPrice })

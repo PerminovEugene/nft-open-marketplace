@@ -9,20 +9,17 @@ event NftPurchased(address buyer, uint256 tokenId, uint256 price);
 event NftListed(address seller, uint256 tokenId, uint256 price);
 event NftUnlisted(address owner, uint256 tokenId);
 event MarketFeePercentChanged(uint256 newFeePercent);
+event MarketListingActiveStatusChanged(bool isActive);
 
 interface MarketErrors {
-  // list 
   error MarketNonexistentToken(uint256 tokenId);
   error MarketListingAlreadyExist(uint256 tokenId);
   error MarketSenderIsNotNftOwner(uint256 tokenId);
   error MarketNftManagementIsNotApproved(uint256 tokenId);
-
   error MarketListingDoesNotExist(uint256 tokenId);
   error MarketListingIsNotActive(uint256 tokenId);
-
   error IncorrectFundsSent(uint256 tokenId, uint256 price);
   error CanNotBuyFromYourself();
-
   error InvalidMarketFeePercent(uint16 newFeePercent);
 }
 
@@ -50,8 +47,8 @@ contract Market is Ownable {
       uint256 price
     ) public {
       require (price > 0, "Invalid price"); // TODO probably not needed
-      Listing memory currentListing = listings[tokenId];
-      if (currentListing.price != 0) {
+      Listing memory listing = listings[tokenId];
+      if (listing.price != 0) {
         revert MarketErrors.MarketListingAlreadyExist(tokenId);
       }
 
@@ -76,11 +73,9 @@ contract Market is Ownable {
     function unlistNft(
       uint256 tokenId
     ) public {
-      Listing memory currentListing = listings[tokenId];
-      if (currentListing.price == 0) {
-        revert MarketErrors.MarketListingDoesNotExist(tokenId);
-      }
-      if (!currentListing.isActive) {
+      Listing storage listing = _getListing(tokenId);
+
+      if (!listing.isActive) {
         revert MarketErrors.MarketListingIsNotActive(tokenId);
       }
 
@@ -96,10 +91,8 @@ contract Market is Ownable {
       public
       payable
     {
-      Listing storage listing = listings[tokenId];
-      if (listing.price == 0) {
-        revert MarketErrors.MarketListingDoesNotExist(tokenId);
-      }
+      Listing storage listing = _getListing(tokenId);
+
       if (msg.value != listing.price) { // TODO OR Do we need to check <= ?
         revert MarketErrors.IncorrectFundsSent(tokenId, listing.price);
       }
@@ -125,16 +118,11 @@ contract Market is Ownable {
       delete listings[tokenId];
     }
 
-    function makeListingActive(uint16 tokenId) public {
+    function changeListingActiveStatus(uint16 tokenId, bool isActive) public {
       _checkNftOwnership(tokenId);
-      Listing storage listing = listings[tokenId];
-      listing.isActive = true;
-    }
-
-    function makeListingInactive(uint16 tokenId) public {
-      _checkNftOwnership(tokenId);
-      Listing storage listing = listings[tokenId];
-      listing.isActive = false;
+      Listing storage listing = _getListing(tokenId);
+      listing.isActive = isActive;
+      emit MarketListingActiveStatusChanged(isActive);
     }
 
     function setMarketFeePercent(uint16 newFeePercent) public onlyOwner {
@@ -153,6 +141,14 @@ contract Market is Ownable {
       pendingWithdrawals[msg.sender] = 0;
       payable(msg.sender).transfer(amount);
     }
+
+    function _getListing(uint256 tokenId) private view returns (Listing storage) {
+      Listing storage listing = listings[tokenId];
+      if (listing.price == 0) {
+        revert MarketErrors.MarketListingDoesNotExist(tokenId);
+      }
+      return listing;
+    } 
 
     function _distributeFunds(address seller, uint256 marketPlaceFee) private {
       uint256 sellerPart = msg.value - marketPlaceFee;

@@ -8,7 +8,8 @@
     "test": "NODE_ENV=test ./node_modules/.bin/hardhat test",
     "node": "npx hardhat node",
     "predeploy:local": "npm run compile",
-    "deploy:local": "npx hardhat run scripts/deploy-dev-local-node.ts"
+    "deploy:local": "npx hardhat run scripts/deploy-dev-local-node.ts",
+    "coverage": "NODE_ENV=test npx hardhat coverage"
   },
   "author": "",
   "license": "ISC",
@@ -32,10 +33,9 @@
     "ethers": "^6.4.0",
     "hardhat": "^2.22.6",
     "hardhat-gas-reporter": "^1.0.8",
-    "solidity-coverage": "^0.8.1",
+    "solidity-coverage": "^0.8.13",
     "ts-node": "^10.9.2",
     "typechain": "^8.3.0",
     "typescript": "^5.5.3"
-  },
-  "dependencies": {}
+  }
 }

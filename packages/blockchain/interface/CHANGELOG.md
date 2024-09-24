@@ -1,6 +1,12 @@
 # nft marketplace contracts interfaces and ABI
 
-## [0.1.1] - 2023-03-05
+## [0.1.4] - 2024-09-24
+
+### Changed
+
+- Fix interface details
+
+## [0.1.3] - 2024-09-24
 
 ### Changed
 

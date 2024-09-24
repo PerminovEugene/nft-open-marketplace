@@ -1,8 +1,9 @@
 {
   "name": "@nft-open-marketplace/interface",
-  "version": "0.1.1",
-  "description": "",
-  "main": "index.js",
+  "version": "0.1.4",
+  "description": "Contract ABI and interfaces for nft-open-marketplace project",
+  "keywords": ["solidity", "ethers", "nft", "workspaces", "interface", "nft-open-marketplace"],
+  "main": "/dist/index.js",
   "private": false,
   "scripts": {
     "build": "tsc",
@@ -16,11 +17,14 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "ether": "^0.0.9",
+    "ethers": "^6.13.2",
     "typescript": "^5.6.2"
   },
   "dependencies": {},
   "publishConfig": {
     "access": "public"
+  },
+  "peerDependencies": {
+    "ethers": "^6.13.2"
   }
 }

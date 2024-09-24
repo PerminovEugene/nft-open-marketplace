@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useSDK } from "@metamask/sdk-react";
-import PnftABI from "./Pnft.json";
+import { mark } from "@nft-open-marketplace/interface";
 
 function useContract() {
   const [account, setAccount] = useState<string>();
@@ -19,11 +19,10 @@ function useContract() {
       const signer = await ethersProvider.getSigner();
 
       const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
-      const contractABI = PnftABI.abi;
 
       const contract = new ethers.Contract(
         contractAddress,
-        contractABI,
+        pnftContractAbi,
         signer
       );
 

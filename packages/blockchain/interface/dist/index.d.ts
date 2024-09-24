@@ -1,4 +1,6 @@
 declare const _default: {
+    Market: any;
+    MarketErrors: any;
     pnftContractAbi: {
         _format: string;
         contractName: string;

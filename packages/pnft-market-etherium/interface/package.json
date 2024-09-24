@@ -1,0 +1,18 @@
+{
+  "name": "@nft-open-marketplace/interface",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist/",
+    "prepublishOnly": "npm run build"
+  },
+  "author": "Eugene Perminov",
+  "license": "MIT",
+  "devDependencies": {
+    "ether": "^0.0.9",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {}
+}

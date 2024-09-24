@@ -1,6 +1,6 @@
 {
   "name": "@nft-open-marketplace/interface",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "",
   "main": "index.js",
   "private": false,
@@ -10,6 +10,10 @@
     "prepublishOnly": "npm run build"
   },
   "author": "Eugene Perminov",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PerminovEugene/pnft-market/tree/main/packages/pnft-market-etherium/interface"
+  },
   "license": "MIT",
   "devDependencies": {
     "ether": "^0.0.9",

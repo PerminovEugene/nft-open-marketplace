@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  "private": true,
+  "private": false,
   "scripts": {
     "test": "echo \"Error: no test yet\" && exit 0",
     "prepare": "husky"

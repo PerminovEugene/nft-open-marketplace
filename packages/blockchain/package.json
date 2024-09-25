@@ -13,6 +13,7 @@
     "node": "npx hardhat node",
     "predeploy:local": "npm run compile",
     "deploy:local": "npx hardhat run scripts/deploy-dev-local-node.ts",
+    "linter": "npx hardhat check",
     "coverage": "NODE_ENV=test npx hardhat coverage"
   },
   "author": "",
@@ -27,6 +28,7 @@
     "@nomicfoundation/hardhat-toolbox": "^5.0.0",
     "@nomicfoundation/hardhat-verify": "^2.0.0",
     "@nomicfoundation/ignition-core": "^0.15.5",
+    "@nomiclabs/hardhat-solhint": "^4.0.1",
     "@openzeppelin/contracts": "^5.0.2",
     "@typechain/ethers-v6": "^0.5.0",
     "@typechain/hardhat": "^9.0.0",

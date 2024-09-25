@@ -1,8 +1,11 @@
 import { HardhatUserConfig, task } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import envConfig from "./scripts/config";
-import "solidity-coverage";
+
 import { updateInterface } from "./scripts/update-interface";
+
+import "solidity-coverage";
+import "@nomiclabs/hardhat-solhint";
 
 task("update-interface", "Update interface contracts ABI and Types").setAction(
   updateInterface

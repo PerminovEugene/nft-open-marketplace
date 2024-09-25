@@ -3,8 +3,6 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-import "hardhat/console.sol";
-
 event NftPurchased(address buyer, uint256 tokenId, uint256 price);
 event NftListed(address seller, uint256 tokenId, uint256 price);
 event NftUnlisted(address owner, uint256 tokenId);

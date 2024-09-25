@@ -1,10 +1,10 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { deployMarket } from "./deploy";
-import { mintAndApprove } from "../utils/openMarketplaceNFT-helpers";
+import { mintAndApprove } from "../utils/open-marketplace-helpers";
 import { ethers } from "hardhat";
 
-describe("Market", function () {
+describe("OpenMarketplace", function () {
   describe("Withdraw", function () {
     it("Should withdraw correct amount of eth", async function () {
       const { owner, buyer, openMarketplaceNFT, market } = await loadFixture(

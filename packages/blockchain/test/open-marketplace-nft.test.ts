@@ -4,7 +4,6 @@ import hre, { ethers } from "hardhat";
 import { OpenMarketplaceNFT } from "../typechain-types";
 import { faker } from "@faker-js/faker";
 import { ERC721Events } from "./utils/enums";
-import { ContractTransactionReceipt } from "ethers";
 
 describe("OpenMarketplaceNFT", function () {
   // We define a fixture to reuse the same setup in every test.

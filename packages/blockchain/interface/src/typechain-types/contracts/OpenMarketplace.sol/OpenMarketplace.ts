@@ -23,7 +23,7 @@ import type {
   TypedContractMethod,
 } from "../../common";
 
-export interface MarketInterface extends Interface {
+export interface OpenMarketplaceInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "_marketplaceFeePercent"
@@ -220,11 +220,11 @@ export namespace OwnershipTransferredEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface Market extends BaseContract {
-  connect(runner?: ContractRunner | null): Market;
+export interface OpenMarketplace extends BaseContract {
+  connect(runner?: ContractRunner | null): OpenMarketplace;
   waitForDeployment(): Promise<this>;
 
-  interface: MarketInterface;
+  interface: OpenMarketplaceInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,

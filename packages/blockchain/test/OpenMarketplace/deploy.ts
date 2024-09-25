@@ -1,5 +1,5 @@
 import hre from "hardhat";
-import { OpenMarketplaceNFT, Market } from "../../typechain-types";
+import { OpenMarketplaceNFT, OpenMarketplace } from "../../typechain-types";
 
 export async function deployMarket() {
   let [owner, other, buyer] = await hre.ethers.getSigners();
@@ -7,16 +7,18 @@ export async function deployMarket() {
   const OpenMarketplaceNFT = await hre.ethers.getContractFactory(
     "OpenMarketplaceNFT"
   );
-  const Market = await hre.ethers.getContractFactory("Market");
+  const OpenMarketplace = await hre.ethers.getContractFactory(
+    "OpenMarketplace"
+  );
 
   const openMarketplaceNFT = (await OpenMarketplaceNFT.deploy(
     owner.address
   )) as OpenMarketplaceNFT;
   const openMarketplaceNFTAddress = await openMarketplaceNFT.getAddress();
-  const market = (await Market.deploy(
+  const market = (await OpenMarketplace.deploy(
     owner.address,
     openMarketplaceNFTAddress
-  )) as Market;
+  )) as OpenMarketplace;
 
   return { owner, other, buyer, openMarketplaceNFT, market };
 }

@@ -1,6 +1,8 @@
-export { default as nftContractAbi } from "./artifacts/contracts/OpenMarketplaceNFT.sol/OpenMarketplaceNFT.json";
-export { default as marketContractAbi } from "./artifacts/contracts/Market.sol/Market.json";
+export { default as openMarketplaceNFTContractAbi } from "./artifacts/contracts/OpenMarketplaceNFT.sol/OpenMarketplaceNFT.json";
+export { default as openMarketplaceContractAbi } from "./artifacts/contracts/OpenMarketplace.sol/OpenMarketplace.json";
+export { default as openMarketplaceErrorsContractAbi } from "./artifacts/contracts/OpenMarketplace.sol/OpenMarketplaceErrors.json";
 
-export type { Market } from "./typechain-types/contracts/Market.sol/Market";
-export type { MarketErrors } from "./typechain-types/contracts/Market.sol/MarketErrors";
-export type { OpenMarketplaceNFT } from "./typechain-types/contracts/";
+export type { OpenMarketplace } from "./typechain-types/contracts/OpenMarketplace.sol/OpenMarketplace";
+export type { OpenMarketplaceErrors } from "./typechain-types/contracts/OpenMarketplace.sol/OpenMarketplaceErrors";
+
+export type { OpenMarketplaceNFT } from "./typechain-types/contracts/OpenMarketplaceNFT";

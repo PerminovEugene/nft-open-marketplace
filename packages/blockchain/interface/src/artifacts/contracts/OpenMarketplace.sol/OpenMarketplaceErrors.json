@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "MarketErrors",
-  "sourceName": "contracts/Market.sol",
+  "contractName": "OpenMarketplaceErrors",
+  "sourceName": "contracts/OpenMarketplace.sol",
   "abi": [
     {
       "inputs": [],

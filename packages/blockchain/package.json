@@ -5,7 +5,10 @@
   "main": "index.js",
   "private": true,
   "scripts": {
+    "precompile": "rimraf cache/* artifacts typechain-types --glob",
     "compile": "hardhat compile",
+    "preupdate-interface": "npm run compile",
+    "update-interface": "npx hardhat update-interface",
     "test": "NODE_ENV=test ./node_modules/.bin/hardhat test",
     "node": "npx hardhat node",
     "predeploy:local": "npm run compile",

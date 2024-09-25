@@ -11,7 +11,7 @@ event NftUnlisted(address owner, uint256 tokenId);
 event MarketFeePercentChanged(uint256 newFeePercent);
 event MarketListingActiveStatusChanged(bool isActive);
 
-interface MarketErrors {
+interface OpenMarketplaceErrors {
   error MarketNonexistentToken(uint256 tokenId);
   error MarketListingAlreadyExist(uint256 tokenId);
   error MarketSenderIsNotNftOwner(uint256 tokenId);
@@ -23,7 +23,7 @@ interface MarketErrors {
   error InvalidMarketFeePercent(uint16 newFeePercent);
 }
 
-contract Market is Ownable {
+contract OpenMarketplace is Ownable {
     struct Listing {
       uint tokenId;
       uint256 price;
@@ -49,7 +49,7 @@ contract Market is Ownable {
       require (price > 0, "Invalid price"); // TODO probably not needed
       Listing memory listing = listings[tokenId];
       if (listing.price != 0) {
-        revert MarketErrors.MarketListingAlreadyExist(tokenId);
+        revert OpenMarketplaceErrors.MarketListingAlreadyExist(tokenId);
       }
 
       _checkNftOwnership(tokenId);
@@ -76,7 +76,7 @@ contract Market is Ownable {
       Listing storage listing = _getListing(tokenId);
 
       if (!listing.isActive) {
-        revert MarketErrors.MarketListingIsNotActive(tokenId);
+        revert OpenMarketplaceErrors.MarketListingIsNotActive(tokenId);
       }
 
       _checkNftOwnership(tokenId);
@@ -94,18 +94,18 @@ contract Market is Ownable {
       Listing storage listing = _getListing(tokenId);
 
       if (msg.value != listing.price) { // TODO OR Do we need to check <= ?
-        revert MarketErrors.IncorrectFundsSent(tokenId, listing.price);
+        revert OpenMarketplaceErrors.IncorrectFundsSent(tokenId, listing.price);
       }
 
       IERC721 nftContract = IERC721(_nftContractAddress); // should it be contract private variable?
 
       address currentOwner = nftContract.ownerOf(tokenId);
       if (currentOwner == msg.sender) {
-        revert MarketErrors.CanNotBuyFromYourself();
+        revert OpenMarketplaceErrors.CanNotBuyFromYourself();
       }
 
       if (!listing.isActive) {
-        revert MarketErrors.MarketListingIsNotActive(tokenId);
+        revert OpenMarketplaceErrors.MarketListingIsNotActive(tokenId);
       }
       listing.isActive = false;
 
@@ -127,7 +127,7 @@ contract Market is Ownable {
 
     function setMarketFeePercent(uint16 newFeePercent) public onlyOwner {
       if (newFeePercent > 100) {
-        revert MarketErrors.InvalidMarketFeePercent(newFeePercent);
+        revert OpenMarketplaceErrors.InvalidMarketFeePercent(newFeePercent);
       }
 
       _marketplaceFeePercent = newFeePercent;
@@ -145,7 +145,7 @@ contract Market is Ownable {
     function _getListing(uint256 tokenId) private view returns (Listing storage) {
       Listing storage listing = listings[tokenId];
       if (listing.price == 0) {
-        revert MarketErrors.MarketListingDoesNotExist(tokenId);
+        revert OpenMarketplaceErrors.MarketListingDoesNotExist(tokenId);
       }
       return listing;
     } 
@@ -161,7 +161,7 @@ contract Market is Ownable {
       address approvedAddress = IERC721(_nftContractAddress).getApproved(tokenId);
       bool isApprovedForAll = IERC721(_nftContractAddress).isApprovedForAll(msg.sender, address(this));
       if (approvedAddress != address(this) && !isApprovedForAll) {
-        revert MarketErrors.MarketNftManagementIsNotApproved(tokenId);
+        revert OpenMarketplaceErrors.MarketNftManagementIsNotApproved(tokenId);
       }
     }
 
@@ -171,11 +171,11 @@ contract Market is Ownable {
       try IERC721(_nftContractAddress).ownerOf(tokenId) returns (address result) {
         ownerAddress = result;
       } catch {
-        revert MarketErrors.MarketNonexistentToken(tokenId);
+        revert OpenMarketplaceErrors.MarketNonexistentToken(tokenId);
       }
        
       if (ownerAddress != msg.sender) {
-        revert MarketErrors.MarketSenderIsNotNftOwner(tokenId);
+        revert OpenMarketplaceErrors.MarketSenderIsNotNftOwner(tokenId);
       }
     }
 }

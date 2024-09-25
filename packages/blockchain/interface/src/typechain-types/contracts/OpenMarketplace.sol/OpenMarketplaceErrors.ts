@@ -16,13 +16,13 @@ import type {
   TypedListener,
 } from "../../common";
 
-export interface MarketErrorsInterface extends Interface {}
+export interface OpenMarketplaceErrorsInterface extends Interface {}
 
-export interface MarketErrors extends BaseContract {
-  connect(runner?: ContractRunner | null): MarketErrors;
+export interface OpenMarketplaceErrors extends BaseContract {
+  connect(runner?: ContractRunner | null): OpenMarketplaceErrors;
   waitForDeployment(): Promise<this>;
 
-  interface: MarketErrorsInterface;
+  interface: OpenMarketplaceErrorsInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,

@@ -2,7 +2,7 @@ import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { deployMarket } from "./deploy";
 
-describe("Market", function () {
+describe("OpenMarketplace", function () {
   describe("Set market fee percent", function () {
     it("Should throw when percent less higher then 100", async function () {
       const { owner, market } = await loadFixture(deployMarket);

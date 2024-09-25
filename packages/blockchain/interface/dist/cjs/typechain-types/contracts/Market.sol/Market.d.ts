@@ -110,7 +110,7 @@ export declare namespace OwnershipTransferredEvent {
     type Log = TypedEventLog<Event>;
     type LogDescription = TypedLogDescription<Event>;
 }
-export interface Market extends BaseContract {
+export interfaceOpenMarketplaceextends BaseContract {
     connect(runner?: ContractRunner | null): Market;
     waitForDeployment(): Promise<this>;
     interface: MarketInterface;

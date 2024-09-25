@@ -1,5 +1,5 @@
 import { EventLog, Log } from "ethers";
-import { Market, OpenMarketplaceNFT } from "../../typechain-types";
+import { OpenMarketplace, OpenMarketplaceNFT } from "../../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { faker } from "@faker-js/faker";
 
@@ -27,7 +27,7 @@ export async function mint(
 }
 
 export async function approve(
-  market: Market,
+  market: OpenMarketplace,
   openMarketplaceNFT: OpenMarketplaceNFT,
   owner: HardhatEthersSigner,
   tokenId: number
@@ -40,7 +40,7 @@ export async function approve(
 }
 
 export async function mintAndApprove(
-  market: Market,
+  market: OpenMarketplace,
   openMarketplaceNFT: OpenMarketplaceNFT,
   owner: HardhatEthersSigner
 ): Promise<number> {

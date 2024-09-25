@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "OpenMarketplaceNFT.js",
+  "sourceRoot": "",
+  "sources": [
+    "../../../../src/typechain-types/contracts/OpenMarketplaceNFT.ts"
+  ],
+  "names": [],
+  "mappings": ""
+}

@@ -5,11 +5,11 @@ WORKDIR /app
 COPY yarn.lock .
 COPY package.json .
 
-COPY packages/pnft-market-etherium/package.json ./packages/pnft-market-etherium/
+COPY packages/blockchain/package.json ./packages/blockchain/
 
 RUN yarn install
 
-WORKDIR /app/packages/pnft-market-etherium
+WORKDIR /app/packages/blockchain
 
 RUN yarn install
 

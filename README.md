@@ -1,4 +1,4 @@
-# pnft-market
+# openMarketplaceNFT-market
 
 Collection of Perminov Eugene's NFTs
 

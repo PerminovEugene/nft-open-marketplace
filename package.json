@@ -1,19 +1,22 @@
 {
-  "name": "nft-open-marketplace",
+  "name": "openMarketplaceNFT-market",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
-  "private": false,
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test yet\" && exit 0",
+    "test": "npm run test --workspaces --if-present --parallel",
+    "linter": "npm run linter --workspaces --if-present --parallel",
+    "coverage": "npm run coverage --workspaces --if-present --parallel",
     "prepare": "husky"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "packages/blockchain/interace"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PerminovEugene/pnft-market.git"
+    "url": "git+https://github.com/PerminovEugene/openMarketplaceNFT-market.git"
   },
   "keywords": [
     "etherium",
@@ -25,9 +28,9 @@
   "author": "Evgenii Perminov",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/PerminovEugene/pnft-market/issues"
+    "url": "https://github.com/PerminovEugene/openMarketplaceNFT-market/issues"
   },
-  "homepage": "https://github.com/PerminovEugene/pnft-market#readme",
+  "homepage": "https://github.com/PerminovEugene/openMarketplaceNFT-market#readme",
   "dependencies": {},
   "devDependencies": {
     "husky": "^9.1.6",

@@ -1,6 +1,6 @@
 import { ContractFactory, HDNodeWallet, Wallet, getAddress } from "ethers";
 import { artifacts, ethers } from "hardhat";
-import { Pnft } from "../typechain-types";
+import { OpenMarketplaceNFT } from "../typechain-types";
 import envConfig from "./config";
 
 // LOCAL DEV ONLY !
@@ -11,11 +11,17 @@ export function getDeployerWallet(): HDNodeWallet {
   return Wallet.fromPhrase(mnemonic, provider);
 }
 
-export async function deploy(deployerWallet: HDNodeWallet): Promise<Pnft> {
-  console.log("Deploying contract Pnft...");
+export async function deploy(
+  deployerWallet: HDNodeWallet
+): Promise<OpenMarketplaceNFT> {
+  console.log("Deploying contract OpenMarketplaceNFT...");
 
-  const pnft = await artifacts.readArtifact("Pnft");
-  const factory = new ContractFactory(pnft.abi, pnft.bytecode, deployerWallet);
+  const openMarketplaceNFT = await artifacts.readArtifact("OpenMarketplaceNFT");
+  const factory = new ContractFactory(
+    openMarketplaceNFT.abi,
+    openMarketplaceNFT.bytecode,
+    deployerWallet
+  );
   const contractOwnerWallet = deployerWallet;
 
   deployerWallet.connect(ethers.provider);
@@ -23,7 +29,7 @@ export async function deploy(deployerWallet: HDNodeWallet): Promise<Pnft> {
 
   const contract = (await factory.deploy(
     getAddress(contractOwnerWallet.address)
-  )) as Pnft;
+  )) as OpenMarketplaceNFT;
   console.log("contract address -> ", await contract.getAddress());
 
   const tx = contract?.deploymentTransaction();
@@ -34,7 +40,7 @@ export async function deploy(deployerWallet: HDNodeWallet): Promise<Pnft> {
 }
 
 export async function addFixtures(
-  contract: Pnft,
+  contract: OpenMarketplaceNFT,
   deployerWallet: HDNodeWallet
 ) {
   console.log("Add fixtures...");
@@ -42,7 +48,7 @@ export async function addFixtures(
 }
 
 export async function mintFixtureNfts(
-  contract: Pnft,
+  contract: OpenMarketplaceNFT,
   deployerWallet: HDNodeWallet
 ) {
   console.log("Mint nfts...");

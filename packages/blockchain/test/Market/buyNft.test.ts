@@ -1,6 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import { mintAndApprove } from "../utils/pnft-helpers";
+import { mintAndApprove } from "../utils/openMarketplaceNFT-helpers";
 import { deployMarket } from "./deploy";
 import { ethers } from "hardhat";
 import { ERC721Events } from "../utils/enums";
@@ -10,8 +10,10 @@ describe("Market", function () {
 
   describe("Buy nft", function () {
     it("Should throw when listing does not exist", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
-      pnft.connect(owner);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
+      openMarketplaceNFT.connect(owner);
 
       await expect(market.connect(owner).buyNft(tokenId))
         .to.be.revertedWithCustomError(market, "MarketListingDoesNotExist")
@@ -19,12 +21,14 @@ describe("Market", function () {
     });
 
     it("Should throw when value sent to the contract is not enough", async function () {
-      const { owner, other, pnft, market } = await loadFixture(deployMarket);
+      const { owner, other, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
       const buyingPrice = ethers.parseEther("0.9999999999");
       const sellingPrice = ethers.parseEther("1.0");
 
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, sellingPrice);
 
       await expect(
@@ -35,10 +39,12 @@ describe("Market", function () {
     });
 
     it("Should throw when buyer already owns token", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
       const sellingPrice = ethers.parseEther("1.0");
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
 
       await market.connect(owner).listNft(tokenId, sellingPrice);
 
@@ -48,10 +54,12 @@ describe("Market", function () {
     });
 
     it("Should throw when listing is not active", async function () {
-      const { owner, other, pnft, market } = await loadFixture(deployMarket);
+      const { owner, other, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
       const sellingPrice = ethers.parseEther("1.0");
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
 
       await market.connect(owner).listNft(tokenId, sellingPrice);
       await market.connect(owner).changeListingActiveStatus(tokenId, false);
@@ -64,12 +72,11 @@ describe("Market", function () {
     });
 
     it("Should buy nft once", async function () {
-      const { owner, other, buyer, pnft, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, other, buyer, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const sellingPrice = ethers.parseEther("1.0");
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, sellingPrice);
 
       await expect(
@@ -77,11 +84,11 @@ describe("Market", function () {
       )
         .to.emit(market, "NftPurchased")
         .withArgs(other, tokenId, sellingPrice)
-        .to.emit(pnft, ERC721Events.Transfer)
+        .to.emit(openMarketplaceNFT, ERC721Events.Transfer)
         .withArgs(owner.address, other.address, tokenId);
 
       // check updated ownership
-      const newOwner = await pnft.connect(owner).ownerOf(tokenId);
+      const newOwner = await openMarketplaceNFT.connect(owner).ownerOf(tokenId);
       const expectedNewOwner = await other.getAddress();
       expect(newOwner).to.eql(expectedNewOwner);
 
@@ -108,18 +115,24 @@ describe("Market", function () {
     });
 
     it("Should check that pendingWithdrawals are cumulatively updated and market fee correctly calculated", async function () {
-      const { owner, buyer, pnft, market } = await loadFixture(deployMarket);
+      const { owner, buyer, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
       const ownerConnection = market.connect(owner);
       const buyerConnection = market.connect(buyer);
 
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       const marketPlaceFeePercent = 15;
       await ownerConnection.setMarketFeePercent(BigInt(marketPlaceFeePercent));
 
       // approve for all
       const marketContractAddres = await market.getAddress();
-      await pnft.connect(buyer).setApprovalForAll(marketContractAddres, true);
-      await pnft.connect(owner).setApprovalForAll(marketContractAddres, true);
+      await openMarketplaceNFT
+        .connect(buyer)
+        .setApprovalForAll(marketContractAddres, true);
+      await openMarketplaceNFT
+        .connect(owner)
+        .setApprovalForAll(marketContractAddres, true);
 
       const sellingPrice = ethers.parseEther("1.0");
       await ownerConnection.listNft(tokenId, sellingPrice);
@@ -134,7 +147,7 @@ describe("Market", function () {
       await buyerConnection.buyNft(tokenId, { value: sellingPrice3 });
 
       // check updated ownership
-      const newOwner = await pnft.connect(owner).ownerOf(tokenId);
+      const newOwner = await openMarketplaceNFT.connect(owner).ownerOf(tokenId);
       const expectedNewOwner = await buyer.getAddress();
       expect(newOwner).to.eql(expectedNewOwner);
 

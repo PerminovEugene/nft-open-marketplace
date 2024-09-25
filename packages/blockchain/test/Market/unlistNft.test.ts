@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { faker } from "@faker-js/faker";
-import { getMintedTokenId } from "../utils/pnft-helpers";
+import { getMintedTokenId } from "../utils/openMarketplaceNFT-helpers";
 import { deployMarket } from "./deploy";
 
 describe("Market", function () {
@@ -17,19 +17,21 @@ describe("Market", function () {
     });
 
     it("Should throw when listing is not active", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
       // mint and get tokenId
-      const mintTx = await pnft
+      const mintTx = await openMarketplaceNFT
         .connect(owner)
         .mint(owner.address, faker.internet.url());
       const minted = await mintTx.wait();
       const logs = minted?.logs;
-      const tokenId = getMintedTokenId(pnft, logs);
+      const tokenId = getMintedTokenId(openMarketplaceNFT, logs);
 
       // approve minted nft
       const marketContractAddres = await market.getAddress();
-      const approveTx = await pnft
+      const approveTx = await openMarketplaceNFT
         .connect(owner)
         .approve(marketContractAddres, BigInt(tokenId));
       await approveTx.wait();
@@ -43,19 +45,21 @@ describe("Market", function () {
     });
 
     it("Should throw when unlister is not nft owner", async function () {
-      const { owner, pnft, other, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, other, market } = await loadFixture(
+        deployMarket
+      );
 
       // mint and get tokenId
-      const mintTx = await pnft
+      const mintTx = await openMarketplaceNFT
         .connect(owner)
         .mint(owner.address, faker.internet.url());
       const minted = await mintTx.wait();
       const logs = minted?.logs;
-      const tokenId = getMintedTokenId(pnft, logs);
+      const tokenId = getMintedTokenId(openMarketplaceNFT, logs);
 
       // approve minted nft
       const marketContractAddres = await market.getAddress();
-      const approveTx = await pnft
+      const approveTx = await openMarketplaceNFT
         .connect(owner)
         .approve(marketContractAddres, BigInt(tokenId));
       await approveTx.wait();
@@ -69,19 +73,21 @@ describe("Market", function () {
     });
 
     it("Should unlist nft", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
       // mint and get tokenId
-      const mintTx = await pnft
+      const mintTx = await openMarketplaceNFT
         .connect(owner)
         .mint(owner.address, faker.internet.url());
       const minted = await mintTx.wait();
       const logs = minted?.logs;
-      const tokenId = getMintedTokenId(pnft, logs);
+      const tokenId = getMintedTokenId(openMarketplaceNFT, logs);
 
       // approve minted nft
       const marketContractAddres = await market.getAddress();
-      const approveTx = await pnft
+      const approveTx = await openMarketplaceNFT
         .connect(owner)
         .approve(marketContractAddres, BigInt(tokenId));
       await approveTx.wait();

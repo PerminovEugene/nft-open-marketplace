@@ -22,7 +22,7 @@ function useContract() {
 
       const contract = new ethers.Contract(
         contractAddress,
-        pnftContractAbi,
+        openMarketplaceNFTContractAbi,
         signer
       );
 

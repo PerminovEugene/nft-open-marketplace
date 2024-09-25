@@ -5,11 +5,11 @@ WORKDIR /app
 COPY yarn.lock .
 COPY package.json .
 
-COPY packages/pnft-market-ui/package.json ./packages/pnft-market-ui/
+COPY packages/ui/package.json ./packages/ui/
 
 RUN yarn install
 
-WORKDIR /app/packages/pnft-market-ui
+WORKDIR /app/packages/ui
 
 RUN yarn install
 

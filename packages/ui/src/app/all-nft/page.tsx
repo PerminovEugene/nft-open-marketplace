@@ -16,7 +16,7 @@ export default function Home() {
           communicationServerUrl: process.env.REACT_APP_COMM_SERVER_URL,
           checkInstallationImmediately: false, // This will automatically connect to MetaMask on page load
           dappMetadata: {
-            name: "PNFT",
+            name: "OMNFT",
             url: window.location.host,
           },
         }}

@@ -23,7 +23,7 @@ import type {
   TypedContractMethod,
 } from "../common";
 
-export interface PnftInterface extends Interface {
+export interface OpenMarketplaceNFTInterface extends Interface {
   getFunction(
     nameOrSignature:
       | "approve"
@@ -260,11 +260,11 @@ export namespace TransferEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export interface Pnft extends BaseContract {
-  connect(runner?: ContractRunner | null): Pnft;
+export interface OpenMarketplaceNFT extends BaseContract {
+  connect(runner?: ContractRunner | null): OpenMarketplaceNFT;
   waitForDeployment(): Promise<this>;
 
-  interface: PnftInterface;
+  interface: OpenMarketplaceNFTInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,

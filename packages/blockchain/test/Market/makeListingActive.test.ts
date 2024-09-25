@@ -1,6 +1,6 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import { mintAndApprove } from "../utils/pnft-helpers";
+import { mintAndApprove } from "../utils/openMarketplaceNFT-helpers";
 import { deployMarket } from "./deploy";
 
 describe("Market", function () {
@@ -8,9 +8,11 @@ describe("Market", function () {
 
   describe("MakeListingActive", function () {
     it("Should throw when not nft owner perform activation", async function () {
-      const { owner, other, pnft, market } = await loadFixture(deployMarket);
+      const { owner, other, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, 10000);
       await market.connect(owner).changeListingActiveStatus(tokenId, false);
 
@@ -20,7 +22,9 @@ describe("Market", function () {
     });
 
     it("Should throw when token does not exist", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
       await expect(
         market.connect(owner).changeListingActiveStatus(tokenId, false)
@@ -28,9 +32,11 @@ describe("Market", function () {
     });
 
     it("Should throw when listing does not exist", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
 
       await expect(
         market.connect(owner).changeListingActiveStatus(tokenId, false)
@@ -38,9 +44,11 @@ describe("Market", function () {
     });
 
     it("Should change listing isActive status to false", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, 10000);
 
       await expect(
@@ -54,9 +62,11 @@ describe("Market", function () {
     });
 
     it("Should change listing isActive status to true", async function () {
-      const { owner, pnft, market } = await loadFixture(deployMarket);
+      const { owner, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
 
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, 10000);
 
       await market.connect(owner).changeListingActiveStatus(tokenId, false);

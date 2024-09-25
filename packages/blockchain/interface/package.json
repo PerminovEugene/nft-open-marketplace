@@ -36,7 +36,7 @@
   "author": "Eugene Perminov",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/PerminovEugene/pnft-market/tree/main/packages/pnft-market-etherium/interface"
+    "url": "git+https://github.com/PerminovEugene/openMarketplaceNFT-market/tree/main/packages/blockchain/interface"
   },
   "license": "MIT",
   "devDependencies": {

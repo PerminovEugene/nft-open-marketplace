@@ -1,17 +1,19 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { deployMarket } from "./deploy";
-import { mintAndApprove } from "../utils/pnft-helpers";
+import { mintAndApprove } from "../utils/openMarketplaceNFT-helpers";
 import { ethers } from "hardhat";
 
 describe("Market", function () {
   describe("Withdraw", function () {
     it("Should withdraw correct amount of eth", async function () {
-      const { owner, buyer, pnft, market } = await loadFixture(deployMarket);
+      const { owner, buyer, openMarketplaceNFT, market } = await loadFixture(
+        deployMarket
+      );
       const ownerConnection = market.connect(owner);
       const buyerConnection = market.connect(buyer);
 
-      const tokenId = await mintAndApprove(market, pnft, owner);
+      const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       const marketPlaceFeePercent = 25;
       await ownerConnection.setMarketFeePercent(BigInt(marketPlaceFeePercent));
 
@@ -21,8 +23,12 @@ describe("Market", function () {
       const marketContractAddres = await market.getAddress();
 
       // buying selling preparations
-      await pnft.connect(buyer).setApprovalForAll(marketContractAddres, true);
-      await pnft.connect(owner).setApprovalForAll(marketContractAddres, true);
+      await openMarketplaceNFT
+        .connect(buyer)
+        .setApprovalForAll(marketContractAddres, true);
+      await openMarketplaceNFT
+        .connect(owner)
+        .setApprovalForAll(marketContractAddres, true);
 
       const sellingPrice = ethers.parseEther("0.5");
       await ownerConnection.listNft(tokenId, sellingPrice);

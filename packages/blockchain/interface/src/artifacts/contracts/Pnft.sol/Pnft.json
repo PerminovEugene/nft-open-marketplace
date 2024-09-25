@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
-  "contractName": "Pnft",
-  "sourceName": "contracts/Pnft.sol",
+  "contractName": "OpenMarketplaceNFT",
+  "sourceName": "contracts/OpenMarketplaceNFT.sol",
   "abi": [
     {
       "inputs": [

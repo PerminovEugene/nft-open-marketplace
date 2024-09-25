@@ -1,5 +1,11 @@
 # nft marketplace contracts interfaces and ABI
 
+## [0.1.5] - 2025-09-24
+
+### Changed
+
+- Separate build process to esm and cjs modules.
+
 ## [0.1.4] - 2024-09-24
 
 ### Changed

@@ -1,13 +1,36 @@
 {
   "name": "@nft-open-marketplace/interface",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Contract ABI and interfaces for nft-open-marketplace project",
-  "keywords": ["solidity", "ethers", "nft", "workspaces", "interface", "nft-open-marketplace"],
-  "main": "/dist/index.js",
+  "keywords": [
+    "solidity",
+    "ethers",
+    "nft",
+    "workspaces",
+    "interface",
+    "nft-open-marketplace"
+  ],
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js",
+      "types": "./dist/esm/index.d.ts"
+    }
+  },
+  "files": [
+    "dist/**/*"
+  ],
+  "type": "module",
   "private": false,
   "scripts": {
-    "build": "tsc",
     "clean": "rm -rf dist/",
+    "prebuild": "npm run clean",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "build": "npm run build:cjs && npm run build:esm",
     "prepublishOnly": "npm run build"
   },
   "author": "Eugene Perminov",
@@ -17,6 +40,7 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/node": "^22.7.0",
     "ethers": "^6.13.2",
     "typescript": "^5.6.2"
   },

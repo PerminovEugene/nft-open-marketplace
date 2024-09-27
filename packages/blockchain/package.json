@@ -9,14 +9,14 @@
     "compile": "hardhat compile",
     "preupdate-interface": "npm run compile",
     "update-interface": "npx hardhat update-interface",
-    "test": "NODE_ENV=test ./node_modules/.bin/hardhat test",
+    "test": "NODE_ENV=test hardhat test",
     "node": "npx hardhat node",
     "predeploy:local": "npm run compile",
     "deploy:local": "npx hardhat run scripts/deploy-dev-local-node.ts",
     "linter": "npx hardhat check",
     "coverage": "NODE_ENV=test npx hardhat coverage"
   },
-  "author": "",
+  "author": "Eugene Perminov",
   "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^8.4.1",
@@ -36,6 +36,7 @@
     "@types/mocha": "^10.0.7",
     "@types/node": "^20.14.9",
     "chai": "^4.4.1",
+    "dotenv": "^16.4.5",
     "ethers": "^6.4.0",
     "hardhat": "^2.22.6",
     "hardhat-gas-reporter": "^1.0.8",
@@ -44,7 +45,6 @@
     "typechain": "^8.3.0",
     "typescript": "^5.5.3"
   },
-  "peerDependencies": {},
   "dependencies": {
     "ethers": "^6.13.2"
   }

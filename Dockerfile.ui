@@ -1,16 +1,18 @@
 FROM node:18
 
+RUN yarn set version 4.5.0
+
 WORKDIR /app
 
-COPY yarn.lock .
 COPY package.json .
+COPY yarn.lock .
+COPY .yarnrc.yml .
+COPY .yarn .
 
 COPY packages/ui/package.json ./packages/ui/
 
-RUN yarn install
+RUN yarn workspaces focus @nft-open-marketplace/ui
 
 WORKDIR /app/packages/ui
-
-RUN yarn install
 
 EXPOSE 3000

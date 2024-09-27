@@ -1,18 +1,18 @@
-FROM node:18
+FROM node:20
+
+RUN yarn set version 4.5.0
 
 WORKDIR /app
 
-COPY yarn.lock .
-COPY package.json .
-
-COPY packages/blockchain/package.json ./packages/blockchain/
-
-RUN yarn install
-
-WORKDIR /app/packages/blockchain
-
-RUN yarn install
-
 EXPOSE 8545
 
-CMD ["npm", "run", "node"]
+COPY package.json .
+COPY yarn.lock .
+COPY .yarnrc.yml .
+COPY .yarn .
+
+COPY packages/blockchain/package.json ./packages/blockchain/ 
+
+RUN yarn workspaces focus @nft-open-marketplace/blockchain
+
+WORKDIR /app/packages/blockchain

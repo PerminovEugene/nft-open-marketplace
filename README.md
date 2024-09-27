@@ -1,6 +1,6 @@
-# openMarketplaceNFT-market
+# nft-open-marketplace
 
-Collection of Perminov Eugene's NFTs
+Simple marketplace for buying and selling nfts.
 
 ## Local dev
 

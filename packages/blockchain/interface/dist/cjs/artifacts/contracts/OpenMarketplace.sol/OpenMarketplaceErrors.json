@@ -1,0 +1,109 @@
+{
+    "_format": "hh-sol-artifact-1",
+    "contractName": "OpenMarketplaceErrors",
+    "sourceName": "contracts/OpenMarketplace.sol",
+    "abi": [
+        {
+            "inputs": [],
+            "name": "CanNotBuyFromYourself",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                },
+                {
+                    "internalType": "uint256",
+                    "name": "price",
+                    "type": "uint256"
+                }
+            ],
+            "name": "IncorrectFundsSent",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint16",
+                    "name": "newFeePercent",
+                    "type": "uint16"
+                }
+            ],
+            "name": "InvalidMarketFeePercent",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MarketListingAlreadyExist",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MarketListingDoesNotExist",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MarketListingIsNotActive",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MarketNftManagementIsNotApproved",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MarketNonexistentToken",
+            "type": "error"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "uint256",
+                    "name": "tokenId",
+                    "type": "uint256"
+                }
+            ],
+            "name": "MarketSenderIsNotNftOwner",
+            "type": "error"
+        }
+    ],
+    "bytecode": "0x",
+    "deployedBytecode": "0x",
+    "linkReferences": {},
+    "deployedLinkReferences": {}
+}

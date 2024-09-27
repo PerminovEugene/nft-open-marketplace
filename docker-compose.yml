@@ -8,17 +8,17 @@ services:
     ports:
       - "8545:8545"
     volumes:
-      - .:/app
-      - /app/node_modules
+      - ./packages/blockchain:/app/packages/blockchain
     networks:
       - hardhat-net
+    command: "yarn run node"
     env_file:
       - .env
 
   deploy-blockchain:
     build:
       context: .
-      dockerfile: ./Dockerfile.deploy
+      dockerfile: ./Dockerfile.node
     depends_on:
       - blockchain
     networks:

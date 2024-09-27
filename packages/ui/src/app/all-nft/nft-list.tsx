@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useSDK } from "@metamask/sdk-react";
-import { mark } from "@nft-open-marketplace/interface";
+import { openMarketplaceNFTContractAbi } from "@nft-open-marketplace/interface";
 
 function useContract() {
   const [account, setAccount] = useState<string>();
@@ -18,11 +18,11 @@ function useContract() {
       const ethersProvider = new ethers.BrowserProvider(provider);
       const signer = await ethersProvider.getSigner();
 
-      const contractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
+      const nftContractAddress = "0x5fbdb2315678afecb367f032d93f642f64180aa3";
 
       const contract = new ethers.Contract(
-        contractAddress,
-        openMarketplaceNFTContractAbi,
+        nftContractAddress,
+        openMarketplaceNFTContractAbi.abi,
         signer
       );
 

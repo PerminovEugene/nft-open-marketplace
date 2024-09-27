@@ -25,16 +25,15 @@ export async function deploy(
   const contractOwnerWallet = deployerWallet;
 
   deployerWallet.connect(ethers.provider);
-  console.log("Owner address :", contractOwnerWallet.address);
+  console.log("Owner address:", contractOwnerWallet.address);
 
   const contract = (await factory.deploy(
     getAddress(contractOwnerWallet.address)
   )) as OpenMarketplaceNFT;
-  console.log("contract address -> ", await contract.getAddress());
+  console.log("contract address -> ", await contract.getAddress()); // share address to UI here
 
-  const tx = contract?.deploymentTransaction();
-  const transactionResponse = await tx?.wait();
-  console.log("transactionResponse -->", transactionResponse);
+  // const tx = contract?.deploymentTransaction();
+  // const transactionResponse = await tx?.wait();
 
   return contract;
 }

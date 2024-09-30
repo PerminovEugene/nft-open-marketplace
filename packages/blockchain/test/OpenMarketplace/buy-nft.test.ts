@@ -1,9 +1,9 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
-import { mintAndApprove } from "../utils/open-marketplace-helpers";
+import { mintAndApprove } from "../../utils/open-marketplace-helpers";
 import { deployMarket } from "./deploy";
 import { ethers } from "hardhat";
-import { ERC721Events } from "../utils/enums";
+import { ERC721Events } from "../../utils/enums";
 
 describe("OpenMarketplace", function () {
   let tokenId = 1;

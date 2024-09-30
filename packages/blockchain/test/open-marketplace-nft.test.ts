@@ -3,7 +3,7 @@ import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 import { OpenMarketplaceNFT } from "../typechain-types";
 import { faker } from "@faker-js/faker";
-import { ERC721Events } from "./utils/enums";
+import { ERC721Events } from "../utils/enums";
 
 describe("OpenMarketplaceNFT", function () {
   // We define a fixture to reuse the same setup in every test.

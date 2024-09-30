@@ -25,6 +25,7 @@ services:
       - hardhat-net
     volumes:
       - ./packages/blockchain:/app/packages/blockchain
+      - ./shared:/app/shared
     command: "yarn run deploy:local"
     env_file:
       - .env
@@ -37,10 +38,10 @@ services:
       - "3000:3000"
     volumes:
       - ./packages/ui:/app/packages/ui
-      - /app/node_modules
+      - ./shared:/app/shared
     depends_on:
       - deploy-blockchain
-    command: "npm run dev"
+    command: "yarn run dev"
     env_file:
       - .env
 

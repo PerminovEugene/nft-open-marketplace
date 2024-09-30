@@ -1,5 +1,5 @@
 import { EventLog, Log } from "ethers";
-import { OpenMarketplace, OpenMarketplaceNFT } from "../../typechain-types";
+import { OpenMarketplace, OpenMarketplaceNFT } from "../typechain-types";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { faker } from "@faker-js/faker";
 

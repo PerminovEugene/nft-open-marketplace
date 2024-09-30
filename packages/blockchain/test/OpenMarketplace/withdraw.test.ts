@@ -1,7 +1,7 @@
 import { loadFixture } from "@nomicfoundation/hardhat-toolbox/network-helpers";
 import { expect } from "chai";
 import { deployMarket } from "./deploy";
-import { mintAndApprove } from "../utils/open-marketplace-helpers";
+import { mintAndApprove } from "../../utils/open-marketplace-helpers";
 import { ethers } from "hardhat";
 
 describe("OpenMarketplace", function () {

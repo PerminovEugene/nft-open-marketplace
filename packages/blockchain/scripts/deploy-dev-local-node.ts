@@ -1,72 +1,232 @@
-import { ContractFactory, HDNodeWallet, Wallet, getAddress } from "ethers";
+import {
+  ContractFactory,
+  ContractTransactionReceipt,
+  NonceManager,
+  Wallet,
+  getAddress,
+} from "ethers";
 import { artifacts, ethers } from "hardhat";
-import { OpenMarketplaceNFT } from "../typechain-types";
+import { OpenMarketplace, OpenMarketplaceNFT } from "../typechain-types";
 import envConfig from "./config";
+import { promises as fs } from "fs";
+import { existsSync } from "fs";
+import * as path from "path";
+import { getMintedTokenId } from "../utils/open-marketplace-helpers";
 
-// LOCAL DEV ONLY !
+// ! LOCAL DEV ONLY !
+type ContractDeployData = {
+  name: string;
+  address: string;
+  gasUsed: string;
+  gasPrice: string;
+  totalCost: string;
+};
 
-export function getDeployerWallet(): HDNodeWallet {
+type ContractsDeployData = {
+  contracts: ContractDeployData[];
+};
+
+export function getDeployerWallet(): NonceManager {
   const mnemonic = envConfig.testAccMnemonic;
   const provider = new ethers.JsonRpcProvider(envConfig.nodeAddress);
-  return Wallet.fromPhrase(mnemonic, provider);
+  const wallet = Wallet.fromPhrase(mnemonic, provider);
+  const manager = new NonceManager(wallet);
+  return manager as NonceManager;
 }
 
-export async function deploy(
-  deployerWallet: HDNodeWallet
-): Promise<OpenMarketplaceNFT> {
-  console.log("Deploying contract OpenMarketplaceNFT...");
+async function saveContractsData(contractsDeployData: ContractsDeployData) {
+  const contractsAddressessFolder = path.resolve("../../shared");
+  const contractsAddressessFile = path.join(
+    contractsAddressessFolder,
+    "contracts.deploy-data.json"
+  );
 
-  const openMarketplaceNFT = await artifacts.readArtifact("OpenMarketplaceNFT");
+  console.log(`Saving contracts deploy data to ${contractsAddressessFile}`);
+
+  if (!existsSync(contractsAddressessFolder)) {
+    await fs.mkdir(contractsAddressessFolder, { recursive: true });
+  } else {
+    if (existsSync(contractsAddressessFile)) {
+      await fs.unlink(contractsAddressessFile);
+    }
+  }
+
+  await fs.writeFile(
+    contractsAddressessFile,
+    JSON.stringify(contractsDeployData)
+  );
+}
+
+export async function deployContract<Contract>(
+  contractName: string,
+  deployerWallet: NonceManager,
+  args: any[]
+) {
+  const contractArtifacts = await artifacts.readArtifact(contractName);
   const factory = new ContractFactory(
-    openMarketplaceNFT.abi,
-    openMarketplaceNFT.bytecode,
+    contractArtifacts.abi,
+    contractArtifacts.bytecode,
     deployerWallet
   );
-  const contractOwnerWallet = deployerWallet;
+  console.log(`Deploying contract ${contractName}`);
+  const deploymentResult = await factory.deploy(...args);
+  const deploymentTransaction = deploymentResult.deploymentTransaction();
+  if (!deploymentTransaction) {
+    throw new Error(`${contractName} Contract deployment transaction is null`);
+  }
+  const deploymentReceipt =
+    (await deploymentTransaction.wait()) as ContractTransactionReceipt;
 
-  deployerWallet.connect(ethers.provider);
-  console.log("Owner address:", contractOwnerWallet.address);
-
-  const contract = (await factory.deploy(
-    getAddress(contractOwnerWallet.address)
-  )) as OpenMarketplaceNFT;
-  console.log("contract address -> ", await contract.getAddress()); // share address to UI here
-
-  // const tx = contract?.deploymentTransaction();
-  // const transactionResponse = await tx?.wait();
-
-  return contract;
+  return {
+    deploymentResult: deploymentResult as Contract,
+    deploymentReceipt,
+  };
 }
 
-export async function addFixtures(
-  contract: OpenMarketplaceNFT,
-  deployerWallet: HDNodeWallet
-) {
-  console.log("Add fixtures...");
-  await mintFixtureNfts(contract, deployerWallet);
+export async function getDeployCost(receipt: ContractTransactionReceipt) {
+  const { gasUsed, gasPrice } = receipt;
+  console.log(`Gas Used for Deployment: ${gasUsed.toString()}`);
+  const totalCost = gasUsed * gasPrice;
+
+  console.log(`Total Deployment Cost (Wei): ${totalCost.toString()}`);
+
+  return {
+    gasUsed: gasUsed.toString(),
+    gasPrice: gasPrice.toString(),
+    totalCost: totalCost.toString(),
+  };
 }
 
-export async function mintFixtureNfts(
+export async function deploy(deployerWallet: NonceManager) {
+  const deployerAddress = await deployerWallet.signer.getAddress();
+
+  const {
+    deploymentResult: OpenMarketplaceNFT,
+    deploymentReceipt: OpenMarketplaceNFTReceipt,
+  } = await deployContract<OpenMarketplaceNFT>(
+    "OpenMarketplaceNFT",
+    deployerWallet,
+    [deployerAddress]
+  );
+
+  const nftContractAddress = await OpenMarketplaceNFT.getAddress();
+
+  const {
+    deploymentResult: OpenMarketplace,
+    deploymentReceipt: OpenMarketplaceReceipt,
+  } = await deployContract<OpenMarketplace>("OpenMarketplace", deployerWallet, [
+    deployerAddress,
+    nftContractAddress,
+  ]);
+
+  return {
+    OpenMarketplaceNFT,
+    OpenMarketplaceNFTReceipt,
+    OpenMarketplace,
+    OpenMarketplaceReceipt,
+  };
+}
+
+export async function mintFixtureNFTs(
   contract: OpenMarketplaceNFT,
-  deployerWallet: HDNodeWallet
+  deployerWallet: NonceManager
 ) {
   console.log("Mint nfts...");
   const nftOwnerAddress = await deployerWallet.getAddress();
+  const tokenIds = [];
   for (const cid of envConfig.testNftUrls) {
-    let nonce = await deployerWallet?.provider?.getTransactionCount(
-      deployerWallet.address
-    );
+    const tx = await contract.mint(nftOwnerAddress, cid);
+    const txReceipt = await tx.wait();
 
-    const tx = await contract.mint(nftOwnerAddress, cid, { nonce });
-    console.log(`Minted ${cid} with nonce: ${nonce}`);
+    console.log(`Minted ${cid}`);
+
+    const tokenId = getMintedTokenId(contract, txReceipt?.logs);
+    tokenIds.push(tokenId);
+  }
+
+  return tokenIds;
+}
+
+export async function addListingFixtures(
+  contract: OpenMarketplace,
+  tokenIds: number[]
+) {
+  console.log("Add listings...");
+  for (const tokenId of tokenIds) {
+    const price = 100000;
+    const tx = await contract.listNft(tokenId, price);
+
+    console.log(`Listed NFT with id ${tokenId} with price ${price}`);
     await tx.wait();
   }
 }
 
+export async function approveAllNfts(
+  contract: OpenMarketplaceNFT,
+  marketplaceAddress: string
+) {
+  console.log("Approve all nfts");
+  const tx = await contract.setApprovalForAll(marketplaceAddress, true);
+  await tx.wait();
+}
+
+export async function changeMarketPlaceFee(
+  contract: OpenMarketplace,
+  deployerWallet: NonceManager
+) {
+  console.log(`Setting market place fee`);
+
+  const percent = 10;
+  const tx = await contract.setMarketFeePercent(
+    percent
+    // { nonce }
+  );
+  await tx.wait();
+}
+
+export async function addFixtures(
+  openMarketplaceNFT: OpenMarketplaceNFT,
+  openMarketplace: OpenMarketplace,
+  deployerWallet: NonceManager
+) {
+  console.log("Add fixtures...");
+  const tokenIds = await mintFixtureNFTs(openMarketplaceNFT, deployerWallet);
+  await approveAllNfts(openMarketplaceNFT, await openMarketplace.getAddress());
+  await addListingFixtures(openMarketplace, tokenIds);
+}
+
 async function main() {
   const deployerWallet = getDeployerWallet();
-  const contract = await deploy(deployerWallet);
-  await addFixtures(contract, deployerWallet);
+
+  const {
+    OpenMarketplaceNFT,
+    OpenMarketplaceNFTReceipt,
+    OpenMarketplace,
+    OpenMarketplaceReceipt,
+  } = await deploy(deployerWallet);
+
+  await saveContractsData({
+    contracts: [
+      {
+        name: "OpenMarketplaceNFT",
+        address: await OpenMarketplaceNFT.getAddress(),
+        ...(await getDeployCost(
+          OpenMarketplaceNFTReceipt as ContractTransactionReceipt
+        )),
+      },
+      {
+        name: "OpenMarketplace",
+        address: await OpenMarketplace.getAddress(),
+        ...(await getDeployCost(
+          OpenMarketplaceReceipt as ContractTransactionReceipt
+        )),
+      },
+    ],
+  });
+
+  await changeMarketPlaceFee(OpenMarketplace, deployerWallet);
+
+  await addFixtures(OpenMarketplaceNFT, OpenMarketplace, deployerWallet);
 }
 
 main();

@@ -1,11 +1,19 @@
-"use client";
+// prettier-ignore
+'use client';
 
 import { MetaMaskProvider } from "@metamask/sdk-react";
 import { ConnectWalletButton } from "./connect-wallet-button";
 import { NftList } from "./nft-list";
+import { useEffect, useState } from "react";
 
 export default function Home() {
-  return (
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  return isClient ? (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <MetaMaskProvider
         debug={false}
@@ -25,5 +33,7 @@ export default function Home() {
         <NftList />
       </MetaMaskProvider>
     </main>
+  ) : (
+    []
   );
 }

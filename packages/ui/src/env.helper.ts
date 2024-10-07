@@ -1,19 +1,15 @@
-import { Contracts, contractsAddressesENV } from "./contracts.meta";
-
-function getContractAddressFromEnv(contractName: Contracts) {
-  const address = process.env[contractsAddressesENV[contractName]];
+export function getMarketplaceContractAddress() {
+  const address = process.env.NEXT_PUBLIC_OPEN_MARKETPLACE_NFT_ADDRESS;
   if (!address) {
-    throw new Error(
-      `${Contracts.OpenMarketplaceNFT} contract's address is not saved in env`
-    );
+    throw new Error("Nft contract address is not defined");
   }
   return address;
 }
 
-export function getMarketplaceContractAddress() {
-  return getContractAddressFromEnv(Contracts.OpenMarketplace);
-}
-
 export function getNftContractAddress() {
-  return getContractAddressFromEnv(Contracts.OpenMarketplaceNFT);
+  const address = process.env.NEXT_PUBLIC_OPEN_MARKETPLACE_ADDRESS;
+  if (!address) {
+    throw new Error("Nft contract address is not defined");
+  }
+  return address;
 }

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useSDK } from "@metamask/sdk-react";
 import { openMarketplaceNFTContractAbi } from "@nft-open-marketplace/interface";
-import { Contracts, contractsAddressesENV } from "../../contracts.meta";
 import { getNftContractAddress } from "@/env.helper";
 
 function useContract() {

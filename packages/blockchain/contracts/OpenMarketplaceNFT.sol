@@ -9,15 +9,12 @@ contract OpenMarketplaceNFT is ERC721URIStorage, Ownable {
 
     constructor(address initialOwner) ERC721("OpenMarketplaceNFT", "OMNFT") Ownable(initialOwner) {}
 
-    function mint(address owner, string memory tokenURI)
+    function mint(string memory tokenURI)
       public
-      // Since I am the only person who will post nft - onlyOwner modificator is fine,
-      // but for public marketplace it should be deleted
-      onlyOwner
       returns (uint256)
     {
       uint256 tokenId = _nextTokenId++;
-      _mint(owner, tokenId);
+      _mint(msg.sender, tokenId);
       _setTokenURI(tokenId, tokenURI);
 
       return tokenId;

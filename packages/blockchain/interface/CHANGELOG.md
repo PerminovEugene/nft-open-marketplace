@@ -1,5 +1,11 @@
 # nft marketplace contracts interfaces and ABI
 
+## [0.2.0] - 2025-09-24
+
+### Changed
+
+- Make mint public.
+
 ## [0.1.5] - 2025-09-24
 
 ### Changed

@@ -3,7 +3,6 @@ import {
   ContractTransactionReceipt,
   NonceManager,
   Wallet,
-  getAddress,
 } from "ethers";
 import { artifacts, ethers } from "hardhat";
 import { OpenMarketplace, OpenMarketplaceNFT } from "../typechain-types";
@@ -127,15 +126,11 @@ export async function deploy(deployerWallet: NonceManager) {
   };
 }
 
-export async function mintFixtureNFTs(
-  contract: OpenMarketplaceNFT,
-  deployerWallet: NonceManager
-) {
+export async function mintFixtureNFTs(contract: OpenMarketplaceNFT) {
   console.log("Mint nfts...");
-  const nftOwnerAddress = await deployerWallet.getAddress();
   const tokenIds = [];
   for (const cid of envConfig.testNftUrls) {
-    const tx = await contract.mint(nftOwnerAddress, cid);
+    const tx = await contract.mint(cid);
     const txReceipt = await tx.wait();
 
     console.log(`Minted ${cid}`);
@@ -186,11 +181,10 @@ export async function changeMarketPlaceFee(
 
 export async function addFixtures(
   openMarketplaceNFT: OpenMarketplaceNFT,
-  openMarketplace: OpenMarketplace,
-  deployerWallet: NonceManager
+  openMarketplace: OpenMarketplace
 ) {
   console.log("Add fixtures...");
-  const tokenIds = await mintFixtureNFTs(openMarketplaceNFT, deployerWallet);
+  const tokenIds = await mintFixtureNFTs(openMarketplaceNFT);
   await approveAllNfts(openMarketplaceNFT, await openMarketplace.getAddress());
   await addListingFixtures(openMarketplace, tokenIds);
 }
@@ -226,7 +220,7 @@ async function main() {
 
   await changeMarketPlaceFee(OpenMarketplace, deployerWallet);
 
-  await addFixtures(OpenMarketplaceNFT, OpenMarketplace, deployerWallet);
+  await addFixtures(OpenMarketplaceNFT, OpenMarketplace);
 }
 
 main();

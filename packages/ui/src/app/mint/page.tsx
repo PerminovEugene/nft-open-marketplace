@@ -4,23 +4,41 @@ import React from "react";
 import { useHandleSubmit } from "./hooks/use-handle-submit";
 
 const MintPage = () => {
-  const [selectedFile, handleSubmit, handleFileChange] = useHandleSubmit();
+  const [selectedFile, handleSubmit, handleFileChange, nftNameRef] =
+    useHandleSubmit();
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-whit px-4">
       <h1 className="text-4xl font-bold mb-6">Mint Your NFT</h1>
       <form onSubmit={handleSubmit}>
-        <div className="flex items-center mb-4">
-          <div className="flex items-center justify-center w-full">
+        <div className="flex flex-col 8 mb-6 md:grid-cols-2">
+          <div className="mb-4">
+            <label
+              htmlFor="nft-name"
+              className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              NFT name
+            </label>
+            <input
+              type="text"
+              id="nft-name"
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Fancy cat"
+              required
+              ref={nftNameRef}
+            />
+          </div>
+          <div className="flex items-center justify-center w-ful mb-4">
             <label
               htmlFor="dropzone-file"
-              className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+              className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 overflow-hidden"
             >
               {selectedFile ? (
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                <div className="flex flex-col items-center justify-center w-full h-full p-2">
                   <img
-                    className="object-contain"
+                    className="max-w-full max-h-full object-contain"
                     src={URL.createObjectURL(selectedFile)}
+                    alt="Selected File"
                   />
                 </div>
               ) : (
@@ -41,8 +59,10 @@ const MintPage = () => {
                     />
                   </svg>
                   <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="font-semibold">Click to upload</span> or
-                    drag and drop
+                    <span className="font-semibold">
+                      Click to select NFT image
+                    </span>{" "}
+                    or drag and drop
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     SVG, PNG, JPG or GIF (MAX. 800x400px)
@@ -58,13 +78,13 @@ const MintPage = () => {
               />
             </label>
           </div>
+          <button
+            type="submit"
+            className="px-6 py-2 bg-blue-600 rounded hover:bg-blue-500"
+          >
+            Mint
+          </button>
         </div>
-        <button
-          type="submit"
-          className="px-6 py-2 bg-blue-600 rounded hover:bg-blue-500"
-        >
-          Mint
-        </button>
       </form>
     </div>
   );

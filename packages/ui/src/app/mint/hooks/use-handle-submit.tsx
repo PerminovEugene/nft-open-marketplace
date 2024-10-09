@@ -1,19 +1,14 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 
-async function uploadFile(file: File) {
+async function uploadFile(file: File, name: string) {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("nftName", "tester1");
-  formData.append("groupId", "073d6312-0bad-4603-9cdd-55ba3e635d1a");
+  formData.append("nftName", name);
 
   try {
-    const response = await fetch("http://localhost:8080/upload", {
+    const response = await fetch("http://localhost:8080/ipfs/upload", {
       method: "POST",
       body: formData,
-      // mode: "no-cors",
-      // headers: {
-      // "Content-Type": "application/x-www-form-urlencoded",
-      // },
     });
 
     if (response.ok) {
@@ -37,14 +32,23 @@ async function deleteFile() {}
 export const useHandleSubmit = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
+  const nftNameRef = useRef<HTMLInputElement>(null);
+
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
-    if (!selectedFile) {
-      alert("Пожалуйста, выберите файл для загрузки.");
+    const name = nftNameRef.current?.value;
+
+    if (!name) {
+      alert("Please fill in nft name");
       return;
     }
-    await uploadFile(selectedFile);
+
+    if (!selectedFile) {
+      alert("Please select image");
+      return;
+    }
+    await uploadFile(selectedFile, name);
     try {
       await mintNft();
     } catch (error: unknown) {
@@ -56,5 +60,5 @@ export const useHandleSubmit = () => {
     setSelectedFile(event.target.files[0]);
   };
 
-  return [selectedFile, handleSubmit, handleFileChange] as const;
+  return [selectedFile, handleSubmit, handleFileChange, nftNameRef] as const;
 };

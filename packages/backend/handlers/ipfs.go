@@ -22,13 +22,19 @@ func NewIfpsHandler(client *pinata.PinataClient) *IfpsHandler {
 	}
 }
 
-func (h *IfpsHandler) IfpsUploadFile(c *gin.Context) {
+func Optional(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
+
+func (h *IfpsHandler) IfpsPinImageAndMeta(c *gin.Context) {
 	fileHeader, err := getFileFromContext(c)
 	if err != nil {
 		c.String(http.StatusBadRequest, "Error retrieving file: %s", err.Error())
 		return
 	}
-	log.Println("Received file:", fileHeader.Filename)
 
 	uploadedFile, err := openUploadedFile(fileHeader)
 	if err != nil {
@@ -37,16 +43,37 @@ func (h *IfpsHandler) IfpsUploadFile(c *gin.Context) {
 	}
 	defer uploadedFile.Close()
 
-	nftName, groupId := getAdditionalFields(c)
+	name, groupId := getAdditionalFields(c)
 
-	pinataResponse, err := h.PinataClient.PinFile(uploadedFile, fileHeader.Filename, nftName, groupId)
+	// pin file
+
+	pinFileResponse, err := h.PinataClient.PinFile(uploadedFile, fileHeader.Filename, name, groupId)
 	if err != nil {
-		log.Println("Error uploading to Pinata:", err)
-		c.String(http.StatusInternalServerError, "Error uploading file: %s", err.Error())
+		c.String(http.StatusInternalServerError, "Error during pinning iamge: %s", err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, pinataResponse)
+	cid := pinFileResponse.IPFSHash
+
+	// pinning json
+
+	pinJsonArgs := pinata.PinJsonArgs{
+		Name:            name,
+		CID:             cid,
+		Description:     c.PostForm("description"),
+		ExternalUrl:     Optional(c.PostForm("externalUrl")),
+		BackgroundColor: Optional(c.PostForm("backgroundColor")),
+		AnimationUrl:    Optional(c.PostForm("animationUrl")),
+		YoutubeUrl:      Optional(c.PostForm("youtubeUrl")),
+	}
+	pinJsonResponse, err := h.PinataClient.PinJson(pinJsonArgs)
+	if err != nil {
+		log.Println("Error uploading to Pinata:", err)
+		c.String(http.StatusInternalServerError, "Error during uploading meta file: %s", err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, pinJsonResponse)
 }
 
 func getFileFromContext(c *gin.Context) (*multipart.FileHeader, error) {
@@ -58,7 +85,7 @@ func openUploadedFile(fileHeader *multipart.FileHeader) (multipart.File, error) 
 }
 
 func getAdditionalFields(c *gin.Context) (nftName, groupId string) {
-	nftName = c.PostForm("nftName")
+	nftName = c.PostForm("name")
 
 	// Later uuid logic should be updated to support nft collections
 	groupId = uuid.New().String()

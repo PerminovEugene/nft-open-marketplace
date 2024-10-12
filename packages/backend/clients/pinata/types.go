@@ -6,14 +6,19 @@ import (
 )
 
 type PinataClientInterface interface {
-	PinFile(file io.Reader, fileName string, nftName, groupId string) (PinataResponse, error)
+	PinFile(file io.Reader, fileName string, nftName, groupId string) (PinataPinFileData, error)
+	pinJSON(cid, description, name string) (PinataPinFileData, error)
 }
 
 type PinataClient struct {
-	BaseURL string
-	Client  *http.Client
-	Token   string
+	BaseURL   string
+	Client    *http.Client
+	Jwt       string
+	ApiSecret string
+	ApiKey    string
 }
+
+// Upload file
 
 type PinataData struct {
 	ID            string `json:"id"`
@@ -28,4 +33,21 @@ type PinataData struct {
 
 type PinataResponse struct {
 	Data PinataData `json:"data"`
+}
+
+// PINs
+
+type PinataPinFileData struct {
+	IPFSHash    string `json:"IpfsHash"`
+	PinSize     int    `json:"PinSize"`
+	Timestamp   string `json:"Timestamp"`
+	IsDuplicate bool   `json:"isDuplicate"`
+}
+
+type PinataPinFileResponse struct {
+	Data PinataPinFileData `json:"data"`
+}
+
+type PinataPinJsonResponse struct {
+	Data PinataPinFileData `json:"data"`
 }

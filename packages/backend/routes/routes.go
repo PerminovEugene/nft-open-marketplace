@@ -22,15 +22,15 @@ func attachRoutes(router *gin.Engine) {
 	ipfsGroup := router.Group("/ipfs")
 	ifpsHandler := handlers.NewIfpsHandler(pinataClient)
 	{
-		ipfsGroup.POST("/upload", ifpsHandler.IfpsUploadFile)
+		ipfsGroup.POST("/upload", ifpsHandler.IfpsPinImageAndMeta)
 	}
 }
 
 func SetupRouter() *gin.Engine {
-    router := gin.Default()
+	router := gin.Default()
 
-		attachMiddlewares(router)
-		attachRoutes(router)
+	attachMiddlewares(router)
+	attachRoutes(router)
 
-    return router
+	return router
 }

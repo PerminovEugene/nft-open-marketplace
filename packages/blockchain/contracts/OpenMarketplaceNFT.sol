@@ -9,6 +9,8 @@ contract OpenMarketplaceNFT is ERC721URIStorage, Ownable {
 
     constructor(address initialOwner) ERC721("OpenMarketplaceNFT", "OMNFT") Ownable(initialOwner) {}
 
+    // Token URI expects link to JSON file hosted on IPFS storage
+    // This file should follow ERC-721 metadata standart https://github.com/ethereum/ercs/blob/master/ERCS/erc-721.md 
     function mint(string memory tokenURI)
       public
       returns (uint256)

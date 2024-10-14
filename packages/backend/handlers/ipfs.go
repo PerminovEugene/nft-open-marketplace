@@ -2,14 +2,13 @@
 package handlers
 
 import (
-	"log"
+	"encoding/json"
 	"mime/multipart"
 	"net/http"
 
 	"backend/clients/pinata"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type IfpsHandler struct {
@@ -29,6 +28,24 @@ func Optional(s string) *string {
 	return &s
 }
 
+type Attribute struct {
+	TraitType string `json:"traitType"`
+	Value     string `json:"value"`
+}
+
+type JsonDetails struct {
+	Description     string      `json:"description"`
+	Name            string      `json:"name"`
+	ExternalUrl     *string     `json:"externalUrl"`
+	BackgroundColor *string     `json:"backgroundColor"`
+	AnimationUrl    *string     `json:"animationUrl"`
+	YoutubeUrl      *string     `json:"youtubeUrl"`
+	Attributes      []Attribute `json:"attributes"`
+}
+type RequestData struct {
+	Data JsonDetails `json:"data"`
+}
+
 func (h *IfpsHandler) IfpsPinImageAndMeta(c *gin.Context) {
 	fileHeader, err := getFileFromContext(c)
 	if err != nil {
@@ -43,11 +60,9 @@ func (h *IfpsHandler) IfpsPinImageAndMeta(c *gin.Context) {
 	}
 	defer uploadedFile.Close()
 
-	name, groupId := getAdditionalFields(c)
-
 	// pin file
 
-	pinFileResponse, err := h.PinataClient.PinFile(uploadedFile, fileHeader.Filename, name, groupId)
+	pinFileResponse, err := h.PinataClient.PinFile(uploadedFile, fileHeader.Filename)
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Error during pinning iamge: %s", err.Error())
 		return
@@ -56,19 +71,38 @@ func (h *IfpsHandler) IfpsPinImageAndMeta(c *gin.Context) {
 	cid := pinFileResponse.IPFSHash
 
 	// pinning json
+	jsonStr := c.PostForm("data")
+	if jsonStr == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Data not provided"})
+		return
+	}
+	var requestData JsonDetails
+	if err := json.Unmarshal([]byte(jsonStr), &requestData); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	pinJsonArgs := pinata.PinJsonArgs{
-		Name:            name,
+		Name:            requestData.Name,
 		CID:             cid,
-		Description:     c.PostForm("description"),
-		ExternalUrl:     Optional(c.PostForm("externalUrl")),
-		BackgroundColor: Optional(c.PostForm("backgroundColor")),
-		AnimationUrl:    Optional(c.PostForm("animationUrl")),
-		YoutubeUrl:      Optional(c.PostForm("youtubeUrl")),
+		Description:     requestData.Description,
+		ExternalUrl:     requestData.ExternalUrl,
+		BackgroundColor: requestData.BackgroundColor,
+		AnimationUrl:    requestData.AnimationUrl,
+		YoutubeUrl:      requestData.YoutubeUrl,
 	}
+	var pinataAttributes []pinata.Attribute
+	for _, attr := range requestData.Attributes {
+		pinataAttr := pinata.Attribute{
+			TraitType: attr.TraitType,
+			Value:     attr.Value,
+		}
+		pinataAttributes = append(pinataAttributes, pinataAttr)
+	}
+	pinJsonArgs.Attributes = pinataAttributes
+
 	pinJsonResponse, err := h.PinataClient.PinJson(pinJsonArgs)
 	if err != nil {
-		log.Println("Error uploading to Pinata:", err)
 		c.String(http.StatusInternalServerError, "Error during uploading meta file: %s", err.Error())
 		return
 	}
@@ -82,12 +116,4 @@ func getFileFromContext(c *gin.Context) (*multipart.FileHeader, error) {
 
 func openUploadedFile(fileHeader *multipart.FileHeader) (multipart.File, error) {
 	return fileHeader.Open()
-}
-
-func getAdditionalFields(c *gin.Context) (nftName, groupId string) {
-	nftName = c.PostForm("name")
-
-	// Later uuid logic should be updated to support nft collections
-	groupId = uuid.New().String()
-	return
 }

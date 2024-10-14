@@ -8,6 +8,11 @@ import (
 	"net/http"
 )
 
+type Attribute struct {
+	TraitType string
+	Value     string
+}
+
 type PinJsonArgs struct {
 	CID             string
 	Description     string
@@ -16,10 +21,7 @@ type PinJsonArgs struct {
 	BackgroundColor *string
 	AnimationUrl    *string
 	YoutubeUrl      *string
-	Attributes      []struct {
-		TraitType string
-		Value     string
-	}
+	Attributes      []Attribute
 }
 
 func (p *PinataClient) PinJson(pinJsonArgs PinJsonArgs) (PinataPinFileData, error) {
@@ -27,19 +29,10 @@ func (p *PinataClient) PinJson(pinJsonArgs PinJsonArgs) (PinataPinFileData, erro
 
 	jsonData := map[string]interface{}{
 		"pinataContent": map[string]interface{}{
-			"name":        pinJsonArgs.Name,
-			"description": pinJsonArgs.Description,
-			"image":       pinJsonArgs.CID,
-			"attributes": []map[string]interface{}{
-				{
-					"trait_type": "Artist",
-					"value":      "Jane Doe",
-				},
-				{
-					"trait_type": "Year Created",
-					"value":      2023,
-				},
-			},
+			"name":             pinJsonArgs.Name,
+			"description":      pinJsonArgs.Description,
+			"image":            pinJsonArgs.CID,
+			"attributes":       pinJsonArgs.Attributes,
 			"external_url":     pinJsonArgs.ExternalUrl,
 			"animation_url":    pinJsonArgs.AnimationUrl,
 			"background_color": pinJsonArgs.BackgroundColor,

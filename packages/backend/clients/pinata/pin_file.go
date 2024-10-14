@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-func (p *PinataClient) PinFile(file io.Reader, fileName, nftName, groupId string) (PinataPinFileData, error) {
+func (p *PinataClient) PinFile(file io.Reader, fileName string) (PinataPinFileData, error) {
 	var pinataResponse PinataPinFileData
 	pr, pw := io.Pipe()
 	multipartWriter := multipart.NewWriter(pw)

@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/header/header.component";
 import Footer from "@/components/footer/footer.component";
 import MetaMaskProviderWrapper from "@/providers/metamask.provider";
+import { EthereumProvider } from "@/providers/etherium.provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,11 +21,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <MetaMaskProviderWrapper>
-        <body className={inter.className}>
-          <Header />
-          {children}
-          <Footer />
-        </body>
+        <EthereumProvider>
+          <body className={inter.className}>
+            <Header />
+            {children}
+            <Footer />
+          </body>
+        </EthereumProvider>
       </MetaMaskProviderWrapper>
     </html>
   );

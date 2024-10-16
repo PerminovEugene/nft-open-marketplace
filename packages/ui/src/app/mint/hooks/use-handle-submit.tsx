@@ -2,7 +2,7 @@ import { mint } from "@/components/etherium/nft/mint";
 import { useRef, useState } from "react";
 import { MintFormValues } from "../page";
 
-type UploadParams = {
+type PinFileBody = {
   file: File;
   data: {
     name: string;
@@ -18,26 +18,17 @@ type UploadParams = {
   };
 };
 
-async function uploadFile({
-  file,
-  data,
-}: // name,
-// description,
-// externalUrl,
-// backgroundColor,
-// animationUrl,
-// youtubeUrl,
-// attributes,
-UploadParams) {
+type PinFileResponse = {
+  IpfsHash: string;
+  PinSize: number;
+  Timestamp: string;
+  isDuplicate: boolean;
+};
+
+async function uploadFile({ file, data }: PinFileBody) {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("data", JSON.stringify(data));
-  // formData.append("description", description);
-  // externalUrl && formData.append("externalUrl", externalUrl);
-  // backgroundColor && formData.append("backgroundColor", backgroundColor);
-  // animationUrl && formData.append("animationUrl", animationUrl);
-  // youtubeUrl && formData.append("youtubeUrl", youtubeUrl);
-  // attributes && formData.append("attributes", JSON.stringify(attributes));
 
   try {
     const response = await fetch("http://localhost:8080/ipfs/upload", {
@@ -46,15 +37,14 @@ UploadParams) {
     });
 
     if (response.ok) {
-      const data = await response.json();
-      alert("IPFS Pinning successfull");
+      const data: PinFileResponse = await response.json();
       return data;
     } else {
-      alert("IPFS pinning error");
+      throw new Error("Ipfs pinning error", { cause: response });
     }
   } catch (error) {
-    alert("NETWORK ERROR");
-    console.error("Сетевая ошибка:", error);
+    alert("Ipfs pinning network error");
+    throw new Error("Ipfs pinning network error", { cause: error });
   }
 }
 
@@ -89,9 +79,12 @@ export const useHandleSubmit = () => {
       },
     });
     try {
-      await mint(uploadResult.tokenURI);
+      console.log("mint");
+      await mint(uploadResult?.IpfsHash);
     } catch (error: unknown) {
+      console.log(error);
       await deleteFile();
+      throw new Error("Mint error", { cause: error });
     }
   };
 

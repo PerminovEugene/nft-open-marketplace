@@ -24,7 +24,7 @@ describe("OpenMarketplace", function () {
       // mint and get tokenId
       const mintTx = await openMarketplaceNFT
         .connect(owner)
-        .mint(owner.address, faker.internet.url());
+        .mint(faker.internet.url());
       const minted = await mintTx.wait();
       const logs = minted?.logs;
       const tokenId = getMintedTokenId(openMarketplaceNFT, logs);
@@ -52,7 +52,7 @@ describe("OpenMarketplace", function () {
       // mint and get tokenId
       const mintTx = await openMarketplaceNFT
         .connect(owner)
-        .mint(owner.address, faker.internet.url());
+        .mint(faker.internet.url());
       const minted = await mintTx.wait();
       const logs = minted?.logs;
       const tokenId = getMintedTokenId(openMarketplaceNFT, logs);
@@ -80,7 +80,7 @@ describe("OpenMarketplace", function () {
       // mint and get tokenId
       const mintTx = await openMarketplaceNFT
         .connect(owner)
-        .mint(owner.address, faker.internet.url());
+        .mint(faker.internet.url());
       const minted = await mintTx.wait();
       const logs = minted?.logs;
       const tokenId = getMintedTokenId(openMarketplaceNFT, logs);

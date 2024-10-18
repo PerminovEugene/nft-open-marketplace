@@ -5,6 +5,8 @@ import { OpenMarketplaceNFT } from "../typechain-types";
 import { faker } from "@faker-js/faker";
 import { ERC721Events } from "../utils/enums";
 
+const firstId = 0;
+
 describe("OpenMarketplaceNFT", function () {
   // We define a fixture to reuse the same setup in every test.
   // We use loadFixture to run this setup once, snapshot that state,
@@ -24,19 +26,14 @@ describe("OpenMarketplaceNFT", function () {
   }
 
   describe("Ownership", function () {
-    it("Should not allow to mint anyone except contract owner", async function () {
+    it("Should allow to mint everyone", async function () {
       const { openMarketplaceNFT, other } = await loadFixture(
         deployOpenMarketplaceNFT
       );
 
-      await expect(
-        openMarketplaceNFT
-          .connect(other)
-          .mint(other.address, faker.internet.url())
-      ).to.be.revertedWithCustomError(
-        openMarketplaceNFT,
-        "OwnableUnauthorizedAccount"
-      );
+      await expect(openMarketplaceNFT.connect(other).mint(faker.internet.url()))
+        .to.emit(openMarketplaceNFT, ERC721Events.Transfer)
+        .withArgs(ethers.ZeroAddress, other.address, firstId);
     });
 
     it("Should allow to mint contract owner", async function () {
@@ -45,9 +42,7 @@ describe("OpenMarketplaceNFT", function () {
       );
 
       await expect(
-        openMarketplaceNFT
-          .connect(owner)
-          .mint(owner.address, faker.internet.url())
+        openMarketplaceNFT.connect(owner).mint(faker.internet.url())
       ).not.to.be.revertedWithCustomError(
         openMarketplaceNFT,
         "OwnableUnauthorizedAccount"
@@ -72,7 +67,7 @@ describe("OpenMarketplaceNFT", function () {
         deployOpenMarketplaceNFT
       );
 
-      await openMarketplaceNFT.mint(owner.address, faker.internet.url());
+      await openMarketplaceNFT.mint(faker.internet.url());
 
       expect(await openMarketplaceNFT.balanceOf(owner)).to.eql(
         1n,
@@ -89,15 +84,9 @@ describe("OpenMarketplaceNFT", function () {
         deployOpenMarketplaceNFT
       );
 
-      await openMarketplaceNFT
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
-      await openMarketplaceNFT
-        .connect(owner)
-        .mint(other.address, faker.internet.url());
-      await openMarketplaceNFT
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
+      await openMarketplaceNFT.connect(owner).mint(faker.internet.url());
+      await openMarketplaceNFT.connect(other).mint(faker.internet.url());
+      await openMarketplaceNFT.connect(owner).mint(faker.internet.url());
 
       expect(await openMarketplaceNFT.connect(other).ownerOf(0)).to.eql(
         owner.address
@@ -115,20 +104,15 @@ describe("OpenMarketplaceNFT", function () {
         deployOpenMarketplaceNFT
       );
 
-      const firstId = 0;
       await expect(
-        await openMarketplaceNFT
-          .connect(owner)
-          .mint(owner.address, faker.internet.url())
+        await openMarketplaceNFT.connect(owner).mint(faker.internet.url())
       )
         .to.emit(openMarketplaceNFT, ERC721Events.Transfer)
         .withArgs(ethers.ZeroAddress, owner.address, firstId);
 
       const secondId = 1;
       await expect(
-        await openMarketplaceNFT
-          .connect(owner)
-          .mint(other.address, faker.internet.url())
+        await openMarketplaceNFT.connect(other).mint(faker.internet.url())
       )
         .to.emit(openMarketplaceNFT, ERC721Events.Transfer)
         .withArgs(ethers.ZeroAddress, other.address, secondId);
@@ -141,9 +125,7 @@ describe("OpenMarketplaceNFT", function () {
       );
       const tokenId = 0;
 
-      await openMarketplaceNFT
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
+      await openMarketplaceNFT.connect(owner).mint(faker.internet.url());
 
       expect(await openMarketplaceNFT.balanceOf(owner)).to.eql(1n);
       expect(await openMarketplaceNFT.balanceOf(other)).to.eql(0n);
@@ -162,9 +144,7 @@ describe("OpenMarketplaceNFT", function () {
       );
       const tokenId = 0;
 
-      await openMarketplaceNFT
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
+      await openMarketplaceNFT.connect(owner).mint(faker.internet.url());
 
       expect(await openMarketplaceNFT.balanceOf(owner)).to.eql(1n);
       expect(await openMarketplaceNFT.balanceOf(other)).to.eql(0n);
@@ -187,9 +167,7 @@ describe("OpenMarketplaceNFT", function () {
       );
       const tokenId = 0;
 
-      await openMarketplaceNFT
-        .connect(owner)
-        .mint(owner.address, faker.internet.url());
+      await openMarketplaceNFT.connect(owner).mint(faker.internet.url());
 
       expect(await openMarketplaceNFT.balanceOf(owner)).to.eql(1n);
       expect(await openMarketplaceNFT.balanceOf(other)).to.eql(0n);

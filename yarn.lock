@@ -1120,12 +1120,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@nft-open-marketplace/interface@npm:^0.1.5":
-  version: 0.1.5
-  resolution: "@nft-open-marketplace/interface@npm:0.1.5"
+"@nft-open-marketplace/interface@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "@nft-open-marketplace/interface@npm:0.2.0"
   peerDependencies:
     ethers: ^6.13.2
-  checksum: 10c0/b37dd00c1bb7530b781b387944f2cbfcfdd5dcb511c669c77b7319cd2cea5d85c5b772d438de60db89e00d9427c515ae2dab6b15d42b3384e2da9bf01becf8f4
+  checksum: 10c0/e89855c2592b6f6075777b9be85bf25928eddbb3c8bc759c39e1a841600265e295b5d49f8141bd2cea126b8d215f7178f31b68ad072b215ac1d707c662028b66
   languageName: node
   linkType: hard
 
@@ -1134,7 +1134,7 @@ __metadata:
   resolution: "@nft-open-marketplace/ui@workspace:packages/ui"
   dependencies:
     "@metamask/sdk-react": "npm:^0.26.5"
-    "@nft-open-marketplace/interface": "npm:^0.1.5"
+    "@nft-open-marketplace/interface": "npm:^0.2.0"
     "@types/node": "npm:^20"
     "@types/react": "npm:^18"
     "@types/react-dom": "npm:^18"
@@ -1145,6 +1145,8 @@ __metadata:
     postcss: "npm:^8"
     react: "npm:^18"
     react-dom: "npm:^18"
+    react-hook-form: "npm:^7.53.0"
+    react-icons: "npm:^5.3.0"
     tailwindcss: "npm:^3.4.1"
     typescript: "npm:^5"
   languageName: unknown
@@ -10571,6 +10573,24 @@ __metadata:
   peerDependencies:
     react: ^18.3.1
   checksum: 10c0/a752496c1941f958f2e8ac56239172296fcddce1365ce45222d04a1947e0cc5547df3e8447f855a81d6d39f008d7c32eab43db3712077f09e3f67c4874973e85
+  languageName: node
+  linkType: hard
+
+"react-hook-form@npm:^7.53.0":
+  version: 7.53.0
+  resolution: "react-hook-form@npm:7.53.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10c0/6d62b150618a833c17d59e669b707661499e2bb516a8d340ca37699f99eb448bbba7b5b78324938c8948014e21efaa32e3510c2ba246fd5e97a96fca0cfa7c98
+  languageName: node
+  linkType: hard
+
+"react-icons@npm:^5.3.0":
+  version: 5.3.0
+  resolution: "react-icons@npm:5.3.0"
+  peerDependencies:
+    react: "*"
+  checksum: 10c0/a53af0de558f0e2bacfbafc973aa8ca1e6a429006a2f83d70becad5be431726a691e096336c95949bb0d967587b145264c5046d2bc1518969dbae731855d0712
   languageName: node
   linkType: hard
 

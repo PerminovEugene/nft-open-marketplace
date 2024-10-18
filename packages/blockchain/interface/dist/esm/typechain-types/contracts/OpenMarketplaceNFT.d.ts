@@ -7,7 +7,7 @@ export interface OpenMarketplaceNFTInterface extends Interface {
     encodeFunctionData(functionFragment: "balanceOf", values: [AddressLike]): string;
     encodeFunctionData(functionFragment: "getApproved", values: [BigNumberish]): string;
     encodeFunctionData(functionFragment: "isApprovedForAll", values: [AddressLike, AddressLike]): string;
-    encodeFunctionData(functionFragment: "mint", values: [AddressLike, string]): string;
+    encodeFunctionData(functionFragment: "mint", values: [string]): string;
     encodeFunctionData(functionFragment: "name", values?: undefined): string;
     encodeFunctionData(functionFragment: "owner", values?: undefined): string;
     encodeFunctionData(functionFragment: "ownerOf", values: [BigNumberish]): string;
@@ -158,12 +158,7 @@ export interface OpenMarketplaceNFT extends BaseContract {
     ], [
         boolean
     ], "view">;
-    mint: TypedContractMethod<[
-        owner: AddressLike,
-        tokenURI: string
-    ], [
-        bigint
-    ], "nonpayable">;
+    mint: TypedContractMethod<[tokenURI: string], [bigint], "nonpayable">;
     name: TypedContractMethod<[], [string], "view">;
     owner: TypedContractMethod<[], [string], "view">;
     ownerOf: TypedContractMethod<[tokenId: BigNumberish], [string], "view">;
@@ -223,12 +218,7 @@ export interface OpenMarketplaceNFT extends BaseContract {
     ], [
         boolean
     ], "view">;
-    getFunction(nameOrSignature: "mint"): TypedContractMethod<[
-        owner: AddressLike,
-        tokenURI: string
-    ], [
-        bigint
-    ], "nonpayable">;
+    getFunction(nameOrSignature: "mint"): TypedContractMethod<[tokenURI: string], [bigint], "nonpayable">;
     getFunction(nameOrSignature: "name"): TypedContractMethod<[], [string], "view">;
     getFunction(nameOrSignature: "owner"): TypedContractMethod<[], [string], "view">;
     getFunction(nameOrSignature: "ownerOf"): TypedContractMethod<[tokenId: BigNumberish], [string], "view">;

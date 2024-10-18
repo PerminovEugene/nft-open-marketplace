@@ -6,7 +6,6 @@ import { updateInterface } from "./scripts/update-interface";
 
 import "solidity-coverage";
 import "@nomiclabs/hardhat-solhint";
-import { ethers } from "hardhat";
 
 task("update-interface", "Update interface contracts ABI and Types").setAction(
   updateInterface

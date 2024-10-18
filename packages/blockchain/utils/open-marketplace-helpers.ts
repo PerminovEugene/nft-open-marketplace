@@ -19,7 +19,7 @@ export async function mint(
 ) {
   const mintTx = await openMarketplaceNFT
     .connect(owner)
-    .mint(owner.address, faker.internet.url());
+    .mint(faker.internet.url());
   const minted = await mintTx.wait();
   const logs = minted?.logs;
   const tokenId = getMintedTokenId(openMarketplaceNFT, logs);

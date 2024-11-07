@@ -52,9 +52,16 @@ export const createMarketplaceContract = async function (
 
 export const getNftContract = function () {
   if (!nftContract) {
-    throw new Error("Init contract before using");
+    throw new Error("Init NFT contract before using");
   }
   return nftContract;
+};
+
+export const getMarketplaceContract = function () {
+  if (!marketplaceContract) {
+    throw new Error("Init marketplace contract before using");
+  }
+  return marketplaceContract;
 };
 
 export const getSigner = function () {

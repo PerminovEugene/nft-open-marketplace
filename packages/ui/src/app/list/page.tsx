@@ -3,67 +3,35 @@
 import React, { useState } from "react";
 import { useSDK } from "@metamask/sdk-react";
 import { ConnectWalletButton } from "@/components/wallet/connect-button.component";
-import MintForm, { MintFormValues } from "./mint.form";
+import ListingForm, { ListingFormValues } from "./listing.form";
 import { Stepper } from "@/components/stepper/stepper.component";
-import { mint } from "@/components/ethereum/nft/mint";
-import { pinFile } from "./pin-file";
+import { listNft } from "@/components/ethereum/nft/list-nft";
 
 const steps = [
   {
     text: "Fill the form",
-    details: "Set up nft data",
-    // icon: <FaWallet className="mr-2" />,
+    details: "Pick NFT and set the price",
   },
   {
-    text: "Pin in IPFS",
-    details: "Image and JSON uploading to IPFS",
-  },
-  {
-    text: "Mint",
+    text: "Create lising",
     details: "Execute blockchain transaction",
   },
   {
     text: "Done",
-    details: "Now it's time to create Listing",
+    details: "Now it's time to promote your listing",
   },
 ];
 
-const MintPage = () => {
+const ListingPage = () => {
   const [formStep, setFormStep] = useState(0);
   const { connected } = useSDK();
 
-  const onSubmit = async ({
-    file,
-    name,
-    description,
-    externalUrl,
-    backgroundColor,
-    animationUrl,
-    youtubeUrl,
-    attributes,
-  }: MintFormValues) => {
-    if (!file) {
-      alert("Please select image");
-      return;
-    }
-    setFormStep((step) => step + 1);
-
-    const pinResult = await pinFile({
-      file: file[0],
-      data: {
-        name,
-        description,
-        externalUrl,
-        attributes,
-        backgroundColor,
-        animationUrl,
-        youtubeUrl,
-      },
-    });
+  const onSubmit = async (data: ListingFormValues) => {
     setFormStep((step) => step + 1);
 
     try {
-      await mint(pinResult?.IpfsHash);
+      console.log("-->", data);
+      // const listResult = await listNft(tokenId, price);
       setFormStep((step) => step + 1);
     } catch (error: unknown) {
       console.log(error);
@@ -79,6 +47,9 @@ const MintPage = () => {
         <ConnectWalletButton />
       ) : (
         <div className="grid grid-cols-3">
+          <div className="col-span-2">
+            <ListingForm onSubmit={onSubmit} />
+          </div>
           <div className="p-3">
             <Stepper
               {...{
@@ -87,13 +58,10 @@ const MintPage = () => {
               }}
             />
           </div>
-          <div className="col-span-2">
-            <MintForm onSubmit={onSubmit} />
-          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default MintPage;
+export default ListingPage;

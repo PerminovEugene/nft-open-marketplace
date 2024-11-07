@@ -3,7 +3,7 @@
 import {
   createMarketplaceContract,
   createNftContract,
-} from "@/components/etherium/nft/factory";
+} from "@/components/ethereum/nft/factory";
 import { EtheriumContext } from "@/context/etherium.context";
 import { useSDK } from "@metamask/sdk-react";
 import React, { useEffect, createContext, useState } from "react";

@@ -8,7 +8,7 @@ import {
   FaChevronDown,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { createNftContract } from "../etherium/nft/factory";
+import { createNftContract } from "../ethereum/nft/factory";
 import { EtheriumContext } from "../../context/etherium.context";
 
 export const ConnectWalletButton = () => {

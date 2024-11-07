@@ -9,7 +9,7 @@ export async function mint(tokenURI: string) {
   const nonce = await signer.getNonce();
 
   const tx = await contract.mint(tokenURI, {
-    gasLimit: 200000,
+    gasLimit: 200000, // TODO
     nonce,
   });
 

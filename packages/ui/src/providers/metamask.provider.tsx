@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { MetaMaskProvider, useSDK } from "@metamask/sdk-react";
-import { createNftContract } from "@/components/etherium/nft/factory";
+import { createNftContract } from "@/components/ethereum/nft/factory";
 
 const MetaMaskProviderWrapper = ({
   children,

@@ -9,17 +9,14 @@ const HomePage = () => {
         <div className="container mx-auto px-6 py-20 flex flex-col-reverse md:flex-row items-center">
           <div className="md:w-1/2">
             <h1 className="text-4xl font-bold mb-4">
-              Добро пожаловать в NFT Маркетплейс
+              Welcome to NFT Marketplace
             </h1>
-            <p className="mb-6">
-              Исследуйте, покупайте и продавайте уникальные цифровые коллекции и
-              NFT.
-            </p>
+            <p className="mb-6">Explore, buy and sell uniq NFTs.</p>
             <a
               href="#"
               className="bg-white text-indigo-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-200"
             >
-              Исследовать NFT
+              Explore NFT
             </a>
           </div>
           <div className="md:w-1/2">

@@ -1,5 +1,11 @@
 # nft marketplace contracts interfaces and ABI
 
+## [0.2.1] - 2025-09-24
+
+### Changed
+
+- Fix cjs and mjs builds.
+
 ## [0.2.0] - 2025-09-24
 
 ### Changed

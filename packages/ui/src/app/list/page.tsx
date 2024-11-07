@@ -26,12 +26,11 @@ const ListingPage = () => {
   const [formStep, setFormStep] = useState(0);
   const { connected } = useSDK();
 
-  const onSubmit = async (data: ListingFormValues) => {
+  const onSubmit = async ({ tokenId, price }: ListingFormValues) => {
     setFormStep((step) => step + 1);
 
     try {
-      console.log("-->", data);
-      // const listResult = await listNft(tokenId, price);
+      await listNft(tokenId, price);
       setFormStep((step) => step + 1);
     } catch (error: unknown) {
       console.log(error);

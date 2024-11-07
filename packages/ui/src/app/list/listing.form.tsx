@@ -17,7 +17,12 @@ const ListingForm = ({
 }: {
   onSubmit: (data: ListingFormValues) => Promise<void>;
 }) => {
-  const { register, handleSubmit, setValue } = useForm<ListingFormValues>();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<ListingFormValues>();
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-4/5  mb-12">
@@ -35,6 +40,10 @@ const ListingForm = ({
               required: true,
               placeholder: "Search for NFT",
               setValue,
+              error: errors["tokenId"],
+              registerOptions: {
+                required: "Select NFT for selling",
+              },
             }}
           />
           <TextInput<ListingFormValues>
@@ -45,6 +54,17 @@ const ListingForm = ({
               label: "Price of the NFT in eth",
               required: true,
               placeholder: "Price",
+              error: errors["price"],
+              registerOptions: {
+                required: "Price is required",
+                pattern: {
+                  value: /^\d+(\.\d{1,18})?$/, // Up to 18 decimal places (typical ETH precision)
+                  message:
+                    "Price must be a valid number with up to 18 decimal places",
+                },
+                validate: (value: any) =>
+                  parseFloat(value) >= 0 || "Price must be a positive number",
+              },
             }}
           />
         </div>

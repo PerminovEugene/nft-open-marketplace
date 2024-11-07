@@ -8,7 +8,14 @@ import {
   FaChevronDown,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import {
+  FieldError,
+  FieldValues,
+  Path,
+  RegisterOptions,
+  UseFormRegister,
+} from "react-hook-form";
+import { ErrorBlock } from "./error";
 
 type TextInputParams<IFormValues extends FieldValues> = {
   register: UseFormRegister<IFormValues>;
@@ -17,6 +24,8 @@ type TextInputParams<IFormValues extends FieldValues> = {
   type: "text";
   label: string;
   required: boolean;
+  registerOptions?: RegisterOptions<IFormValues, Path<IFormValues>>;
+  error?: FieldError;
 };
 
 export const TextInput = <T extends FieldValues>({
@@ -26,6 +35,8 @@ export const TextInput = <T extends FieldValues>({
   type,
   label,
   required,
+  registerOptions,
+  error,
 }: TextInputParams<T>) => {
   return (
     <div className="mb-4">
@@ -41,8 +52,9 @@ export const TextInput = <T extends FieldValues>({
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         placeholder={placeholder}
         required={required}
-        {...register(name)}
+        {...register(name, registerOptions)}
       />
+      <ErrorBlock error={error} />
     </div>
   );
 };

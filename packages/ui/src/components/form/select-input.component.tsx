@@ -7,19 +7,15 @@ import React, {
   ChangeEvent,
   KeyboardEvent,
 } from "react";
-import { useSDK } from "@metamask/sdk-react";
 import {
-  FaWallet,
-  FaCheckCircle,
-  FaChevronDown,
-  FaSignOutAlt,
-} from "react-icons/fa";
-import {
+  FieldError,
   FieldValues,
   Path,
+  RegisterOptions,
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
+import { ErrorBlock } from "./error";
 
 type SelectInputParams<IFormValues extends FieldValues> = {
   register: UseFormRegister<IFormValues>;
@@ -28,6 +24,8 @@ type SelectInputParams<IFormValues extends FieldValues> = {
   placeholder: string;
   type: "text";
   required: boolean;
+  error?: FieldError;
+  registerOptions?: RegisterOptions<IFormValues, Path<IFormValues>>;
 };
 
 type Option = {
@@ -41,6 +39,8 @@ export const SelectInput = <T extends FieldValues>({
   register,
   placeholder,
   setValue,
+  error,
+  registerOptions,
 }: SelectInputParams<T>) => {
   const options: Option[] = [
     {
@@ -89,7 +89,7 @@ export const SelectInput = <T extends FieldValues>({
   const handleOptionClick = (option: Option) => {
     setQuery(option.name);
     setShowOptions(false);
-    setValue(name, option.tokenId as any);
+    setValue(name, option.tokenId as any, { shouldValidate: true });
   };
 
   const handleInputFocus = () => {
@@ -137,7 +137,7 @@ export const SelectInput = <T extends FieldValues>({
     };
   }, []);
 
-  const { ref } = register(name);
+  const { ref } = register(name, registerOptions);
 
   return (
     <div className="mb-4 relative" ref={componentRef}>
@@ -152,6 +152,7 @@ export const SelectInput = <T extends FieldValues>({
         placeholder={placeholder}
         name={name}
         ref={ref}
+        autoComplete="off"
       />
       {showOptions && (
         <ul className="absolute z-10 w-full mt-1 bg-white border rounded shadow max-h-60 overflow-y-auto">
@@ -177,6 +178,7 @@ export const SelectInput = <T extends FieldValues>({
           )}
         </ul>
       )}
+      <ErrorBlock error={error} />
     </div>
   );
 };

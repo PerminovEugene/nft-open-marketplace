@@ -34,8 +34,7 @@ const ListingPage = () => {
       setFormStep((step) => step + 1);
     } catch (error: unknown) {
       console.log(error);
-      // await deleteFile();
-      throw new Error("Mint error", { cause: error });
+      throw new Error("Listing error", { cause: error });
     }
   };
 

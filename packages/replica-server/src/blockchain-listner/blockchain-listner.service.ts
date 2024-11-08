@@ -1,14 +1,16 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ethers } from 'ethers';
-import { openMarketplaceNFTContractAbi } from '@nft-open-marketplace/interface';
+import {
+  openMarketplaceNFTContractAbi,
+  OpenMarketplaceNFT,
+} from '@nft-open-marketplace/interface';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
+import { ConfigService } from '@nestjs/config';
+import { TransferEventService } from 'src/nft/services/transfer-event.service';
 
 const contractsData = JSON.parse(
-  readFileSync(
-    resolve('../../../../shared/contracts.deploy-data.json'),
-    'utf8',
-  ),
+  readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
 );
 if (!contractsData) {
   throw new Error('Invalid contracts data');
@@ -19,9 +21,14 @@ export class BlockchainListenerService implements OnModuleInit {
   private provider: ethers.WebSocketProvider;
   private contract: ethers.Contract;
 
-  constructor() {
+  constructor(
+    private configService: ConfigService,
+    private transferEventService: TransferEventService,
+  ) {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
-    const wsProviderUrl = 'wss://localhost:8545/ws/v3';
+    const wsProviderUrl = `ws://${this.configService.get(
+      'NODE_ADDRESS', // TODO prod should use wss
+    )}:${this.configService.get('NODE_PORT')}/ws/v3`;
     this.provider = new ethers.WebSocketProvider(wsProviderUrl);
 
     const contractAddress = contractsData.contracts.find(
@@ -40,10 +47,13 @@ export class BlockchainListenerService implements OnModuleInit {
   }
 
   private listenToEvents() {
-    this.contract.on('Transfer', (...args) => {
-      console.log('args: ', args);
-      // console.log(`Value changed from ${oldValue} to ${newValue} by ${author}`);
-      // You can add more logic here, e.g., handling the data received from the event
+    this.contract.on('Transfer', (from, to, tokenId, event) => {
+      /*
+        TODO should be refactored using bus (rabbitMQ/kafka).
+        Saving will be moved to consumer.
+        Also requries sync worker for server downtime
+      */
+      this.transferEventService.save(from, to, tokenId, event);
     });
   }
 }

@@ -27,7 +27,7 @@ export async function pinFile({ file, data }: PinFileBody) {
   formData.append("data", JSON.stringify(data));
 
   try {
-    const response = await fetch("http://localhost:8080/ipfs/upload", {
+    const response = await fetch("http://localhost:8080/ipfs/upload", {// TODO change to backend url
       method: "POST",
       body: formData,
     });

@@ -6,11 +6,29 @@ import {  } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contr
 import { Token } from '../entities/token.entity';
 import { Transaction } from '../entities/transaction.entity';
 import { Metadata } from '../entities/metadata.entity';
+import { MetadataService } from 'src/blockchain/metadata.service';
+import { Attribute } from '../entities/attribute.entity';
+
+type NftAttribute = {
+  TraitType: string;
+  Value: string;
+}
+type NftMetadata = {
+  name: string;
+  description: string;
+  image: string;
+  youtubeUrl?: string;
+  attributes?: NftAttribute[],
+  animation_url: string,
+  background_color?: string,
+  external_url?: string,
+}
 
 @Injectable()
 export class TransferEventService {
   constructor(
-    private readonly dataSource: DataSource
+    private readonly dataSource: DataSource,
+    private readonly metadataService: MetadataService
   ) {}
 
   async save(
@@ -19,25 +37,36 @@ export class TransferEventService {
     tokenId: string,
     eventData: any,
   ): Promise<void> {
-    console.log('-------->', from,
-    to,
-    tokenId)
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      console.log('--->1')
       let token = await queryRunner.manager.findOne(Token, {
         where: { id: tokenId },
       });
       if (!token) {
+        const metadataJson = await this.metadataService.getMetadata(tokenId) as unknown as NftMetadata;
+        console.log('metadataJson-->', metadataJson)
+        if (typeof metadataJson !== 'object') {
+          throw new Error('Invalid metadata type: ' + typeof metadataJson)
+        }
+        // const attributes: Attribute[] = [];
+        // for (const attribute of metadataJson.attributes) {
+        //   attributes.push(queryRunner.manager.create(Attribute, {
+        //     traitType: attribute.TraitType,
+        //     value: attribute.Value
+        //   }));
+        // }
         const metadata = queryRunner.manager.create(Metadata, {
-          name: 'name1',
-          description: "3",
-          image: 'image'
+          name: metadataJson.name,
+          description: metadataJson.description,
+          image: metadataJson.image,
+          attributes: metadataJson.attributes.map((a) => ({
+            traitType: a.TraitType,
+            value: a.Value
+          })),
         });
-        console.log('--->2')
 
         await queryRunner.manager.save(metadata);
 
@@ -48,8 +77,6 @@ export class TransferEventService {
         await queryRunner.manager.save(Token, token);
       }
 
-      console.log('--->3')
-
       const transaction = queryRunner.manager.create(Transaction, {
         blockHash: eventData.log.blockHash,
         blockNumber: eventData.log.blockNumber,
@@ -58,23 +85,17 @@ export class TransferEventService {
       });
       await queryRunner.manager.save(transaction);
 
-      console.log('--->4')
-
       const transferEvent = queryRunner.manager.create(TransferEvent, {
         from,
         to,
         transaction,
         token,
       });
-      console.log('--->5')
 
       await queryRunner.manager.save(transferEvent);
 
-      console.log('--->6')
-
       await queryRunner.commitTransaction();
     } catch (e) {
-      console.error('Transaction failed: ', e);
       await queryRunner.rollbackTransaction();
       throw e;
     } finally {

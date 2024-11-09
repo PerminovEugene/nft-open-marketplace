@@ -89,8 +89,11 @@ services:
       - DATABASE_NAME=${DATABASE_NAME}
       - NODE_PORT=${NODE_PORT}
       - NODE_ADDRESS=${NODE_ADDRESS}
+      - PINATA_JWT=${PINATA_JWT}
+      - IPFS_GATEWAY=${IPFS_GATEWAY}
     depends_on:
       - postgres
+      - ui
     restart: on-failure
     networks:
       - hardhat-net

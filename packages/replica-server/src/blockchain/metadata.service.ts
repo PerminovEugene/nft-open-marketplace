@@ -7,7 +7,7 @@ import {
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { ConfigService } from '@nestjs/config';
-import { TransferEventService } from 'src/nft/services/transfer-event.service';
+import { PinataSDK } from "pinata-web3";
 
 const contractsData = JSON.parse(
   readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
@@ -17,19 +17,19 @@ if (!contractsData) {
 }
 
 @Injectable()
-export class BlockchainListenerService implements OnModuleInit {
-  private provider: ethers.WebSocketProvider;
-  private contract: ethers.Contract;
-
+export class MetadataService {
+  private provider: ethers.JsonRpcProvider;
+  private contract: OpenMarketplaceNFT;
+  private pinata: PinataSDK;
+  
   constructor(
     private configService: ConfigService,
-    private transferEventService: TransferEventService,
   ) {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
-    const wsProviderUrl = `ws://${this.configService.get(
-      'NODE_ADDRESS', // TODO prod should use wss
-    )}:${this.configService.get('NODE_PORT')}/ws/v3`;
-    this.provider = new ethers.WebSocketProvider(wsProviderUrl);
+    const wsProviderUrl = `http://${this.configService.get(
+      'NODE_ADDRESS', // TODO prod should use https
+    )}:${this.configService.get('NODE_PORT')}/`;
+    this.provider = new ethers.JsonRpcProvider(wsProviderUrl);
 
     const contractAddress = contractsData.contracts.find(
       ({ name }) => name === 'OpenMarketplaceNFT',
@@ -39,21 +39,24 @@ export class BlockchainListenerService implements OnModuleInit {
       contractAddress,
       openMarketplaceNFTContractAbi.abi,
       this.provider,
-    );
-  }
+    ) as unknown as OpenMarketplaceNFT;
 
-  onModuleInit() {
-    this.listenToEvents();
-  }
 
-  private listenToEvents() {
-    this.contract.on('Transfer', (from, to, tokenId, event) => {
-      /*
-        TODO should be refactored using bus (rabbitMQ/kafka).
-        Saving will be moved to consumer.
-        Also requries sync worker for server downtime
-      */
-      this.transferEventService.save(from, to, tokenId, event);
+    this.pinata = new PinataSDK({
+      pinataJwt: this.configService.get('PINATA_JWT'),
+      pinataGateway: this.configService.get('IPFS_GATEWAY'),
     });
+  }
+
+  public async getMetadata(tokenId: string) {
+    const tokenUri = await this.contract.tokenURI(tokenId);
+    return this.getMetadataFromPinata(tokenUri);
+  }
+
+  private async getMetadataFromPinata(tokenUri: string) {
+    const { data } = await this.pinata.gateways.get(
+      tokenUri
+    )
+    return data;
   }
 }

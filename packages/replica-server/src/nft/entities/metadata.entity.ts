@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Attribute } from './attribute.entity';
 
 @Entity()
 export class Metadata {
@@ -11,7 +12,8 @@ export class Metadata {
   @Column()
   description: string;
 
-  // TODO add attributes
+  @OneToMany(() => Attribute, (attribute: Attribute) => attribute.metadata, {cascade:['insert', 'update']})
+  attributes: Attribute[]
 
   @Column()
   image: string;

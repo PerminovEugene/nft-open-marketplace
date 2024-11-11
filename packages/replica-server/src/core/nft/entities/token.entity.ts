@@ -4,12 +4,15 @@ import { Metadata } from './metadata.entity';
 @Entity()
 export class Token {
   @PrimaryGeneratedColumn()
-  internalId: number;
+  id: number;
 
   @Column()
-  id: string;
+  contractId: string; // id from the contract
 
   @OneToOne(() => Metadata, { cascade: true})
   @JoinColumn()
   metadata: Metadata;
+
+  @Column()
+  owner: string;
 }

@@ -6,8 +6,8 @@ import {  } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contr
 import { Token } from '../entities/token.entity';
 import { Transaction } from '../entities/transaction.entity';
 import { Metadata } from '../entities/metadata.entity';
-import { MetadataService } from 'src/blockchain/metadata.service';
-import { Attribute } from '../entities/attribute.entity';
+import { MetadataService } from 'src/core/nft/services/metadata.service';
+import { TransferEventJob } from 'src/core/bus/types';
 
 type NftAttribute = {
   TraitType: string;
@@ -29,13 +29,13 @@ export class TransferEventService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly metadataService: MetadataService
-  ) {}
+  ) { }
 
-  async save(
-    from: string,
-    to: string,
-    tokenId: string,
-    eventData: any,
+  async save({
+    from,
+    to,
+    tokenId,
+    log }: TransferEventJob,
   ): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
@@ -43,26 +43,19 @@ export class TransferEventService {
 
     try {
       let token = await queryRunner.manager.findOne(Token, {
-        where: { id: tokenId },
+        where: { contractId: tokenId.toString() },
       });
       if (!token) {
         const metadataJson = await this.metadataService.getMetadata(tokenId) as unknown as NftMetadata;
-        console.log('metadataJson-->', metadataJson)
         if (typeof metadataJson !== 'object') {
           throw new Error('Invalid metadata type: ' + typeof metadataJson)
         }
-        // const attributes: Attribute[] = [];
-        // for (const attribute of metadataJson.attributes) {
-        //   attributes.push(queryRunner.manager.create(Attribute, {
-        //     traitType: attribute.TraitType,
-        //     value: attribute.Value
-        //   }));
-        // }
+
         const metadata = queryRunner.manager.create(Metadata, {
           name: metadataJson.name,
           description: metadataJson.description,
           image: metadataJson.image,
-          attributes: metadataJson.attributes.map((a) => ({
+          attributes: metadataJson.attributes?.map((a) => ({
             traitType: a.TraitType,
             value: a.Value
           })),
@@ -71,31 +64,41 @@ export class TransferEventService {
         await queryRunner.manager.save(metadata);
 
         token = queryRunner.manager.create(Token, {
-          id: tokenId,
-          metadata,
+          contractId: tokenId.toString(),
+          metadata: metadata,
+          owner: to,
         });
-        await queryRunner.manager.save(Token, token);
+        await queryRunner.manager.save(token);
+      } else {
+        console.log('-update->', tokenId)
+        // token.owner = to;
+        // await queryRunner.manager.save(token);
+        await queryRunner.manager.update(Token, tokenId, { owner: to });
       }
 
       const transaction = queryRunner.manager.create(Transaction, {
-        blockHash: eventData.log.blockHash,
-        blockNumber: eventData.log.blockNumber,
-        address: eventData.log.blockNumber,
-        transactionHash: eventData.log.transactionHash
+        blockHash: log.blockHash,
+        blockNumber: log.blockNumber,
+        address: log.address,
+        transactionHash: log.transactionHash,
+        transactionIndex: log.transactionIndex,
       });
       await queryRunner.manager.save(transaction);
 
+      console.log('---> transfer event', )
       const transferEvent = queryRunner.manager.create(TransferEvent, {
         from,
         to,
         transaction,
         token,
       });
+      console.log('---> transfer event end', token, transferEvent)
 
       await queryRunner.manager.save(transferEvent);
 
       await queryRunner.commitTransaction();
     } catch (e) {
+      console.error('error ||', e);
       await queryRunner.rollbackTransaction();
       throw e;
     } finally {

@@ -17,7 +17,9 @@ const deployData = JSON.parse(
 );
 
 const nextConfig = {
-  env: {},
+  env: {
+    REPLICA_SERVER_ADDRESS: process.env.REPLICA_SERVER_ADDRESS
+  },
 };
 
 deployData.contracts.forEach(({ name, address }) => {

@@ -48,7 +48,7 @@ export class MetadataService {
     });
   }
 
-  public async getMetadata(tokenId: string) {
+  public async getMetadata(tokenId: number) {
     const tokenUri = await this.contract.tokenURI(tokenId);
     return this.getMetadataFromPinata(tokenUri);
   }

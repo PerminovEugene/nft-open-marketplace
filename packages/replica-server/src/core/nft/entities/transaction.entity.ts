@@ -8,11 +8,14 @@ export class Transaction {
   @Column()
   transactionHash: string;
 
+  @Column("int")
+  transactionIndex: number;
+
   @Column()
   blockHash: string;
 
-  @Column()
-  blockNumber: string;
+  @Column("int")
+  blockNumber: number;
 
   @Column()
   address: string;

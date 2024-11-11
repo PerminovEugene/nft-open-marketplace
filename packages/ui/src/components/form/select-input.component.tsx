@@ -16,6 +16,7 @@ import {
   UseFormSetValue,
 } from "react-hook-form";
 import { ErrorBlock } from "./error";
+import { getUrlByCid } from "../ipfs/utils";
 
 type SelectInputParams<IFormValues extends FieldValues> = {
   register: UseFormRegister<IFormValues>;
@@ -26,11 +27,12 @@ type SelectInputParams<IFormValues extends FieldValues> = {
   required: boolean;
   error?: FieldError;
   registerOptions?: RegisterOptions<IFormValues, Path<IFormValues>>;
+  options: Option[];
 };
 
-type Option = {
-  tokenId: number;
-  url: string;
+export type Option = {
+  id: number;
+  cid: string;
   name: string;
 };
 
@@ -41,25 +43,8 @@ export const SelectInput = <T extends FieldValues>({
   setValue,
   error,
   registerOptions,
+  options,
 }: SelectInputParams<T>) => {
-  const options: Option[] = [
-    {
-      tokenId: 1,
-      name: "Apple",
-      url: "https://via.placeholder.com/24/FF0000/FFFFFF?text=A",
-    },
-    {
-      tokenId: 2,
-      name: "Banana",
-      url: "https://via.placeholder.com/24/FFFF00/000000?text=B",
-    },
-    {
-      tokenId: 3,
-      name: "Cherry",
-      url: "https://via.placeholder.com/24/FF007F/FFFFFF?text=C",
-    },
-  ];
-
   const [query, setQuery] = useState<string>("");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>(options);
   const [showOptions, setShowOptions] = useState<boolean>(false);
@@ -71,9 +56,9 @@ export const SelectInput = <T extends FieldValues>({
     const value = e.target.value;
     setQuery(value);
 
-    if (value === "") {
+    if (value === "" || !value) {
       setFilteredOptions(options);
-      setShowOptions(false);
+      setShowOptions(true);
       setValue(name, undefined as any, { shouldValidate: true });
     } else {
       const filtered = options.filter((option) =>
@@ -89,13 +74,14 @@ export const SelectInput = <T extends FieldValues>({
   const handleOptionClick = (option: Option) => {
     setQuery(option.name);
     setShowOptions(false);
-    setValue(name, option.tokenId as any, { shouldValidate: true });
+    setValue(name, option.id as any, { shouldValidate: true });
   };
 
   const handleInputFocus = () => {
-    if (query !== "") {
-      setShowOptions(true);
+    if (!filteredOptions || query === "") {
+      setFilteredOptions(options);
     }
+    setShowOptions(true);
   };
 
   const handleInputBlur = (e: any) => {
@@ -160,9 +146,9 @@ export const SelectInput = <T extends FieldValues>({
             filteredOptions.map((option, index) => (
               <li
                 key={index}
-                className={`bg-gray-100 border border-gray-200 text-gray-800
+                className={`flex bg-gray-100 border border-gray-200 text-gray-800
                  text-sm rounded-lg focus:ring-blue-500
-                  focus:border-blue-500 block w-full p-2.5 bg-gray-300 ${
+                  focus:border-blue-500 block w-full p-1 bg-gray-300 ${
                     index === highlightedIndex
                       ? "bg-gray-600 text-white"
                       : "hover:bg-gray-300"
@@ -170,7 +156,12 @@ export const SelectInput = <T extends FieldValues>({
                 onMouseDown={() => handleOptionClick(option)}
                 onMouseEnter={() => setHighlightedIndex(index)}
               >
-                {option.name}
+                <img
+                  src={getUrlByCid(option.cid)}
+                  alt="IPFS Image"
+                  className="w-14 h-14 object-contain pr-3"
+                />
+                <span>{option.name}</span>
               </li>
             ))
           ) : (
@@ -178,7 +169,7 @@ export const SelectInput = <T extends FieldValues>({
           )}
         </ul>
       )}
-      <ErrorBlock error={error} />
+      {!showOptions && <ErrorBlock error={error} />}
     </div>
   );
 };

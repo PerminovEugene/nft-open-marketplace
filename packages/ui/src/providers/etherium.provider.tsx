@@ -6,7 +6,7 @@ import {
 } from "@/components/ethereum/nft/factory";
 import { EtheriumContext } from "@/context/etherium.context";
 import { useSDK } from "@metamask/sdk-react";
-import React, { useEffect, createContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export function EthereumProvider({
   children,
@@ -19,20 +19,6 @@ export function EthereumProvider({
   const [account, setAccount] = useState(null);
 
   useEffect(() => {
-    if (sdk) {
-      console.log("SDK инициализирован");
-    } else {
-      console.log("SDK не инициализирован");
-    }
-    if (provider) {
-      console.log("provider инициализирован");
-    } else {
-      console.log("provider не инициализирован");
-    }
-  }, [sdk, provider]);
-
-  useEffect(() => {
-    console.log("now", sdk, provider);
     if (sdk && provider) {
       // Function to initialize connection state
       const initializeConnection = async () => {

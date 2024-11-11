@@ -17,7 +17,7 @@ export class TransferEvent {
   @JoinColumn()
   token: Token;
 
-  @OneToOne(() => Token, { cascade: true})
+  @OneToOne(() => Transaction, { cascade: true})
   @JoinColumn()
   transaction: Transaction;
 }

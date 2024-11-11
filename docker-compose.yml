@@ -91,9 +91,13 @@ services:
       - NODE_ADDRESS=${NODE_ADDRESS}
       - PINATA_JWT=${PINATA_JWT}
       - IPFS_GATEWAY=${IPFS_GATEWAY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
     depends_on:
       - postgres
       - ui
+      - redis
     restart: on-failure
     networks:
       - hardhat-net
@@ -102,8 +106,19 @@ services:
       - ./packages/replica-server:/app/packages/replica-server
       - ./shared:/app/shared
 
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    networks:
+      - hardhat-net
+
 volumes:
   postgres_data:
+  redis-data:
 
 networks:
   hardhat-net:

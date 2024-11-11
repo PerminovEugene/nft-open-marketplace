@@ -9,7 +9,6 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import { createNftContract } from "../ethereum/nft/factory";
-import { EtheriumContext } from "../../context/etherium.context";
 
 export const ConnectWalletButton = () => {
   const { sdk, connected, provider, connecting, chainId, account } = useSDK();

@@ -1,12 +1,15 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { ethers } from 'ethers';
+import { ContractEventPayload, ethers, toNumber } from 'ethers';
 import {
   openMarketplaceNFTContractAbi,
 } from '@nft-open-marketplace/interface';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { ConfigService } from '@nestjs/config';
-import { TransferEventService } from 'src/nft/services/transfer-event.service';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
+import { JobName, QueueName } from '../bus/consts';
+import { TransferEventJob } from '../bus/types';
 
 const contractsData = JSON.parse(
   readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
@@ -22,7 +25,8 @@ export class BlockchainListenerService implements OnModuleInit {
 
   constructor(
     private configService: ConfigService,
-    private transferEventService: TransferEventService,
+    @InjectQueue(QueueName.transferEvent) private transferEventQueue: Queue<TransferEventJob>,
+    // @InjectQueue('listing-queue') private listingQueue: Queue,
   ) {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
     const wsProviderUrl = `ws://${this.configService.get(
@@ -46,15 +50,26 @@ export class BlockchainListenerService implements OnModuleInit {
   }
 
   private listenToEvents() {
-    console.log('Tran lsi')
-
-    this.contract.on('Transfer', (from, to, tokenId, event) => {
+    this.contract.on('Transfer', async (from: string, to: string, tokenId: BigInt, eventData: ContractEventPayload) => {
       /*
         TODO should be refactored using bus (rabbitMQ/kafka).
         Saving will be moved to consumer.
         Also requries sync worker for server downtime
       */
-      this.transferEventService.save(from, to, tokenId, event);
+      // this.transferEventService.save(from, to, tokenId, eventData);
+      console.log('publish', tokenId)
+        await this.transferEventQueue.add(JobName.Transfer, {
+          from,
+          to,
+          tokenId: parseInt(tokenId.toString()),
+          log: {
+            blockHash: eventData.log.blockHash,
+            blockNumber: eventData.log.blockNumber,
+            address: eventData.log.address,
+            transactionHash: eventData.log.transactionHash,
+            transactionIndex: eventData.log.transactionIndex,
+          }
+        });
     });
   }
 }

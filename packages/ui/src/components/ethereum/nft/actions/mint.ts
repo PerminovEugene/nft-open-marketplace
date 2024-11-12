@@ -1,6 +1,6 @@
 "use client";
 
-import { getNftContract, getSigner } from "./factory";
+import { getNftContract, getSigner } from "../factory";
 
 export async function mint(tokenURI: string) {
   const contract = getNftContract();
@@ -9,7 +9,7 @@ export async function mint(tokenURI: string) {
   const nonce = await signer.getNonce();
 
   const tx = await contract.mint(tokenURI, {
-    gasLimit: 200000, // TODO
+    gasLimit: 2000000, // TODO
     nonce,
   });
 

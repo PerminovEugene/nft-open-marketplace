@@ -96,9 +96,9 @@ services:
       - REDIS_HOST=${REDIS_HOST}
     depends_on:
       - postgres
-      - ui
+      - node
       - redis
-    restart: on-failure
+    # restart: on-failure
     networks:
       - hardhat-net
     command: "npm run start:dev"

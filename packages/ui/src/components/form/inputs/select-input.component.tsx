@@ -15,8 +15,10 @@ import {
   UseFormRegister,
   UseFormSetValue,
 } from "react-hook-form";
-import { ErrorBlock } from "./error";
-import { getUrlByCid } from "../ipfs/utils";
+import { ErrorBlock } from "../error";
+import { getUrlByCid } from "../../ipfs/utils";
+import classNames from "classnames";
+import { getInputDisabledStyles, inputStyles } from "../style.utils";
 
 type SelectInputParams<IFormValues extends FieldValues> = {
   register: UseFormRegister<IFormValues>;
@@ -28,6 +30,7 @@ type SelectInputParams<IFormValues extends FieldValues> = {
   error?: FieldError;
   registerOptions?: RegisterOptions<IFormValues, Path<IFormValues>>;
   options: Option[];
+  disabled: boolean;
 };
 
 export type Option = {
@@ -44,6 +47,7 @@ export const SelectInput = <T extends FieldValues>({
   error,
   registerOptions,
   options,
+  disabled,
 }: SelectInputParams<T>) => {
   const [query, setQuery] = useState<string>("");
   const [filteredOptions, setFilteredOptions] = useState<Option[]>(options);
@@ -129,7 +133,7 @@ export const SelectInput = <T extends FieldValues>({
     <div className="mb-4 relative" ref={componentRef}>
       <input
         type="text"
-        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        className={classNames(inputStyles, getInputDisabledStyles(disabled))}
         value={query}
         onChange={handleInputChange}
         onFocus={handleInputFocus}
@@ -139,6 +143,7 @@ export const SelectInput = <T extends FieldValues>({
         name={name}
         ref={ref}
         autoComplete="off"
+        disabled={disabled}
       />
       {showOptions && (
         <ul className="absolute z-10 w-full mt-1 bg-white border rounded shadow max-h-60 overflow-y-auto">

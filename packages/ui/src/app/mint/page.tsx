@@ -5,31 +5,39 @@ import { useSDK } from "@metamask/sdk-react";
 import { ConnectWalletButton } from "@/components/wallet/connect-button.component";
 import MintForm, { MintFormValues } from "./mint.form";
 import { Stepper } from "@/components/stepper/stepper.component";
-import { mint } from "@/components/ethereum/nft/mint";
-import { pinFile } from "./pin-file";
+import { mint } from "@/components/ethereum/nft/actions/mint";
+import { pinFile, PinFileResponse } from "./pin-file";
+import { IconName } from "@/components/icon/icon.component";
+import NftDetails from "../../components/ethereum/nft/nft-details";
+import { TransactionReceipt } from "ethers";
+import classNames from "classnames";
 
 const steps = [
   {
     text: "Fill the form",
     details: "Set up nft data",
-    // icon: <FaWallet className="mr-2" />,
+    iconName: IconName.TableList,
   },
   {
     text: "Pin in IPFS",
     details: "Image and JSON uploading to IPFS",
+    iconName: IconName.Thumbtack,
   },
   {
     text: "Mint",
     details: "Execute blockchain transaction",
+    iconName: IconName.Link,
   },
   {
     text: "Done",
-    details: "Now it's time to create Listing",
+    iconName: IconName.Check,
   },
 ];
 
 const MintPage = () => {
   const [formStep, setFormStep] = useState(0);
+  const [pinData, setPinData] = useState<PinFileResponse | null>(null);
+  const [mintData, setMintData] = useState<TransactionReceipt | null>(null);
   const { connected } = useSDK();
 
   const onSubmit = async ({
@@ -60,10 +68,12 @@ const MintPage = () => {
         youtubeUrl,
       },
     });
+    setPinData(pinResult);
     setFormStep((step) => step + 1);
 
     try {
-      await mint(pinResult?.IpfsHash);
+      const { receipt } = await mint(pinResult?.IpfsHash);
+      setMintData(receipt);
       setFormStep((step) => step + 1);
     } catch (error: unknown) {
       console.log(error);
@@ -71,6 +81,7 @@ const MintPage = () => {
       throw new Error("Mint error", { cause: error });
     }
   };
+  const isMinted = mintData || pinData;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-whit px-4">
@@ -78,17 +89,25 @@ const MintPage = () => {
       {!connected ? (
         <ConnectWalletButton />
       ) : (
-        <div className="grid grid-cols-3">
-          <div className="p-3">
-            <Stepper
-              {...{
-                currentStep: formStep,
-                steps,
-              }}
-            />
-          </div>
-          <div className="col-span-2">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="hidden md:block" />
+          <div className="col-span-3 md:col-span-2">
+            <NftDetails mintData={mintData} pinData={pinData} />
             <MintForm onSubmit={onSubmit} />
+          </div>
+          <div
+            className={classNames("p-3", {
+              "md:block": isMinted,
+            })}
+          >
+            <div className="sticky top-7">
+              <Stepper
+                {...{
+                  currentStep: formStep,
+                  steps,
+                }}
+              />
+            </div>
           </div>
         </div>
       )}

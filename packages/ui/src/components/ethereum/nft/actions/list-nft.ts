@@ -1,6 +1,6 @@
 "use client";
 
-import { getMarketplaceContract, getSigner } from "./factory";
+import { getMarketplaceContract, getSigner } from "../factory";
 
 export async function listNft(tokenId: number, price: string) {
   const contract = getMarketplaceContract();
@@ -8,8 +8,9 @@ export async function listNft(tokenId: number, price: string) {
   const signer = getSigner();
   const nonce = await signer.getNonce();
 
-  const tx = await contract.listNft(tokenId, price, {
-    gasLimit: 200000, // TODO
+  console.log(tokenId, price);
+  const tx = await contract.listNft(BigInt(tokenId), BigInt(price), {
+    gasLimit: 2000000, // TODO
     nonce,
   });
 

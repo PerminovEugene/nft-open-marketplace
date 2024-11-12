@@ -1,5 +1,6 @@
 "use client";
 
+import classNames from "classnames";
 import React from "react";
 import {
   ArrayPath,
@@ -10,10 +11,11 @@ import {
   UseFieldArrayRemove,
   UseFormRegister,
 } from "react-hook-form";
+import { getInputDisabledStyles, inputStyles } from "../style.utils";
 
 type AttributesInputParams<
   TFormValues extends FieldValues,
-  TFieldName extends Path<TFormValues>
+  TFieldName extends Path<TFormValues>,
 > = {
   label: string;
   arrayKeyName: Path<TFormValues>;
@@ -22,6 +24,7 @@ type AttributesInputParams<
   keyPlaceholder: string;
   valuePlaceholder: string;
   maxLength: number;
+  disabled: boolean;
 
   register: UseFormRegister<TFormValues>;
 
@@ -32,14 +35,11 @@ type AttributesInputParams<
 
 export const useAttributesHook = <
   T extends FieldValues,
-  TFieldName extends Path<T>
+  TFieldName extends Path<T>,
 >(
   append: AttributesInputParams<T, TFieldName>["append"]
 ) => {
-  const addAttribute = (
-    keyName: AttributesInputParams<T, TFieldName>["keyName"],
-    valueName: AttributesInputParams<T, TFieldName>["valueName"]
-  ) => {
+  const addAttribute = () => {
     append({} as any);
   };
 
@@ -48,21 +48,26 @@ export const useAttributesHook = <
 
 export const AttributesInput = <
   T extends FieldValues,
-  TFieldName extends Path<T>
+  TFieldName extends Path<T>,
 >({
+  disabled,
   arrayKeyName,
   keyName,
   valueName,
-  register,
   label,
   maxLength,
   valuePlaceholder,
   keyPlaceholder,
   fields,
+  register,
   append,
   remove,
 }: AttributesInputParams<T, TFieldName>) => {
   const [addAttribute] = useAttributesHook<T, TFieldName>(append);
+  const inputClasses = classNames(
+    inputStyles,
+    getInputDisabledStyles(disabled)
+  );
   return (
     <div className="mb-4">
       <div className="flex items-center justify-center text-xl mb-4">
@@ -79,23 +84,29 @@ export const AttributesInput = <
             <input
               type="text"
               id={key}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className={inputClasses}
               placeholder={keyPlaceholder}
               required={false}
+              disabled={disabled}
               {...register(key)}
             />
             <input
               type="text"
               id={valueName}
-              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              className={inputClasses}
               placeholder={valuePlaceholder}
               required={false}
+              disabled={disabled}
               {...register(value)}
             />
             <button
               type="button"
+              disabled={disabled}
               onClick={() => remove(index)}
-              className="px-6 py-2 bg-red-600 rounded hover:bg-red-500 grow-0 self-end"
+              className={classNames("px-6 py-2 grow-0 self-end rounded", {
+                "hover:bg-red-500 bg-red-600": !disabled,
+                "bg-red-300 cursor-not-allowed": disabled,
+              })}
             >
               Remove
             </button>
@@ -106,8 +117,12 @@ export const AttributesInput = <
         <div className="flex justify-end mt-6">
           <button
             type="button"
-            onClick={() => addAttribute(keyName, valueName)}
-            className="px-6 py-2 bg-blue-600 rounded hover:bg-blue-500"
+            onClick={() => addAttribute()}
+            disabled={disabled}
+            className={classNames("px-6 py-2 grow-0 rounded", {
+              "hover:bg-blue-500 bg-blue-600": !disabled,
+              "bg-blue-300 cursor-not-allowed": disabled,
+            })}
           >
             Add attribute
           </button>

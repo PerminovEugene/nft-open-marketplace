@@ -8,11 +8,14 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import { FieldValues, Path, UseFormRegister } from "react-hook-form";
+import classNames from "classnames";
+import { getInputDisabledStyles } from "../style.utils";
 
 type TextInputParams<IFormValues extends FieldValues> = {
   register: UseFormRegister<IFormValues>;
   name: Path<IFormValues>;
   required: boolean;
+  disabled: boolean;
   file: File | null;
 };
 
@@ -20,13 +23,21 @@ export const DropZoneInput = <T extends FieldValues>({
   name,
   register,
   required,
+  disabled,
   file,
 }: TextInputParams<T>) => {
   return (
     <div className="flex items-center justify-center w-ful mb-4">
       <label
         htmlFor="dropzone-file"
-        className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600 overflow-hidden"
+        className={classNames(
+          "flex flex-col items-center justify-center w-full h-64",
+          "border-2 border-gray-300 border-dashed rounded-lg",
+          "bg-gray-50 dark:bg-gray-700",
+          "dark:border-gray-600",
+          "overflow-hidden",
+          getInputDisabledStyles(disabled)
+        )}
       >
         {file ? (
           <div className="flex flex-col items-center justify-center w-full h-full p-2">
@@ -69,6 +80,7 @@ export const DropZoneInput = <T extends FieldValues>({
           className="hidden"
           required={required}
           multiple={false}
+          disabled={disabled}
           {...register(name)}
         />
       </label>

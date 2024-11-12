@@ -24,7 +24,8 @@ import { getRedisConfig } from 'src/config/datasource';
       name: `${QueueName.transferEvent}`,
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => getRedisConfig(configService),
+      useFactory: async (configService: ConfigService) =>
+        getRedisConfig(configService),
     }),
     NftModule,
   ],
@@ -32,10 +33,9 @@ import { getRedisConfig } from 'src/config/datasource';
     TransferEventService,
     MetadataService,
 
-        // @InjectQueue(QueueName.transferEvent) private transferEventQueue: Queue,
-
     TransferEventConsumer,
-    
-    BlockchainListenerService,],
+
+    BlockchainListenerService,
+  ],
 })
 export class AppModule {}

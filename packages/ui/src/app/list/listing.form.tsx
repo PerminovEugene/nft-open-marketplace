@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { TextInput } from "@/components/form/text-input.component";
-import { SelectInput } from "@/components/form/select-input.component";
+import { TextInput } from "@/components/form/inputs/text-input.component";
+import { SelectInput } from "@/components/form/inputs/select-input.component";
 import { Token } from "@/entities/nft";
+import SubmitButton from "@/components/form/submit-button";
 
 export type ListingFormValues = {
   tokenId: number;
@@ -20,7 +21,7 @@ const ListingForm = ({
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm<ListingFormValues>();
 
   const [nfts, setNfts] = useState<Token[]>([]);
@@ -44,6 +45,8 @@ const ListingForm = ({
     });
   }, []);
 
+  const disabled = isSubmitting || isSubmitSuccessful;
+
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-4/5 mb-12">
       <div className="flex flex-col mb-6 md:grid-cols-2">
@@ -60,6 +63,7 @@ const ListingForm = ({
               required: true,
               placeholder: "Search for NFT",
               setValue,
+              disabled,
               error: errors["tokenId"],
               registerOptions: {
                 required: "Select NFT for selling",
@@ -80,6 +84,7 @@ const ListingForm = ({
               required: true,
               placeholder: "Price",
               error: errors["price"],
+              disabled,
               registerOptions: {
                 required: "Price is required",
                 pattern: {
@@ -93,12 +98,7 @@ const ListingForm = ({
             }}
           />
         </div>
-        <button
-          type="submit"
-          className="px-6 py-2 bg-blue-600 rounded hover:bg-blue-500 text-lg"
-        >
-          Create Listing
-        </button>
+        <SubmitButton {...{ disabled, text: "List" }} />
       </div>
     </form>
   );

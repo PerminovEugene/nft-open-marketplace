@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useSDK } from "@metamask/sdk-react";
 import { ConnectWalletButton } from "@/components/wallet/connect-button.component";
 import ListingForm, { ListingFormValues } from "./listing.form";
@@ -9,12 +9,23 @@ import { listNft } from "@/components/ethereum/nft/actions/list-nft";
 import { IconName } from "@/components/icon/icon.component";
 import { TransactionReceipt } from "ethers";
 import TransactionDetails from "@/components/ethereum/nft/transaction-details";
+import {
+  approveForAll,
+  isApprovedForAll,
+} from "@/components/ethereum/nft/actions/approval";
+import { EtheriumContext } from "@/providers/etherium.provider";
 
 const steps = [
   {
     text: "Fill the form",
     details: "Pick NFT and set the price",
     iconName: IconName.TableList,
+  },
+  {
+    text: "Set approval for all NFT",
+    details: "Allow marketplace to operate with NFTs",
+    iconName: IconName.Approve,
+    isVisible: ({ isApproved }: { isApproved: boolean }) => !isApproved,
   },
   {
     text: "Create lising",
@@ -32,19 +43,42 @@ const ListingPage = () => {
   const [formStep, setFormStep] = useState(0);
   const { connected } = useSDK();
 
+  const [isApproved, setApproval] = useState<boolean | null>(null);
   const [listingData, setListingData] = useState<TransactionReceipt | null>(
     null
   );
+  const { isReady } = useContext(EtheriumContext);
+
+  useEffect(() => {
+    if (isReady) {
+      isApprovedForAll()
+        .then(setApproval)
+        .catch((e) => {
+          console.error(e);
+        });
+    }
+  }, [isReady]);
 
   const onSubmit = async ({ tokenId, price }: ListingFormValues) => {
     setFormStep((step) => step + 1);
+    if (!isApproved) {
+      try {
+        await approveForAll();
+        setFormStep((step) => step + 1);
+      } catch (error: unknown) {
+        console.error(error);
+        throw new Error("Set approval for all error", { cause: error });
+      }
+    } else {
+      setFormStep((step) => step + 1);
+    }
 
     try {
       const { tx, receipt } = await listNft(tokenId, price);
       setFormStep((step) => step + 1);
       setListingData(receipt);
-    } catch (error: unknown) {
-      console.log(error);
+    } catch (error: any) {
+      console.error(error);
       throw new Error("Listing error", { cause: error });
     }
   };
@@ -67,6 +101,7 @@ const ListingPage = () => {
               {...{
                 currentStep: formStep,
                 steps,
+                visibilityConfig: { isApproved },
               }}
             />
           </div>

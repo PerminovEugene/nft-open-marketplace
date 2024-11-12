@@ -4,9 +4,13 @@ import {
   createMarketplaceContract,
   createNftContract,
 } from "@/components/ethereum/nft/factory";
-import { EtheriumContext } from "@/context/etherium.context";
 import { useSDK } from "@metamask/sdk-react";
 import React, { useEffect, useState } from "react";
+import { createContext } from "react";
+
+export const EtheriumContext = createContext<{ isReady: boolean }>({
+  isReady: false,
+});
 
 export function EthereumProvider({
   children,
@@ -15,8 +19,7 @@ export function EthereumProvider({
 }>) {
   const { sdk, provider } = useSDK();
 
-  const [chainId, setChainId] = useState(null);
-  const [account, setAccount] = useState(null);
+  const [isReady, setIsReady] = useState<boolean>(false);
 
   useEffect(() => {
     if (sdk && provider) {
@@ -25,6 +28,7 @@ export function EthereumProvider({
         try {
           await createNftContract(provider);
           await createMarketplaceContract(provider);
+          setIsReady(true);
         } catch (error) {
           console.error("Error initializing connection:", error);
         }
@@ -40,7 +44,7 @@ export function EthereumProvider({
       };
 
       const handleAccountsChanged = (newAccounts: any) => {
-        setAccount(newAccounts[0]);
+        // setAccount(newAccounts[0]);
         // Additional logic on accounts change
       };
 
@@ -76,9 +80,7 @@ export function EthereumProvider({
   }, [sdk, provider]);
 
   return (
-    <EtheriumContext.Provider
-      value={{ chainId, setChainId, account, setAccount }}
-    >
+    <EtheriumContext.Provider value={{ isReady }}>
       {children}
     </EtheriumContext.Provider>
   );

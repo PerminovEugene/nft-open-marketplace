@@ -1,4 +1,3 @@
-
 export type Attribute = {
   id: number;
   traitType: string;
@@ -16,7 +15,8 @@ export type Metadata = {
   attributes?: Attribute[];
 };
 export type Token = {
-  id: number;
+  id: number; // id in db
+  contractId: number; // id in blockchain
   owner: string;
   metadata: Metadata;
   transaction: Transaction;

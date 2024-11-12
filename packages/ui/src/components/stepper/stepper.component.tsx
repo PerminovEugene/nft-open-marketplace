@@ -8,6 +8,7 @@ type Step = {
   details?: string;
   withLoader?: boolean;
   iconName: IconName;
+  isVisible?: (config: any) => boolean;
 };
 
 const Step = ({ text, details, iconName }: Step) => {
@@ -71,21 +72,27 @@ const SuccessStep = ({ text, details, iconName }: Step) => {
 export const Stepper = ({
   currentStep,
   steps,
+  visibilityConfig,
 }: {
   currentStep: number;
   steps: Step[];
+  visibilityConfig: any;
 }) => {
   return (
     <ol className="relative text-gray-500 border-s border-gray-200 dark:border-gray-700 dark:text-gray-400">
       {steps.map((step, index) => {
+        console.log(index, step, visibilityConfig);
+        if (step.isVisible && !step.isVisible(visibilityConfig)) {
+          return null;
+        }
         if (currentStep > index) {
-          return <SuccessStep {...step} />;
+          return <SuccessStep {...step} key={index} />;
         }
         if (currentStep === index) {
           const withLoader = index !== 0 && index < steps.length - 1;
-          return <CurrentStep {...{ withLoader, ...step }} />;
+          return <CurrentStep {...{ withLoader, ...step }} key={index} />;
         }
-        return <Step {...step} />;
+        return <Step {...step} key={index} />;
       })}
     </ol>
   );

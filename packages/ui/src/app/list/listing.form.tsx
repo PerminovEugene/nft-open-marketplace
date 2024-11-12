@@ -69,7 +69,7 @@ const ListingForm = ({
                 required: "Select NFT for selling",
               },
               options: nfts.map((token: Token) => ({
-                id: token.id,
+                id: token.contractId,
                 cid: token.metadata.image,
                 name: token.metadata.name,
               })),

@@ -9,9 +9,8 @@ describe("OpenMarketplace", function () {
 
   describe("List Nft", function () {
     it("Should throw when price is 0", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
       openMarketplaceNFT.connect(owner);
 
       await expect(
@@ -28,9 +27,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw when listing with same tokenId already exist", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       // mint and get tokenId
       const mintTx = await openMarketplaceNFT
@@ -55,9 +53,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw lister is not nft owner", async function () {
-      const { owner, other, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, other, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       // mint and get tokenId
       const mintTx = await openMarketplaceNFT
@@ -80,9 +77,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw when NFT management is not not approved", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       // mint and get tokenId
       const mintTx = await openMarketplaceNFT
@@ -101,9 +97,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should list nft and emit NftListed event", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       // mint and get tokenId
       const mintTx = await openMarketplaceNFT
@@ -122,9 +117,11 @@ describe("OpenMarketplace", function () {
 
       const price = 10;
 
+      const marketplaceFee = 0;
+
       await expect(await market.connect(owner).listNft(tokenId, price))
         .to.emit(market, "NftListed")
-        .withArgs(owner, tokenId, price);
+        .withArgs(owner, tokenId, price, marketplaceFee);
     });
 
     it("Should allow list nft even not for initial owner", async function () {

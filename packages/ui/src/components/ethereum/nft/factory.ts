@@ -9,42 +9,36 @@ import {
   getNftContractAddress,
 } from "@/env.helper";
 import { ethers } from "ethers";
-import { SDKProvider } from "@metamask/sdk";
+import { JsonRpcSigner } from "ethers";
 
 let nftContract: OpenMarketplaceNFT;
 let marketplaceContract: OpenMarketplace;
 
-let signer: ethers.JsonRpcSigner;
-
 const createContract = async function (
-  provider: SDKProvider,
+  signer: JsonRpcSigner,
   contractAddress: string,
   contractAbi: any
 ) {
-  if (!provider) {
-    throw new Error("Provider is not defined");
+  if (!signer) {
+    throw new Error("Signer is not defined");
   }
-
-  const ethersProvider = new ethers.BrowserProvider(provider);
-
-  signer = await ethersProvider.getSigner();
-
   return new ethers.Contract(contractAddress, contractAbi, signer) as unknown;
 };
 
-export const createNftContract = async function (provider: SDKProvider) {
+// todo probably move to eth context to support account changing
+export const createNftContract = async function (signer: JsonRpcSigner) {
   nftContract = (await createContract(
-    provider,
+    signer,
     getNftContractAddress(),
     openMarketplaceNFTContractAbi.abi
   )) as OpenMarketplaceNFT;
 };
 
 export const createMarketplaceContract = async function (
-  provider: SDKProvider
+  signer: JsonRpcSigner
 ) {
   marketplaceContract = (await createContract(
-    provider,
+    signer,
     getMarketplaceContractAddress(),
     openMarketplaceContractAbi.abi
   )) as OpenMarketplace;
@@ -62,11 +56,4 @@ export const getMarketplaceContract = function () {
     throw new Error("Init marketplace contract before using");
   }
   return marketplaceContract;
-};
-
-export const getSigner = function () {
-  if (!signer) {
-    throw new Error("Init signer before using");
-  }
-  return signer;
 };

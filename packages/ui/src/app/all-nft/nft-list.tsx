@@ -5,6 +5,7 @@ import { ethers } from "ethers";
 import { useSDK } from "@metamask/sdk-react";
 import { openMarketplaceNFTContractAbi } from "@nft-open-marketplace/interface";
 import { getNftContractAddress } from "@/env.helper";
+import { getNftContract } from "@/components/ethereum/nft/factory";
 
 function useContract() {
   const [account, setAccount] = useState<string>();
@@ -16,16 +17,7 @@ function useContract() {
     async function fetchTransferEvents() {
       if (!sdk || !provider) return;
 
-      const ethersProvider = new ethers.BrowserProvider(provider);
-      const signer = await ethersProvider.getSigner();
-
-      const nftContractAddress = getNftContractAddress();
-
-      const contract = new ethers.Contract(
-        nftContractAddress,
-        openMarketplaceNFTContractAbi.abi,
-        signer
-      );
+      const contract = getNftContract();
 
       try {
         const fromBlock = 0; // Adjust based on when the contract was deployed

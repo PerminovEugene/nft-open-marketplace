@@ -7,7 +7,7 @@ import {
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { ConfigService } from '@nestjs/config';
-import { PinataSDK } from "pinata-web3";
+import { PinataSDK } from 'pinata-web3';
 
 const contractsData = JSON.parse(
   readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
@@ -21,15 +21,13 @@ export class MetadataService {
   private provider: ethers.JsonRpcProvider;
   private contract: OpenMarketplaceNFT;
   private pinata: PinataSDK;
-  
-  constructor(
-    private configService: ConfigService,
-  ) {
+
+  constructor(private configService: ConfigService) {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
-    const wsProviderUrl = `http://${this.configService.get(
+    const httpProviderUrl = `http://${this.configService.get(
       'NODE_ADDRESS', // TODO prod should use https
     )}:${this.configService.get('NODE_PORT')}/`;
-    this.provider = new ethers.JsonRpcProvider(wsProviderUrl);
+    this.provider = new ethers.JsonRpcProvider(httpProviderUrl);
 
     const contractAddress = contractsData.contracts.find(
       ({ name }) => name === 'OpenMarketplaceNFT',
@@ -40,7 +38,6 @@ export class MetadataService {
       openMarketplaceNFTContractAbi.abi,
       this.provider,
     ) as unknown as OpenMarketplaceNFT;
-
 
     this.pinata = new PinataSDK({
       pinataJwt: this.configService.get('PINATA_JWT'),
@@ -54,9 +51,7 @@ export class MetadataService {
   }
 
   private async getMetadataFromPinata(tokenUri: string) {
-    const { data } = await this.pinata.gateways.get(
-      tokenUri
-    )
+    const { data } = await this.pinata.gateways.get(tokenUri);
     return data;
   }
 }

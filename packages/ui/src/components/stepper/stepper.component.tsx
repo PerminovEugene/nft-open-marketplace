@@ -76,12 +76,11 @@ export const Stepper = ({
 }: {
   currentStep: number;
   steps: Step[];
-  visibilityConfig: any;
+  visibilityConfig?: any;
 }) => {
   return (
     <ol className="relative text-gray-500 border-s border-gray-200 dark:border-gray-700 dark:text-gray-400">
       {steps.map((step, index) => {
-        console.log(index, step, visibilityConfig);
         if (step.isVisible && !step.isVisible(visibilityConfig)) {
           return null;
         }

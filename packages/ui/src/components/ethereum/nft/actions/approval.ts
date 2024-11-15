@@ -1,28 +1,28 @@
 "use client";
 
 import { getMarketplaceContractAddress } from "@/env.helper";
-import { getNftContract, getSigner } from "../factory";
+import { getNftContract } from "../factory";
+import { JsonRpcSigner } from "ethers";
 
-export async function isApprovedForAll(): Promise<boolean> {
+export async function isApprovedForAll(
+  signer: JsonRpcSigner
+): Promise<boolean> {
   const contract = getNftContract();
-
-  const signer = getSigner();
 
   const signerAddress = await signer.getAddress();
   const isApprovedForAll = await contract.isApprovedForAll(
     signerAddress,
     getMarketplaceContractAddress()
   );
-  console.log("isApprovedForAll->", isApprovedForAll);
   return isApprovedForAll;
 }
 
-export async function approveForAll() {
+export async function approveForAll(signer: JsonRpcSigner) {
   const contract = getNftContract();
 
-  const signer = getSigner();
   const nonce = await signer.getNonce();
 
+  console.log("address", signer, nonce);
   const tx = await contract.setApprovalForAll(
     getMarketplaceContractAddress(),
     true,

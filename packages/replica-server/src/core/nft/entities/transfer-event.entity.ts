@@ -1,4 +1,11 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  ManyToOne,
+} from 'typeorm';
 import { Token } from './token.entity';
 import { Transaction } from './transaction.entity';
 
@@ -13,11 +20,11 @@ export class TransferEvent {
   @Column()
   to: string;
 
-  @OneToOne(() => Token, { cascade: true})
+  @ManyToOne(() => Token, (token: Token) => token.transferEvent)
   @JoinColumn()
   token: Token;
 
-  @OneToOne(() => Transaction, { cascade: true})
+  @OneToOne(() => Transaction, { cascade: true })
   @JoinColumn()
   transaction: Transaction;
 }

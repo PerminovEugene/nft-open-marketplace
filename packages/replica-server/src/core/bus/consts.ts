@@ -1,6 +1,14 @@
-export enum JobName {
-  Transfer = 'transfer'
+export enum NftEventJobName {
+  Transfer = 'transfer',
 }
+
+export enum MarketplaceEventJobName {
+  NftListed = 'NftListed',
+}
+
 export enum QueueName {
-  transferEvent = 'transfer_event'
+  nftEvents = 'nft_events',
+  unsyncedNftEvents = 'unsynced_nft_events',
+  marketplaceEvents = 'marketplace_events',
+  unsyncedMarketplaceEvents = 'unsynced_marketplace_events',
 }

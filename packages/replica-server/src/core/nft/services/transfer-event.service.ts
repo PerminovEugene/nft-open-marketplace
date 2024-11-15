@@ -1,8 +1,7 @@
-
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { TransferEvent } from '../entities/transfer-event.entity';
-import {  } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
+import {} from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
 import { Token } from '../entities/token.entity';
 import { Transaction } from '../entities/transaction.entity';
 import { Metadata } from '../entities/metadata.entity';
@@ -12,31 +11,26 @@ import { TransferEventJob } from 'src/core/bus/types';
 type NftAttribute = {
   TraitType: string;
   Value: string;
-}
+};
 type NftMetadata = {
   name: string;
   description: string;
   image: string;
   youtubeUrl?: string;
-  attributes?: NftAttribute[],
-  animation_url: string,
-  background_color?: string,
-  external_url?: string,
-}
+  attributes?: NftAttribute[];
+  animation_url: string;
+  background_color?: string;
+  external_url?: string;
+};
 
 @Injectable()
 export class TransferEventService {
   constructor(
     private readonly dataSource: DataSource,
-    private readonly metadataService: MetadataService
-  ) { }
+    private readonly metadataService: MetadataService,
+  ) {}
 
-  async save({
-    from,
-    to,
-    tokenId,
-    log }: TransferEventJob,
-  ): Promise<void> {
+  async save({ from, to, tokenId, log }: TransferEventJob): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -46,9 +40,11 @@ export class TransferEventService {
         where: { contractId: tokenId.toString() },
       });
       if (!token) {
-        const metadataJson = await this.metadataService.getMetadata(tokenId) as unknown as NftMetadata;
+        const metadataJson = (await this.metadataService.getMetadata(
+          tokenId,
+        )) as unknown as NftMetadata;
         if (typeof metadataJson !== 'object') {
-          throw new Error('Invalid metadata type: ' + typeof metadataJson)
+          throw new Error('Invalid metadata type: ' + typeof metadataJson);
         }
 
         const metadata = queryRunner.manager.create(Metadata, {
@@ -57,7 +53,7 @@ export class TransferEventService {
           image: metadataJson.image,
           attributes: metadataJson.attributes?.map((a) => ({
             traitType: a.TraitType,
-            value: a.Value
+            value: a.Value,
           })),
         });
 
@@ -66,14 +62,13 @@ export class TransferEventService {
         token = queryRunner.manager.create(Token, {
           contractId: tokenId.toString(),
           metadata: metadata,
-          owner: to,
+          owner: to.toLowerCase(),
         });
         await queryRunner.manager.save(token);
       } else {
-        console.log('-update->', tokenId)
-        // token.owner = to;
-        // await queryRunner.manager.save(token);
-        await queryRunner.manager.update(Token, tokenId, { owner: to });
+        await queryRunner.manager.update(Token, tokenId, {
+          owner: to.toLowerCase(),
+        });
       }
 
       const transaction = queryRunner.manager.create(Transaction, {
@@ -85,14 +80,12 @@ export class TransferEventService {
       });
       await queryRunner.manager.save(transaction);
 
-      console.log('---> transfer event', )
       const transferEvent = queryRunner.manager.create(TransferEvent, {
-        from,
-        to,
+        from: from.toLowerCase(),
+        to: to.toLowerCase(),
         transaction,
         token,
       });
-      console.log('---> transfer event end', token, transferEvent)
 
       await queryRunner.manager.save(transferEvent);
 

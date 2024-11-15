@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useSDK } from "@metamask/sdk-react";
 import { ConnectWalletButton } from "@/components/wallet/connect-button.component";
 import MintForm, { MintFormValues } from "./mint.form";
@@ -11,6 +11,7 @@ import { IconName } from "@/components/icon/icon.component";
 import NftDetails from "../../components/ethereum/nft/nft-details";
 import { TransactionReceipt } from "ethers";
 import classNames from "classnames";
+import { EtheriumContext } from "@/providers/etherium.provider";
 
 const steps = [
   {
@@ -39,6 +40,7 @@ const MintPage = () => {
   const [pinData, setPinData] = useState<PinFileResponse | null>(null);
   const [mintData, setMintData] = useState<TransactionReceipt | null>(null);
   const { connected } = useSDK();
+  const { isReady, signer } = useContext(EtheriumContext);
 
   const onSubmit = async ({
     file,
@@ -50,8 +52,8 @@ const MintPage = () => {
     youtubeUrl,
     attributes,
   }: MintFormValues) => {
-    if (!file) {
-      alert("Please select image");
+    if (!file || !signer || !isReady) {
+      alert("SDK or file is not ready");
       return;
     }
     setFormStep((step) => step + 1);
@@ -72,7 +74,7 @@ const MintPage = () => {
     setFormStep((step) => step + 1);
 
     try {
-      const { receipt } = await mint(pinResult?.IpfsHash);
+      const { receipt } = await mint(signer, pinResult?.IpfsHash);
       setMintData(receipt);
       setFormStep((step) => step + 1);
     } catch (error: unknown) {

@@ -47,11 +47,11 @@ const ListingPage = () => {
   const [listingData, setListingData] = useState<TransactionReceipt | null>(
     null
   );
-  const { isReady } = useContext(EtheriumContext);
+  const { isReady, signer } = useContext(EtheriumContext);
 
   useEffect(() => {
-    if (isReady) {
-      isApprovedForAll()
+    if (isReady && signer) {
+      isApprovedForAll(signer)
         .then(setApproval)
         .catch((e) => {
           console.error(e);
@@ -61,9 +61,12 @@ const ListingPage = () => {
 
   const onSubmit = async ({ tokenId, price }: ListingFormValues) => {
     setFormStep((step) => step + 1);
+    if (!isReady || !signer) {
+      throw new Error("SDK is not ready");
+    }
     if (!isApproved) {
       try {
-        await approveForAll();
+        await approveForAll(signer);
         setFormStep((step) => step + 1);
       } catch (error: unknown) {
         console.error(error);
@@ -74,7 +77,7 @@ const ListingPage = () => {
     }
 
     try {
-      const { tx, receipt } = await listNft(tokenId, price);
+      const { tx, receipt } = await listNft(signer, tokenId, price);
       setFormStep((step) => step + 1);
       setListingData(receipt);
     } catch (error: any) {

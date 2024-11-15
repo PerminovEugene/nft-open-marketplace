@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { MetaMaskProvider, useSDK } from "@metamask/sdk-react";
-import { createNftContract } from "@/components/ethereum/nft/factory";
+import React from "react";
+import { MetaMaskProvider } from "@metamask/sdk-react";
 
 const MetaMaskProviderWrapper = ({
   children,

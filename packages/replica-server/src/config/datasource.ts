@@ -6,7 +6,9 @@ import { QueueOptions } from 'bullmq';
 
 const cs = new ConfigService();
 
-export const getDbConfig = (configService: ConfigService): TypeOrmModuleOptions => {
+export const getDbConfig = (
+  configService: ConfigService,
+): TypeOrmModuleOptions => {
   return {
     type: 'postgres',
     host: configService.get<string>('DATABASE_HOST'),
@@ -15,20 +17,23 @@ export const getDbConfig = (configService: ConfigService): TypeOrmModuleOptions 
     password: configService.get<string>('DATABASE_PASSWORD'),
     database: configService.get<string>('DATABASE_NAME'),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'],
-    synchronize: true,  // TODO set to false in production
+    synchronize: true, // TODO set to false in production
     // TO generate intial migration:
     // npm run typeorm -- migration:generate -d ./src/config/datasource.ts ./src/migrations/initial.ts
-    migrations: [__dirname + '/../migrations/*.entity{.ts,.js}']
-  }
-}
+    migrations: [__dirname + '/../migrations/*.entity{.ts,.js}'],
+    logging: false,
+  };
+};
 
-export const AppDataSource = new DataSource(getDbConfig(cs) as PostgresConnectionOptions);
+export const AppDataSource = new DataSource(
+  getDbConfig(cs) as PostgresConnectionOptions,
+);
 
 export const getRedisConfig = (configService: ConfigService): QueueOptions => {
   return {
     connection: {
-      host: configService.get("REDIS_HOST"),
-      port: configService.get("REDIS_PORT"),
+      host: configService.get('REDIS_HOST'),
+      port: configService.get('REDIS_PORT'),
     },
-  }
-}
+  };
+};

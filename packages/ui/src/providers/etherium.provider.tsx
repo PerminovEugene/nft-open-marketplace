@@ -5,11 +5,18 @@ import {
   createNftContract,
 } from "@/components/ethereum/nft/factory";
 import { useSDK } from "@metamask/sdk-react";
+import { JsonRpcSigner } from "ethers";
+import { ethers } from "ethers";
 import React, { useEffect, useState } from "react";
 import { createContext } from "react";
+import { NonceManager, Signer } from "ethers";
 
-export const EtheriumContext = createContext<{ isReady: boolean }>({
+export const EtheriumContext = createContext<{
+  isReady: boolean;
+  signer: JsonRpcSigner | null;
+}>({
   isReady: false,
+  signer: null,
 });
 
 export function EthereumProvider({
@@ -17,17 +24,22 @@ export function EthereumProvider({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { sdk, provider } = useSDK();
-
+  const { sdk, provider, account } = useSDK();
   const [isReady, setIsReady] = useState<boolean>(false);
-
+  const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
   useEffect(() => {
     if (sdk && provider) {
       // Function to initialize connection state
       const initializeConnection = async () => {
         try {
-          await createNftContract(provider);
-          await createMarketplaceContract(provider);
+          const ethersProvider = new ethers.BrowserProvider(provider);
+          console.log("account for signer", account);
+          const raw = await ethersProvider.getSigner(account);
+          const wallet = new NonceManager(raw);
+
+          await createNftContract(wallet.signer as any);
+          await createMarketplaceContract(wallet.signer as any);
+          setSigner(wallet.signer as any);
           setIsReady(true);
         } catch (error) {
           console.error("Error initializing connection:", error);
@@ -80,7 +92,7 @@ export function EthereumProvider({
   }, [sdk, provider]);
 
   return (
-    <EtheriumContext.Provider value={{ isReady }}>
+    <EtheriumContext.Provider value={{ isReady, signer }}>
       {children}
     </EtheriumContext.Provider>
   );

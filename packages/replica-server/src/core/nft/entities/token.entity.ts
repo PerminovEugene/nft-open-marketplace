@@ -1,5 +1,14 @@
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne, JoinColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from 'typeorm';
 import { Metadata } from './metadata.entity';
+import { Listing } from 'src/core/marketplace/entities/listing.entity';
+import { TransferEvent } from './transfer-event.entity';
 
 @Entity()
 export class Token {
@@ -9,10 +18,25 @@ export class Token {
   @Column()
   contractId: string; // id from the contract
 
-  @OneToOne(() => Metadata, { cascade: true})
+  @Column()
+  owner: string;
+
+  @OneToOne(() => Metadata, { cascade: true })
   @JoinColumn()
   metadata: Metadata;
 
-  @Column()
-  owner: string;
+  @OneToMany(() => Listing, (listing: Listing) => listing.token, {
+    cascade: ['insert', 'update'],
+  })
+  listing: Listing[];
+
+  @OneToMany(
+    () => TransferEvent,
+    (transferEvent: TransferEvent) => transferEvent.token,
+    {
+      cascade: ['insert', 'update'],
+    },
+  )
+  @JoinColumn()
+  transferEvent: TransferEvent[];
 }

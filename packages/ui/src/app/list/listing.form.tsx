@@ -6,6 +6,7 @@ import { TextInput } from "@/components/form/inputs/text-input.component";
 import { SelectInput } from "@/components/form/inputs/select-input.component";
 import { Token } from "@/entities/nft";
 import SubmitButton from "@/components/form/submit-button";
+import { useSDK } from "@metamask/sdk-react";
 
 export type ListingFormValues = {
   tokenId: number;
@@ -17,6 +18,7 @@ const ListingForm = ({
 }: {
   onSubmit: (data: ListingFormValues) => Promise<void>;
 }) => {
+  const { account } = useSDK();
   const {
     register,
     handleSubmit,
@@ -26,10 +28,16 @@ const ListingForm = ({
 
   const [nfts, setNfts] = useState<Token[]>([]);
   useEffect(() => {
+    if (!account) {
+      return;
+    }
     const fetchNfts = async () => {
       try {
         const url = process.env.REPLICA_SERVER_ADDRESS;
-        const response = await fetch(`${url}/nft`);
+        const query = new URLSearchParams({
+          ownerAddress: account,
+        }).toString();
+        const response = await fetch(`${url}/nft?` + query);
         if (response.ok) {
           const result = await response.json();
           setNfts(result);
@@ -43,7 +51,7 @@ const ListingForm = ({
     fetchNfts().catch((e) => {
       console.error(e);
     });
-  }, []);
+  }, [account]);
 
   const disabled = isSubmitting || isSubmitSuccessful;
 

@@ -1,13 +1,14 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ContractEventPayload, ethers, toNumber } from 'ethers';
-import { openMarketplaceNFTContractAbi } from '@nft-open-marketplace/interface';
+import {
+  openMarketplaceContractAbi,
+  openMarketplaceNFTContractAbi,
+} from '@nft-open-marketplace/interface';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { ConfigService } from '@nestjs/config';
-import { InjectQueue } from '@nestjs/bullmq';
-import { Queue } from 'bullmq';
-import { JobName, QueueName } from '../bus/consts';
-import { TransferEventJob } from '../bus/types';
+import { NftEventJobName } from '../bus/consts';
+import { PublisherService } from '../bus/publisher.service';
 
 const contractsData = JSON.parse(
   readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
@@ -19,67 +20,86 @@ if (!contractsData) {
 @Injectable()
 export class BlockchainListenerService implements OnModuleInit {
   private provider: ethers.WebSocketProvider;
-  private contract: ethers.Contract;
+  private nftContract: ethers.Contract;
+  private marketplaceContract: ethers.Contract;
 
   constructor(
     private configService: ConfigService,
-    @InjectQueue(QueueName.transferEvent)
-    private transferEventQueue: Queue<TransferEventJob>,
-    // @InjectQueue('listing-queue') private listingQueue: Queue,
+    private publisherService: PublisherService,
   ) {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
     const wsProviderUrl = `ws://${this.configService.get(
       'NODE_ADDRESS',
     )}:${this.configService.get('NODE_PORT')}/ws/v3`;
     this.provider = new ethers.WebSocketProvider(wsProviderUrl);
+  }
 
-    const contractAddress = contractsData.contracts.find(
-      ({ name }) => name === 'OpenMarketplaceNFT',
-    ).address;
+  async onModuleInit() {
+    await this.listenEvents();
+    // TODO add unsubscribe on module destroy
+  }
 
-    console.log('Contract address', contractAddress);
-    this.contract = new ethers.Contract(
-      contractAddress,
+  private async listenEvents() {
+    await this.listenNftContract();
+    await this.listenMarketplaceContract();
+  }
+
+  private async listenNftContract() {
+    this.nftContract = new ethers.Contract(
+      this.getContractAddressByName('OpenMarketplaceNFT'),
       openMarketplaceNFTContractAbi.abi,
       this.provider,
     );
-  }
 
-  onModuleInit() {
-    this.listenToEvents();
-  }
-
-  private listenToEvents() {
-    console.log('Listen events');
-    this.contract.on(
+    this.nftContract.on(
       'Transfer',
       async (
         from: string,
         to: string,
         tokenId: BigInt,
-        eventData: ContractEventPayload,
+        eventPayload: ContractEventPayload,
       ) => {
-        console.log('transfer event');
-
-        /*
-        TODO should be refactored using bus (rabbitMQ/kafka).
-        Saving will be moved to consumer.
-        Also requries sync worker for server downtime
-      */
-        // this.transferEventService.save(from, to, tokenId, eventData);
-        await this.transferEventQueue.add(JobName.Transfer, {
+        await this.publisherService.publishTransferEventData({
           from,
           to,
           tokenId: parseInt(tokenId.toString()),
-          log: {
-            blockHash: eventData.log.blockHash,
-            blockNumber: eventData.log.blockNumber,
-            address: eventData.log.address,
-            transactionHash: eventData.log.transactionHash,
-            transactionIndex: eventData.log.transactionIndex,
-          },
+          eventLog: eventPayload.log,
         });
       },
     );
   }
+
+  private async listenMarketplaceContract() {
+    this.marketplaceContract = new ethers.Contract(
+      this.getContractAddressByName(openMarketplaceContractAbi.contractName),
+      openMarketplaceContractAbi.abi,
+      this.provider,
+    );
+
+    await this.marketplaceContract.on(
+      'NftListed',
+      async (
+        seller: string,
+        tokenId: BigInt,
+        price: BigInt,
+        marketplaceFee: BigInt,
+        eventPayload: ContractEventPayload,
+      ) => {
+        console.log('list event');
+
+        await this.publisherService.publishNftListedEventData({
+          seller,
+          marketplaceFee: parseInt(marketplaceFee.toString()),
+          tokenId: parseInt(tokenId.toString()),
+          price: parseInt(price.toString()),
+          eventLog: eventPayload.log,
+        });
+      },
+    );
+  }
+
+  private getContractAddressByName = (contractName: string): string => {
+    return contractsData.contracts.find(({ name }) => name === contractName)
+      .address;
+  };
 }

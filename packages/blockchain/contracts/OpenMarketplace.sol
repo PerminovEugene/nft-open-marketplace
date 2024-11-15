@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 event NftPurchased(address buyer, uint256 tokenId, uint256 price);
-event NftListed(address seller, uint256 tokenId, uint256 price);
+event NftListed(address indexed seller, uint256 indexed tokenId, uint256 indexed price, uint256 marketPlaceFee);
 event NftUnlisted(address owner, uint256 tokenId);
 event MarketFeePercentChanged(uint256 newFeePercent);
 event MarketListingActiveStatusChanged(bool isActive);
@@ -65,7 +65,7 @@ contract OpenMarketplace is Ownable {
 
 
       listings[tokenId] = newListing;
-      emit NftListed(msg.sender, tokenId, price);
+      emit NftListed(msg.sender, tokenId, price, marketplaceFee);
     }
 
     function unlistNft(

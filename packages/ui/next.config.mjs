@@ -11,6 +11,10 @@ const contractsAddressesENV = {
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const getConfig = (pathToConfig) => {
+  deployData = JSON.parse(readFileSync(pathToConfig, "utf8"));
+};
+
 /**
  * Asynchronously generates the Next.js configuration.
  * @returns {Promise<import('next').NextConfig>}
@@ -24,13 +28,21 @@ const getNextConfig = async () => {
   const pathToConfig = path.resolve("../../shared/contracts.deploy-data.json");
 
   let deployData;
-  try {
-    // Asynchronously read the deployment data file
-    deployData = JSON.parse(readFileSync(pathToConfig, "utf8"));
-    console.log("Successfully read and parsed contracts.deploy-data.json.");
-  } catch (error) {
-    await sleep(5000);
-    deployData = JSON.parse(readFileSync(pathToConfig, "utf8"));
+  let attempt = 0;
+  const mapAttempts = 10;
+  while (attempt < mapAttempts) {
+    try {
+      deployData = JSON.parse(readFileSync(pathToConfig, "utf8"));
+      console.log("Successfully read and parsed contracts.deploy-data.json.");
+      attempt = mapAttempts;
+    } catch (error) {
+      console.log(`Attempt ${attempt} failed. Waiting 5s and try again`);
+      await sleep(5000);
+    }
+    attempt += 1;
+  }
+  if (!deployData) {
+    throw new Error("Contract data is not found. Something is wrong");
   }
 
   // Initialize the Next.js config object with existing environment variables

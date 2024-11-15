@@ -1,5 +1,11 @@
 # nft marketplace contracts interfaces and ABI
 
+## [0.3.0] - 2025-09-24
+
+### Changed
+
+- Add marketplace fee to NftListed event.
+
 ## [0.2.1] - 2025-09-24
 
 ### Changed

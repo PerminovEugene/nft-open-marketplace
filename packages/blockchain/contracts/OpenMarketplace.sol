@@ -3,9 +3,9 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-event NftPurchased(address buyer, uint256 tokenId, uint256 price);
-event NftListed(address indexed seller, uint256 indexed tokenId, uint256 indexed price, uint256 marketPlaceFee);
-event NftUnlisted(address owner, uint256 tokenId);
+event NftPurchased(address indexed buyer, uint256 indexed tokenId, uint256 price);
+event NftListed(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 marketPlaceFee);
+event NftUnlisted(address indexed owner, uint256 indexed tokenId);
 event MarketFeePercentChanged(uint256 newFeePercent);
 event MarketListingActiveStatusChanged(bool isActive);
 
@@ -44,7 +44,7 @@ contract OpenMarketplace is Ownable {
       uint256 tokenId,
       uint256 price
     ) public {
-      require (price > 0, "Invalid price"); // TODO probably not needed
+      require (price > 0, "Invalid price");
       Listing memory listing = listings[tokenId];
       if (listing.price != 0) {
         revert OpenMarketplaceErrors.MarketListingAlreadyExist(tokenId);

@@ -95,8 +95,7 @@ const ListingPage = () => {
         <div className="grid grid-cols-3">
           <div className="col-span-2">
             {listingData && <TransactionDetails {...listingData} />}
-          </div>
-          <div className="col-span-2">
+
             <ListingForm onSubmit={onSubmit} />
           </div>
           <div className="p-3">

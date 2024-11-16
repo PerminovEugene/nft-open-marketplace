@@ -41,7 +41,9 @@ export class SyncService {
     for (let i = 0; i < unsyncLogs.length; i++) {
       const log = unsyncLogs[i];
       const parsedLog = this.parseLog(log);
+      console.log(parsedLog);
       if (log.address === nftContractAddress) {
+        console.log(log, parsedLog);
         if (parsedLog.name === 'Transfer') {
           const args = (parsedLog as unknown as TransferEvent.Log).args;
           await this.publisherService.publishUnsyncedTransferEventData({

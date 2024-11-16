@@ -56,13 +56,20 @@ export declare namespace NftListedEvent {
     type InputTuple = [
         seller: AddressLike,
         tokenId: BigNumberish,
-        price: BigNumberish
+        price: BigNumberish,
+        marketPlaceFee: BigNumberish
     ];
-    type OutputTuple = [seller: string, tokenId: bigint, price: bigint];
+    type OutputTuple = [
+        seller: string,
+        tokenId: bigint,
+        price: bigint,
+        marketPlaceFee: bigint
+    ];
     interface OutputObject {
         seller: string;
         tokenId: bigint;
         price: bigint;
+        marketPlaceFee: bigint;
     }
     type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
     type Filter = TypedDeferredTopicFilter<Event>;
@@ -221,7 +228,7 @@ export interface OpenMarketplace extends BaseContract {
         MarketFeePercentChanged: TypedContractEvent<MarketFeePercentChangedEvent.InputTuple, MarketFeePercentChangedEvent.OutputTuple, MarketFeePercentChangedEvent.OutputObject>;
         "MarketListingActiveStatusChanged(bool)": TypedContractEvent<MarketListingActiveStatusChangedEvent.InputTuple, MarketListingActiveStatusChangedEvent.OutputTuple, MarketListingActiveStatusChangedEvent.OutputObject>;
         MarketListingActiveStatusChanged: TypedContractEvent<MarketListingActiveStatusChangedEvent.InputTuple, MarketListingActiveStatusChangedEvent.OutputTuple, MarketListingActiveStatusChangedEvent.OutputObject>;
-        "NftListed(address,uint256,uint256)": TypedContractEvent<NftListedEvent.InputTuple, NftListedEvent.OutputTuple, NftListedEvent.OutputObject>;
+        "NftListed(address,uint256,uint256,uint256)": TypedContractEvent<NftListedEvent.InputTuple, NftListedEvent.OutputTuple, NftListedEvent.OutputObject>;
         NftListed: TypedContractEvent<NftListedEvent.InputTuple, NftListedEvent.OutputTuple, NftListedEvent.OutputObject>;
         "NftPurchased(address,uint256,uint256)": TypedContractEvent<NftPurchasedEvent.InputTuple, NftPurchasedEvent.OutputTuple, NftPurchasedEvent.OutputObject>;
         NftPurchased: TypedContractEvent<NftPurchasedEvent.InputTuple, NftPurchasedEvent.OutputTuple, NftPurchasedEvent.OutputObject>;

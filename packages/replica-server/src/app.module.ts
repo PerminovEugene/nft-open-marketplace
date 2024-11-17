@@ -13,10 +13,11 @@ import { getRedisConfig } from 'src/config/datasource';
 import { MarketplaceEventConsumer } from 'src/core/marketplace/marketplace-event.processor';
 import { MarketplaceEventService } from './core/marketplace/marketplace-event.service';
 import { ContractsDeployDataService } from './core/blockchain/contracts-data-provider.service';
-import { NodeHttpProviderService } from './core/blockchain/node-http-provider.service';
+import { NodeTransportProviderService } from './core/blockchain/node-transport-provider.service';
 import { SyncModule } from './core/sync/sync.module';
 import { BusModule } from './core/bus/bus.module';
 import { MarketplaceModule } from './core/marketplace/marketplace.module';
+import { TransactionModule } from './core/transaction/transaction.module';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { MarketplaceModule } from './core/marketplace/marketplace.module';
     }),
     DatabaseModule,
     RedisModule,
-    NftModule,
+    TransactionModule,
+    // NftModule,
     MarketplaceModule,
     BusModule,
     SyncModule,
@@ -34,7 +36,7 @@ import { MarketplaceModule } from './core/marketplace/marketplace.module';
   providers: [
     ContractsDeployDataService,
     // MetadataService,
-    NodeHttpProviderService,
+    NodeTransportProviderService,
     // blockchain event replciation handlers
     // TransferEventService,
     // MarketplaceEventService,

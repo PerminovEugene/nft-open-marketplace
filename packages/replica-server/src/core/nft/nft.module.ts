@@ -12,6 +12,11 @@ import {
 } from './transfer-event.processor';
 import { TransferEventService } from './services/transfer-event.service';
 import { BusModule } from '../bus/bus.module';
+import { NftPublisherService } from './nft-publisher.service';
+import { NftSyncService } from './nft-sync.service';
+import { ContractsDeployDataService } from '../blockchain/contracts-data-provider.service';
+import { NftContractService } from './nft-contract.service';
+import { NodeTransportProviderService } from '../blockchain/node-transport-provider.service';
 
 @Module({
   imports: [
@@ -20,12 +25,21 @@ import { BusModule } from '../bus/bus.module';
   ],
   controllers: [NftController],
   providers: [
-    NftService,
+    // private nodeTransportProviderService: NodeTransportProviderService,
+    NodeTransportProviderService,
+    ContractsDeployDataService,
+
     MetadataService,
+
+    NftContractService,
+    NftService,
+    NftPublisherService,
+    NftSyncService,
+
     TransferEventService,
     TransferEventConsumer,
     UnsyncedTransferEventConsumer,
   ],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, NftSyncService, NftContractService],
 })
 export class NftModule {}

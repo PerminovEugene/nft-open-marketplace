@@ -66,9 +66,6 @@ export class ContractsDeployDataService {
     ).address;
   }
 
-  public getNftContactAddress() {
-    return this.getContactAddress(openMarketplaceNFTContractAbi.contractName);
-  }
   public getMarketplaceContactAddress() {
     return this.getContactAddress(openMarketplaceContractAbi.contractName);
   }

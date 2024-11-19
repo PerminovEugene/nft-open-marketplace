@@ -1,20 +1,20 @@
 import { Module } from '@nestjs/common';
 import { SyncService } from './sync.service';
-import { ContractsDeployDataService } from '../blockchain/contracts-data-provider.service';
+import { BlockchainContractsService } from '../blockchain/blockchain-contracts.service';
 import { NftModule } from '../nft/nft.module';
-import { BusModule } from '../bus/bus.module';
 import { DiscoveryService } from '@nestjs/core';
-import { NodeTransportProviderService } from '../blockchain/node-transport-provider.service';
+import { BlockchainTransportService } from '../blockchain/blockchain-transport.service';
 import { TransactionModule } from '../transaction/transaction.module';
 import { TransactionService } from '../transaction/transaction.service';
+import { MarketplaceModule } from '../marketplace/marketplace.module';
 
 @Module({
-  imports: [NftModule, BusModule, TransactionModule],
+  imports: [NftModule, MarketplaceModule, TransactionModule],
   providers: [
     DiscoveryService,
-    ContractsDeployDataService,
+    BlockchainContractsService,
+    BlockchainTransportService,
     SyncService,
-    NodeTransportProviderService,
     TransactionService,
   ],
 })

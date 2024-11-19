@@ -1,5 +1,11 @@
 # nft marketplace contracts interfaces and ABI
 
+## [0.4.1] - 2024-11-19
+
+### Changed
+
+- Fix typo - set marketPlace to marketplace.
+
 ## [0.4.0] - 2024-11-16
 
 ### Changed

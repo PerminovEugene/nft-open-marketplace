@@ -22,7 +22,10 @@ export class MetadataService {
   private contract: OpenMarketplaceNFT;
   private pinata: PinataSDK;
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    // TODO contract
+  ) {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
     const httpProviderUrl = `http://${this.configService.get(
       'NODE_ADDRESS', // TODO prod should use https
@@ -47,11 +50,30 @@ export class MetadataService {
 
   public async getMetadata(tokenId: number) {
     const tokenUri = await this.contract.tokenURI(tokenId);
-    return this.getMetadataFromPinata(tokenUri);
+    try {
+      const response = await this.getFromPinata(tokenUri);
+      if (typeof response.data !== 'object') {
+        throw new Error('Invalid metadata type: ' + typeof response.data);
+      }
+      return response.data;
+    } catch (error) {
+      console.error('Invalid metadata', { caches: error });
+      return {
+        name: 'NOT AVAILABLE',
+        description: 'METADATA WAS NOT FOUND ON IPFS. CID IS NOT NOT AVAILABLE',
+        image: 'NOT AVAILABLE IMAGE',
+        attributes: [],
+      };
+    }
   }
 
-  private async getMetadataFromPinata(tokenUri: string) {
-    const { data } = await this.pinata.gateways.get(tokenUri);
-    return data;
+  private getFromPinata(tokenUri: string): Promise<any> {
+    // await this.pinata.gateways doesnt work :\
+    return new Promise((res, rej) => {
+      this.pinata.gateways
+        .get(tokenUri)
+        .then((value) => res(value))
+        .catch((reason) => rej(reason));
+    });
   }
 }

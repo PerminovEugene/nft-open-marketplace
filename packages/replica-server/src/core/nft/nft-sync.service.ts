@@ -17,9 +17,7 @@ export class NftSyncService implements Replicable {
   constructor(
     private nftContractService: NftContractService,
     private publisherService: NftPublisherService,
-  ) {
-    console.log('----->', nftContractService);
-  }
+  ) {}
 
   @GetContractInterface()
   public getContractInterface() {
@@ -36,6 +34,11 @@ export class NftSyncService implements Replicable {
     log: ethers.Log,
     logDescription: LogDescription,
   ) {
+    console.log(
+      'LOG',
+      log,
+      log.address === this.nftContractService.getContactAddress(),
+    );
     if (log.address === this.nftContractService.getContactAddress()) {
       await this.handleTransferLog(log, logDescription);
     }
@@ -45,20 +48,24 @@ export class NftSyncService implements Replicable {
     log: ethers.Log,
     logDescription: LogDescription,
   ) {
+    console.log('NFt log', log);
     if (logDescription.name === 'Transfer') {
       const args = (logDescription as unknown as TransferEvent.Log).args;
-      await this.publisherService.publishUnsyncedTransferEventData({
-        from: args[0],
-        to: args[1],
-        tokenId: Number(args[2].toString()),
-        eventLog: {
-          blockHash: log.blockHash,
-          blockNumber: log.blockNumber,
-          address: log.address,
-          transactionHash: log.transactionHash,
-          transactionIndex: log.transactionIndex,
+      await this.publisherService.publishTransferEventData(
+        {
+          from: args[0],
+          to: args[1],
+          tokenId: Number(args[2].toString()),
+          eventLog: {
+            blockHash: log.blockHash,
+            blockNumber: log.blockNumber,
+            address: log.address,
+            transactionHash: log.transactionHash,
+            transactionIndex: log.transactionIndex,
+          },
         },
-      });
+        true,
+      );
     }
   }
 }

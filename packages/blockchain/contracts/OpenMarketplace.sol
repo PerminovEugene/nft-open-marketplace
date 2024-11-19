@@ -4,7 +4,7 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 event NftPurchased(address indexed buyer, uint256 indexed tokenId, uint256 price);
-event NftListed(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 marketPlaceFee);
+event NftListed(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 marketplaceFee);
 event NftUnlisted(address indexed owner, uint256 indexed tokenId);
 event MarketFeePercentChanged(uint256 newFeePercent);
 event MarketListingActiveStatusChanged(bool isActive);
@@ -25,7 +25,7 @@ contract OpenMarketplace is Ownable {
     struct Listing {
       uint tokenId;
       uint256 price;
-      uint256 marketPlaceFee;
+      uint256 marketplaceFee;
       bool isActive;
     }
 
@@ -42,7 +42,7 @@ contract OpenMarketplace is Ownable {
 
     function listNft(
       uint256 tokenId,
-      uint256 price
+      uint256 price // TODO use WEI
     ) public {
       require (price > 0, "Invalid price");
       Listing memory listing = listings[tokenId];
@@ -59,10 +59,9 @@ contract OpenMarketplace is Ownable {
       Listing memory newListing = Listing({
         tokenId: tokenId,
         price: price,
-        marketPlaceFee: marketplaceFee,
+        marketplaceFee: marketplaceFee,
         isActive: true
       });
-
 
       listings[tokenId] = newListing;
       emit NftListed(msg.sender, tokenId, price, marketplaceFee);
@@ -109,7 +108,7 @@ contract OpenMarketplace is Ownable {
 
       nftContract.safeTransferFrom(currentOwner, msg.sender, tokenId);
       
-      _distributeFunds(currentOwner, listing.marketPlaceFee);
+      _distributeFunds(currentOwner, listing.marketplaceFee);
 
       emit NftPurchased(msg.sender, tokenId, msg.value);
 
@@ -148,11 +147,11 @@ contract OpenMarketplace is Ownable {
       return listing;
     } 
 
-    function _distributeFunds(address seller, uint256 marketPlaceFee) private {
-      uint256 sellerPart = msg.value - marketPlaceFee;
+    function _distributeFunds(address seller, uint256 marketplaceFee) private {
+      uint256 sellerPart = msg.value - marketplaceFee;
 
       pendingWithdrawals[seller] += sellerPart;
-      pendingWithdrawals[owner()] += marketPlaceFee;
+      pendingWithdrawals[owner()] += marketplaceFee;
     }
 
     function _checkNftApproval(uint256 tokenId) view private {

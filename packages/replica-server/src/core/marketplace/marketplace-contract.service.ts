@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ContractRunner, ethers } from 'ethers';
 import {
-  openMarketplaceNFTContractAbi,
-  OpenMarketplaceNFT,
+  openMarketplaceContractAbi,
+  OpenMarketplace,
 } from '@nft-open-marketplace/interface';
 import { BlockchainContractsService } from '../blockchain/blockchain-contracts.service';
 
 @Injectable()
-export class NftContractService {
-  private abi = openMarketplaceNFTContractAbi.abi;
-  private name = openMarketplaceNFTContractAbi.contractName;
+export class MarketplaceContractService {
+  private abi = openMarketplaceContractAbi.abi;
+  private name = openMarketplaceContractAbi.contractName;
 
   constructor(private contractsDeployDataService: BlockchainContractsService) {}
 
@@ -18,7 +18,7 @@ export class NftContractService {
       this.getContactAddress(),
       this.abi,
       runer,
-    ) as unknown as OpenMarketplaceNFT;
+    ) as unknown as OpenMarketplace;
   }
 
   public getContactAddress() {

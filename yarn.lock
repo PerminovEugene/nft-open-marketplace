@@ -2188,12 +2188,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nft-open-marketplace/interface@npm:^0.4.0":
-  version: 0.4.0
-  resolution: "@nft-open-marketplace/interface@npm:0.4.0"
+"@nft-open-marketplace/interface@npm:^0.4.1":
+  version: 0.4.1
+  resolution: "@nft-open-marketplace/interface@npm:0.4.1"
   peerDependencies:
     ethers: ^6.13.2
-  checksum: 10c0/eee65c68cd7c8b5fe819cb8a2bd50ce25e4e45d3334c0fb4529f0ae6ded2c96e1e1ab02c31eef31d663ee404cd39de0b99c7460aac1a55708de0cce931edcd7d
+  checksum: 10c0/d469b001328e4580373c87d250ad495b7c74c2406465f74a941d6d754c8cb2f0b1bcd36bbf1549f701f58c84400a94991be1634b05731c8f49f44e230388755e
   languageName: node
   linkType: hard
 
@@ -2211,7 +2211,7 @@ __metadata:
     "@nestjs/schematics": "npm:^10.0.0"
     "@nestjs/testing": "npm:^10.0.0"
     "@nestjs/typeorm": "npm:^10.0.2"
-    "@nft-open-marketplace/interface": "npm:^0.4.0"
+    "@nft-open-marketplace/interface": "npm:^0.4.1"
     "@types/express": "npm:^5.0.0"
     "@types/jest": "npm:^29.5.2"
     "@types/node": "npm:^20.3.1"

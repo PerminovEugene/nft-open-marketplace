@@ -3,10 +3,10 @@ import { DataSource } from 'typeorm';
 import { TransferEvent } from '../entities/transfer-event.entity';
 import {} from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
 import { Token } from '../entities/token.entity';
-import { Transaction } from '../entities/transaction.entity';
+import { Transaction } from '../../transaction/transaction.entity';
 import { Metadata } from '../entities/metadata.entity';
 import { MetadataService } from 'src/core/nft/services/metadata.service';
-import { TransferEventJob } from 'src/core/bus/types';
+import { TransferEventJob } from '../types';
 
 type NftAttribute = {
   TraitType: string;
@@ -30,7 +30,10 @@ export class TransferEventService {
     private readonly metadataService: MetadataService,
   ) {}
 
-  async save({ from, to, tokenId, log }: TransferEventJob): Promise<void> {
+  async save(
+    { from, to, tokenId, log }: TransferEventJob,
+    isUnsyncedRecord: boolean = false,
+  ): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
@@ -43,9 +46,6 @@ export class TransferEventService {
         const metadataJson = (await this.metadataService.getMetadata(
           tokenId,
         )) as unknown as NftMetadata;
-        if (typeof metadataJson !== 'object') {
-          throw new Error('Invalid metadata type: ' + typeof metadataJson);
-        }
 
         const metadata = queryRunner.manager.create(Metadata, {
           name: metadataJson.name,
@@ -71,27 +71,37 @@ export class TransferEventService {
         });
       }
 
-      const transaction = queryRunner.manager.create(Transaction, {
-        blockHash: log.blockHash,
-        blockNumber: log.blockNumber,
-        address: log.address,
-        transactionHash: log.transactionHash,
-        transactionIndex: log.transactionIndex,
-      });
-      await queryRunner.manager.save(transaction);
+      let transaction: Transaction | undefined;
+      if (isUnsyncedRecord) {
+        transaction = await queryRunner.manager.findOne(Transaction, {
+          where: {
+            blockHash: log.blockHash,
+            blockNumber: log.blockNumber,
+          },
+        });
+      }
 
-      const transferEvent = queryRunner.manager.create(TransferEvent, {
-        from: from.toLowerCase(),
-        to: to.toLowerCase(),
-        transaction,
-        token,
-      });
+      if (!transaction) {
+        transaction = queryRunner.manager.create(Transaction, {
+          blockHash: log.blockHash,
+          blockNumber: log.blockNumber,
+          address: log.address,
+          transactionHash: log.transactionHash,
+          transactionIndex: log.transactionIndex,
+        });
+        await queryRunner.manager.save(transaction);
 
-      await queryRunner.manager.save(transferEvent);
-
+        const transferEvent = queryRunner.manager.create(TransferEvent, {
+          from: from.toLowerCase(),
+          to: to.toLowerCase(),
+          transaction,
+          token,
+        });
+        await queryRunner.manager.save(transferEvent);
+      }
       await queryRunner.commitTransaction();
     } catch (e) {
-      console.error('error ||', e);
+      console.error('error during saving transfer event', e);
       await queryRunner.rollbackTransaction();
       throw e;
     } finally {

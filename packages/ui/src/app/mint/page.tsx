@@ -8,7 +8,7 @@ import { Stepper } from "@/components/stepper/stepper.component";
 import { mint } from "@/components/ethereum/nft/actions/mint";
 import { pinFile, PinFileResponse } from "./pin-file";
 import { IconName } from "@/components/icon/icon.component";
-import NftDetails from "../../components/ethereum/nft/nft-details";
+import NftDetails from "../../components/ethereum/nft/mint-details";
 import { TransactionReceipt } from "ethers";
 import classNames from "classnames";
 import { EtheriumContext } from "@/providers/etherium.provider";

@@ -57,19 +57,19 @@ export declare namespace NftListedEvent {
         seller: AddressLike,
         tokenId: BigNumberish,
         price: BigNumberish,
-        marketPlaceFee: BigNumberish
+        marketplaceFee: BigNumberish
     ];
     type OutputTuple = [
         seller: string,
         tokenId: bigint,
         price: bigint,
-        marketPlaceFee: bigint
+        marketplaceFee: bigint
     ];
     interface OutputObject {
         seller: string;
         tokenId: bigint;
         price: bigint;
-        marketPlaceFee: bigint;
+        marketplaceFee: bigint;
     }
     type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
     type Filter = TypedDeferredTopicFilter<Event>;
@@ -156,7 +156,7 @@ export interface OpenMarketplace extends BaseContract {
         ] & {
             tokenId: bigint;
             price: bigint;
-            marketPlaceFee: bigint;
+            marketplaceFee: bigint;
             isActive: boolean;
         }
     ], "view">;
@@ -206,7 +206,7 @@ export interface OpenMarketplace extends BaseContract {
         ] & {
             tokenId: bigint;
             price: bigint;
-            marketPlaceFee: bigint;
+            marketplaceFee: bigint;
             isActive: boolean;
         }
     ], "view">;

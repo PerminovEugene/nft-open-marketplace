@@ -1,10 +1,10 @@
 import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { TransferEventService } from './services/transfer-event.service';
-import { NftEventJob, TransferEventJob } from '../bus/types';
-import { QueueName } from '../bus/consts';
+import { NftEventJob, TransferEventJob } from './types';
 import { Job, Queue } from 'bullmq';
+import { NftQueueName } from './consts';
 
-@Processor(QueueName.nftEvents)
+@Processor(NftQueueName.nftEvents)
 export class TransferEventConsumer extends WorkerHost {
   constructor(private transferEventService: TransferEventService) {
     super();
@@ -21,13 +21,13 @@ export class TransferEventConsumer extends WorkerHost {
   }
 }
 
-@Processor(QueueName.unsyncedNftEvents)
+@Processor(NftQueueName.unsyncedNftEvents)
 export class UnsyncedTransferEventConsumer extends WorkerHost {
   constructor(
     private transferEventService: TransferEventService,
-    @InjectQueue(QueueName.nftEvents)
+    @InjectQueue(NftQueueName.nftEvents)
     private nftEventQueue: Queue<NftEventJob>,
-    @InjectQueue(QueueName.nftEvents)
+    @InjectQueue(NftQueueName.unsyncedNftEvents)
     private unsyncedNftEventQueue: Queue<NftEventJob>,
   ) {
     super();
@@ -42,9 +42,7 @@ export class UnsyncedTransferEventConsumer extends WorkerHost {
       this.inQueue = await this.unsyncedNftEventQueue.count();
     }
     try {
-      console.log('-unsynced->');
-      await this.transferEventService.save(job.data);
-      console.log('-saved->');
+      await this.transferEventService.save(job.data, true);
     } catch (e) {
       console.error('Error during saving event', e);
       // todo
@@ -55,6 +53,6 @@ export class UnsyncedTransferEventConsumer extends WorkerHost {
       this.isLiveQueueActive = true;
     }
 
-    if (this) if (this) return { done: true };
+    if (this) return { done: true };
   }
 }

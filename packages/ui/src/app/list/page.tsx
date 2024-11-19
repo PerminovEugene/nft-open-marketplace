@@ -8,12 +8,12 @@ import { Stepper } from "@/components/stepper/stepper.component";
 import { listNft } from "@/components/ethereum/nft/actions/list-nft";
 import { IconName } from "@/components/icon/icon.component";
 import { TransactionReceipt } from "ethers";
-import TransactionDetails from "@/components/ethereum/nft/transaction-details";
 import {
   approveForAll,
   isApprovedForAll,
 } from "@/components/ethereum/nft/actions/approval";
 import { EtheriumContext } from "@/providers/etherium.provider";
+import ListDetails from "@/components/ethereum/nft/listi-details";
 
 const steps = [
   {
@@ -48,6 +48,7 @@ const ListingPage = () => {
     null
   );
   const { isReady, signer } = useContext(EtheriumContext);
+  const [nftData, setNftData] = useState<null>(null); // TODO
 
   useEffect(() => {
     if (isReady && signer) {
@@ -94,7 +95,9 @@ const ListingPage = () => {
       ) : (
         <div className="grid grid-cols-3">
           <div className="col-span-2">
-            {listingData && <TransactionDetails {...listingData} />}
+            {listingData && (
+              <ListDetails listData={listingData} nftData={nftData} />
+            )}
 
             <ListingForm onSubmit={onSubmit} />
           </div>

@@ -26,8 +26,8 @@ describe("OpenMarketplace", function () {
 
         const newPercent = value;
 
-        const marketPlaceFeePercent = await market._marketplaceFeePercent();
-        expect(marketPlaceFeePercent).to.eql(marketPlaceFeePercent);
+        const marketplaceFeePercent = await market._marketplaceFeePercent();
+        expect(marketplaceFeePercent).to.eql(marketplaceFeePercent);
 
         await expect(
           market.connect(owner).setMarketFeePercent(BigInt(newPercent))

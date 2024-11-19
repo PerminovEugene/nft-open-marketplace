@@ -7,8 +7,8 @@ import {
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class NodeTransportProviderService {
-  public httpProvider: ethers.JsonRpcProvider;
+export class BlockchainTransportService {
+  private httpProvider: ethers.JsonRpcProvider;
   private wsProvider: ethers.WebSocketProvider;
 
   public nftContract: OpenMarketplaceNFT;
@@ -27,9 +27,6 @@ export class NodeTransportProviderService {
     )}:${this.configService.get('NODE_PORT')}/ws/v3`;
     this.wsProvider = new ethers.WebSocketProvider(wsProviderUrl);
   }
-  public getWsProvider = () => this.wsProvider;
-  public getHttpProvider = () => this.httpProvider;
-
   private initHttpProvider() {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
     const httpProviderUrl = `http://${this.configService.get(
@@ -37,4 +34,6 @@ export class NodeTransportProviderService {
     )}:${this.configService.get('NODE_PORT')}/`;
     this.httpProvider = new ethers.JsonRpcProvider(httpProviderUrl);
   }
+  public getWsProvider = () => this.wsProvider;
+  public getHttpProvider = () => this.httpProvider;
 }

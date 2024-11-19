@@ -1,5 +1,4 @@
 import Detail from "@/components/form/detail";
-import { ContractTransactionReceipt } from "ethers";
 import { TransactionReceipt } from "ethers";
 import React from "react";
 

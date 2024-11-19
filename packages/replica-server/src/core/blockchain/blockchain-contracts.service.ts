@@ -14,7 +14,7 @@ type ContractsDeployData = {
 };
 
 @Injectable()
-export class ContractsDeployDataService {
+export class BlockchainContractsService {
   private contractsDeployData: ContractsDeployData;
 
   constructor() {}

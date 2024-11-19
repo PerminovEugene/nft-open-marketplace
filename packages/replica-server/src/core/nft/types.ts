@@ -1,4 +1,4 @@
-import { EventTxLog } from '../bus/types';
+import { EventTxLog } from '../transaction/types';
 
 export type TransferEventJob = {
   from: string;

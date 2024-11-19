@@ -7,7 +7,7 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { Token } from './token.entity';
-import { Transaction } from './transaction.entity';
+import { Transaction } from '../../transaction/transaction.entity';
 
 @Entity()
 export class TransferEvent {

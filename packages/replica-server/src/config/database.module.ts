@@ -6,11 +6,10 @@ import { getDbConfig } from './datasource';
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule], // Make sure ConfigModule is imported
+      imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => 
-        getDbConfig(configService)
-      ,
+      useFactory: async (configService: ConfigService) =>
+        getDbConfig(configService),
     }),
   ],
 })

@@ -1,5 +1,5 @@
 import { Token } from 'src/core/nft/entities/token.entity';
-import { Transaction } from 'src/core/nft/entities/transaction.entity';
+import { Transaction } from 'src/core/transaction/transaction.entity';
 import {
   Entity,
   Column,
@@ -21,12 +21,12 @@ export class Listing {
   price: number;
 
   @Column({ nullable: false })
-  marketPlaceFee: number;
+  marketplaceFee: number;
 
   @Column()
   isActive: boolean;
 
-  @OneToOne(() => Transaction, { cascade: true })
+  @OneToOne(() => Transaction, { cascade: true, nullable: false })
   @JoinColumn()
   transaction: Transaction;
 

@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { NodeTransportProviderService } from '../blockchain/node-transport-provider.service';
+import { BlockchainTransportService } from '../blockchain/blockchain-transport.service';
 import { Filter, Log } from 'ethers';
 import { DiscoveryService, Reflector } from '@nestjs/core';
 import {
@@ -22,7 +22,7 @@ import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 @Injectable()
 export class SyncService {
   constructor(
-    private nodeHttpProviderService: NodeTransportProviderService,
+    private nodeHttpProviderService: BlockchainTransportService,
     private reflector: Reflector,
     @Inject(DiscoveryService) private discoveryService: DiscoveryService,
   ) {}
@@ -161,45 +161,8 @@ export class SyncService {
     for (let i = 0; i < unsyncLogs.length; i++) {
       const log = unsyncLogs[i];
       const parsedLog = this.parseLog(log);
-      //   console.log(parsedLog);
-      //   if (log.address === nftContractAddress) {
-      //     console.log(log, parsedLog);
-      //     if (parsedLog.name === 'Transfer') {
-      //       const args = (parsedLog as unknown as TransferEvent.Log).args;
-      //       await this.publisherService.publishUnsyncedTransferEventData({
-      //         from: args[0],
-      //         to: args[1],
-      //         tokenId: Number(args[2].toString()),
-      //         eventLog: {
-      //           blockHash: log.blockHash,
-      //           blockNumber: log.blockNumber,
-      //           address: log.address,
-      //           transactionHash: log.transactionHash,
-      //           transactionIndex: log.transactionIndex,
-      //         },
-      //       });
-      //     }
-      //   }
       const handleLog = this.addressToHandleLog[log.address];
       await handleLog(log, parsedLog);
-      // if (log.address === marketplaceContractAddress) {
-      //   if (parsedLog.name === 'NftListed') {
-      //     const args = (parsedLog as unknown as NftListedEvent.Log).args;
-      //     await this.publisherService.publishUnsyncedNftListedEventData({
-      //       seller: args[0],
-      //       tokenId: Number(args[1].toString()),
-      //       price: Number(args[2].toString()),
-      //       marketplaceFee: Number(args[3].toString()), // Todo typechain is wierd
-      //       eventLog: {
-      //         blockHash: log.blockHash,
-      //         blockNumber: log.blockNumber,
-      //         address: log.address,
-      //         transactionHash: log.transactionHash,
-      //         transactionIndex: log.transactionIndex,
-      //       },
-      //     });
-      //   }
-      // }
     }
   }
 
@@ -218,7 +181,7 @@ export class SyncService {
       fromBlock: latestProcessedBlockNumber,
       toBlock: 'latest',
     };
-
-    return this.nodeHttpProviderService.httpProvider.getLogs(filter);
+    console.log('->', filter);
+    return this.nodeHttpProviderService.getHttpProvider().getLogs(filter);
   }
 }

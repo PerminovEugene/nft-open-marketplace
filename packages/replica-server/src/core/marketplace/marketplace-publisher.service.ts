@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { EventLog } from 'ethers';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { NftEventJob } from './types';
-import { NftEventJobName, NftQueueName } from './consts';
+import { MarketplaceQueueName } from './consts';
+import { MarketplaceEventJob } from './types';
+import { MarketplaceJobName } from './consts';
 
 type LogData = Pick<
   EventLog,
@@ -15,12 +16,12 @@ type LogData = Pick<
 >;
 
 @Injectable()
-export class NftPublisherService {
+export class MarketplacePublisherService {
   constructor(
-    @InjectQueue(NftQueueName.nftEvents)
-    private nftEventQueue: Queue<NftEventJob>,
-    @InjectQueue(NftQueueName.unsyncedNftEvents)
-    private unsyncedNftEventQueue: Queue<NftEventJob>,
+    @InjectQueue(MarketplaceQueueName.marketplaceEvents)
+    private marketplaceEventQueue: Queue<MarketplaceEventJob>,
+    @InjectQueue(MarketplaceQueueName.unsyncedMarketplaceEvents)
+    private unsyncedMarketplaceEventQueue: Queue<MarketplaceEventJob>,
   ) {}
 
   private getLogReplicationData(log: LogData) {
@@ -34,28 +35,34 @@ export class NftPublisherService {
   }
 
   private selectQueue(useUnsyncedQueue: boolean = false) {
-    return useUnsyncedQueue ? this.unsyncedNftEventQueue : this.nftEventQueue;
+    return useUnsyncedQueue
+      ? this.unsyncedMarketplaceEventQueue
+      : this.marketplaceEventQueue;
   }
 
-  public async publishTransferEventData(
+  public async publishNftListedEventData(
     {
-      from,
-      to,
+      seller,
       tokenId,
+      price,
+      marketplaceFee,
       eventLog,
     }: {
-      from: string;
-      to: string;
+      seller: string;
       tokenId: number;
+      price: number;
+      marketplaceFee: number;
       eventLog: LogData;
     },
     useUnsyncedQueue: boolean = false,
   ) {
+    console.log('Publish NftListed', useUnsyncedQueue);
     const queue = this.selectQueue(useUnsyncedQueue);
-    await queue.add(NftEventJobName.Transfer, {
-      from,
-      to,
+    await queue.add(MarketplaceJobName.NftListed, {
+      seller,
+      marketplaceFee: parseInt(marketplaceFee.toString()),
       tokenId: parseInt(tokenId.toString()),
+      price: parseInt(price.toString()),
       log: this.getLogReplicationData(eventLog),
     });
   }

@@ -1,5 +1,5 @@
 import { Injectable, Scope } from '@nestjs/common';
-import { Transaction } from '../nft/entities/transaction.entity';
+import { Transaction } from './transaction.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import {

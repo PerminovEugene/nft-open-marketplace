@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { TransferEventHandler } from '../nft/services/transfer-event.handler';
-import { ContractEventHandlersRegistry } from './event-handler.registry';
+import { TransferEventHandler } from '../nft/handlers/transfer-event.handler';
+import { EventHandlersRegistry } from './event-handler.registry';
 import { NftModule } from '../nft/nft.module';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
 import { NftListedHandler } from '../marketplace/handlers/nft-listed-event.handler';
@@ -8,34 +8,36 @@ import { NftListedHandler } from '../marketplace/handlers/nft-listed-event.handl
 @Module({
   imports: [NftModule, MarketplaceModule],
   providers: [
-    ContractEventHandlersRegistry,
+    EventHandlersRegistry,
+    // NFT CONTRACT HANDLERS
     {
       provide: 'TRANSFER_EVENT_HANDLER',
       useFactory: (
-        registry: ContractEventHandlersRegistry,
+        registry: EventHandlersRegistry,
         handler: TransferEventHandler,
       ) => {
         registry.registerHandler('transfer', handler);
         return handler;
       },
-      inject: [ContractEventHandlersRegistry, TransferEventHandler],
+      inject: [EventHandlersRegistry, TransferEventHandler],
     },
+    // MARKETPLACE CONTRACT EVENTS
     {
       provide: 'NFT_LISTED_HANDLER',
       useFactory: (
-        registry: ContractEventHandlersRegistry,
+        registry: EventHandlersRegistry,
         handler: NftListedHandler,
       ) => {
         registry.registerHandler('nftListed', handler);
         return handler;
       },
-      inject: [ContractEventHandlersRegistry, NftListedHandler],
+      inject: [EventHandlersRegistry, NftListedHandler],
     },
   ],
   exports: [
     'TRANSFER_EVENT_HANDLER',
     'NFT_LISTED_HANDLER',
-    ContractEventHandlersRegistry,
+    EventHandlersRegistry,
   ],
 })
 export class TransferModule {}

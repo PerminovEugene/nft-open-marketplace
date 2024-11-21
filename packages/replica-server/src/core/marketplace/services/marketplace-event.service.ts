@@ -1,14 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { Token } from '../nft/entities/token.entity';
-import { Transaction } from '../transaction/transaction.entity';
+import { Token } from '../../nft/entities/token.entity';
+import { Transaction } from '../../transaction/transaction.entity';
 import { NftListedEventJob } from 'src/core/marketplace/types';
-import { Listing } from './entities/listing.entity';
-
-type NftAttribute = {
-  TraitType: string;
-  Value: string;
-};
+import { Listing } from '../entities/listing.entity';
 
 @Injectable()
 export class MarketplaceEventService {
@@ -21,13 +16,7 @@ export class MarketplaceEventService {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    console.log('-----> saving listing', {
-      tokenId,
-      seller,
-      price,
-      marketplaceFee,
-      log,
-    });
+
     try {
       let token = await queryRunner.manager.findOne(Token, {
         where: { contractId: tokenId.toString() },
@@ -48,6 +37,7 @@ export class MarketplaceEventService {
           relations: ['listing'],
         });
       }
+      console.log('----->', isUnsyncedListing, existedTransaction);
       if (!existedTransaction) {
         const transaction = queryRunner.manager.create(Transaction, {
           blockHash: log.blockHash,

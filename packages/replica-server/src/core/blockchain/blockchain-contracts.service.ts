@@ -1,8 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import {
-  openMarketplaceContractAbi,
-  openMarketplaceNFTContractAbi,
-} from '@nft-open-marketplace/interface';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
@@ -64,9 +60,5 @@ export class BlockchainContractsService {
     return this.contractsDeployData.contracts.find(
       ({ name }) => name === contractName,
     ).address;
-  }
-
-  public getMarketplaceContactAddress() {
-    return this.getContactAddress(openMarketplaceContractAbi.contractName);
   }
 }

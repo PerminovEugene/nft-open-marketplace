@@ -1,6 +1,6 @@
 import { SetMetadata } from '@nestjs/common';
 
-// repliacte
+// replicacte
 
 export const REPLICATE_SERVICE_KEY = 'replicateService';
 export const ReplicateService = () => SetMetadata(REPLICATE_SERVICE_KEY, true);

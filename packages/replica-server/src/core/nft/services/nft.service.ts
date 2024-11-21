@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Brackets, DataSource, Not, Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { FindNftQueryDto } from '../dtos/find-nft-query.dto';
 import { Token } from '../entities/token.entity';
 
@@ -9,7 +9,6 @@ export class NftService {
   constructor(
     @InjectRepository(Token)
     private tokenRepository: Repository<Token>,
-    // private readonly dataSource: DataSource,
   ) {}
 
   async find(query: FindNftQueryDto): Promise<Token[]> {

@@ -1,12 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ethers, EventLog, LogDescription } from 'ethers';
+import { Injectable } from '@nestjs/common';
+import { ethers, LogDescription } from 'ethers';
 import {
   GetContratAddress,
   HandleContractLog,
   GetContractInterface,
   ReplicateService,
-} from '../sync/sync.decorators';
-import { Replicable } from '../sync/sync.types';
+} from '../../sync/sync.decorators';
+import { Replicable } from '../../sync/sync.types';
 import { NftPublisherService } from './nft-publisher.service';
 import { NftContractService } from './nft-contract.service';
 import { TransferEvent } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
@@ -34,11 +34,6 @@ export class NftSyncService implements Replicable {
     log: ethers.Log,
     logDescription: LogDescription,
   ) {
-    console.log(
-      'LOG',
-      log,
-      log.address === this.nftContractService.getContactAddress(),
-    );
     if (log.address === this.nftContractService.getContactAddress()) {
       await this.handleTransferLog(log, logDescription);
     }
@@ -48,7 +43,6 @@ export class NftSyncService implements Replicable {
     log: ethers.Log,
     logDescription: LogDescription,
   ) {
-    console.log('NFt log', log);
     if (logDescription.name === 'Transfer') {
       const args = (logDescription as unknown as TransferEvent.Log).args;
       await this.publisherService.publishTransferEventData(

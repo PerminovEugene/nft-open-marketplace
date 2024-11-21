@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ContractEventHandler } from '../bus/types';
 
 @Injectable()
-export class ContractEventHandlersRegistry {
+export class EventHandlersRegistry {
   private handlers: Map<string, ContractEventHandler> = new Map();
 
   registerHandler(eventType: string, handler: ContractEventHandler): void {

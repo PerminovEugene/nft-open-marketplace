@@ -27,10 +27,13 @@ export class Transaction {
   @Column()
   address: string;
 
+  // Listing event?
   @OneToOne(() => Listing, (listing) => listing.transaction, {
-    nullable: true, // Transaction may not always be linked to a Listing
+    nullable: true,
     onDelete: 'SET NULL',
   })
-  @JoinColumn() // This will store the foreign key in the Transaction table
+  @JoinColumn()
   listing?: Listing;
+
+  // todo link to transfer event
 }

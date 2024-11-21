@@ -1,26 +1,14 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
-import {
-  openMarketplaceNFTContractAbi,
-  OpenMarketplaceNFT,
-} from '@nft-open-marketplace/interface';
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { OpenMarketplaceNFT } from '@nft-open-marketplace/interface';
+
 import { ConfigService } from '@nestjs/config';
 import { PinataSDK } from 'pinata-web3';
 import { BlockchainTransportService } from 'src/core/blockchain/blockchain-transport.service';
-import { NftContractService } from '../nft-contract.service';
-
-// const contractsData = JSON.parse(
-//   readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
-// );
-// if (!contractsData) {
-//   throw new Error('Invalid contracts data');
-// }
+import { NftContractService } from './nft-contract.service';
 
 @Injectable()
 export class MetadataService {
-  private provider: ethers.JsonRpcProvider;
   private contract: OpenMarketplaceNFT;
   private pinata: PinataSDK;
 

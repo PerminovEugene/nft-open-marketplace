@@ -28,16 +28,12 @@ export class BlockchainTransportService {
     this.wsProvider = new ethers.WebSocketProvider(wsProviderUrl);
 
     this.wsProvider.on('debug', (data) => {
-      console.log('WS debug:', data); // TODO implement reconnect?
-      // setTimeout(() => {
-      //   this.wsProvider = new ethers.WebSocketProvider(wsProviderUrl);
-      //   startListening();
-      // }, 3000);
+      console.log('WS debug:', data);
     });
-    console.log('init ws provider');
 
     this.wsProvider.on('error', (error) => {
       console.log('WebSocket error: ', error);
+      // TODO implement reconnect?
     });
   }
   private initHttpProvider() {

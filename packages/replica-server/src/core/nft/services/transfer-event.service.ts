@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { TransferEvent } from '../entities/transfer-event.entity';
-import {} from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
 import { Token } from '../entities/token.entity';
 import { Transaction } from '../../transaction/transaction.entity';
 import { Metadata } from '../entities/metadata.entity';

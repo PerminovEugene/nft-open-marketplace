@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ContractEventPayload } from 'ethers';
 import { MarketplacePublisherService } from './marketplace-publisher.service';
-import { BlockchainTransportService } from '../blockchain/blockchain-transport.service';
+import { BlockchainTransportService } from '../../blockchain/blockchain-transport.service';
 import { MarketplaceContractService } from './marketplace-contract.service';
 import { OpenMarketplace } from '@nft-open-marketplace/interface';
 

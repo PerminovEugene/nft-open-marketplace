@@ -8,8 +8,6 @@ import {
   FaChevronDown,
   FaSignOutAlt,
 } from "react-icons/fa";
-import { createNftContract } from "../etherium/nft/factory";
-import { EtheriumContext } from "../../context/etherium.context";
 
 export const ConnectWalletButton = () => {
   const { sdk, connected, provider, connecting, chainId, account } = useSDK();
@@ -31,7 +29,7 @@ export const ConnectWalletButton = () => {
       if (!provider) {
         throw new Error("Metamask provider is not defined in connect button");
       }
-      await createNftContract(provider);
+      // await createNftContract(provider);
     } catch (err) {
       alert("Не удалось подключиться. Проверьте консоль для подробностей.");
       console.error("Не удалось подключиться..", err);

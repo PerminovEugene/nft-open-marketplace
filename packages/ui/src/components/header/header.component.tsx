@@ -9,7 +9,7 @@ export default function Header() {
         <div className="text-2xl font-bold text-indigo-600">NFTMarketplace</div>
         <nav className="space-x-4">
           <Link className="text-gray-700 hover:text-indigo-600" href="/">
-            Main
+            Home
           </Link>
           <Link className="text-gray-700 hover:text-indigo-600" href="/explore">
             Explore
@@ -21,7 +21,10 @@ export default function Header() {
             My Collection
           </Link>
           <Link className="text-gray-700 hover:text-indigo-600" href="/mint">
-            Create NFT
+            Mint NFT
+          </Link>
+          <Link className="text-gray-700 hover:text-indigo-600" href="/list">
+            List NFT
           </Link>
           <Link
             className="text-gray-700 hover:text-indigo-600"

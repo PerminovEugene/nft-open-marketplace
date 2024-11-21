@@ -1,0 +1,19 @@
+FROM node:20
+
+RUN yarn set version 4.5.0
+
+WORKDIR /app
+
+COPY package.json .
+COPY yarn.lock .
+COPY .yarnrc.yml .
+COPY .yarn .
+
+COPY packages/replica-server/package.json ./packages/replica-server/ 
+# COPY packages/replica-server/nest-cli.json ./packages/replica-server/
+# COPY packages/replica-server/tsconfig.json ./packages/replica-server/
+# COPY packages/replica-server/tsconfig.build.json ./packages/replica-server/
+
+RUN yarn workspaces focus @nft-open-marketplace/replica-server
+
+WORKDIR /app/packages/replica-server/

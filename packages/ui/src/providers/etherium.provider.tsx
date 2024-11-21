@@ -3,42 +3,44 @@
 import {
   createMarketplaceContract,
   createNftContract,
-} from "@/components/etherium/nft/factory";
-import { EtheriumContext } from "@/context/etherium.context";
+} from "@/components/ethereum/nft/factory";
 import { useSDK } from "@metamask/sdk-react";
-import React, { useEffect, createContext, useState } from "react";
+import { JsonRpcSigner } from "ethers";
+import { ethers } from "ethers";
+import React, { useEffect, useState } from "react";
+import { createContext } from "react";
+import { NonceManager, Signer } from "ethers";
+
+export const EtheriumContext = createContext<{
+  isReady: boolean;
+  signer: JsonRpcSigner | null;
+}>({
+  isReady: false,
+  signer: null,
+});
 
 export function EthereumProvider({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { sdk, provider } = useSDK();
-
-  const [chainId, setChainId] = useState(null);
-  const [account, setAccount] = useState(null);
-
+  const { sdk, provider, account } = useSDK();
+  const [isReady, setIsReady] = useState<boolean>(false);
+  const [signer, setSigner] = useState<JsonRpcSigner | null>(null);
   useEffect(() => {
-    if (sdk) {
-      console.log("SDK инициализирован");
-    } else {
-      console.log("SDK не инициализирован");
-    }
-    if (provider) {
-      console.log("provider инициализирован");
-    } else {
-      console.log("provider не инициализирован");
-    }
-  }, [sdk, provider]);
-
-  useEffect(() => {
-    console.log("now", sdk, provider);
     if (sdk && provider) {
       // Function to initialize connection state
       const initializeConnection = async () => {
         try {
-          await createNftContract(provider);
-          await createMarketplaceContract(provider);
+          const ethersProvider = new ethers.BrowserProvider(provider);
+          console.log("account for signer", account);
+          const raw = await ethersProvider.getSigner(account);
+          const wallet = new NonceManager(raw);
+
+          await createNftContract(wallet.signer as any);
+          await createMarketplaceContract(wallet.signer as any);
+          setSigner(wallet.signer as any);
+          setIsReady(true);
         } catch (error) {
           console.error("Error initializing connection:", error);
         }
@@ -54,7 +56,7 @@ export function EthereumProvider({
       };
 
       const handleAccountsChanged = (newAccounts: any) => {
-        setAccount(newAccounts[0]);
+        // setAccount(newAccounts[0]);
         // Additional logic on accounts change
       };
 
@@ -90,9 +92,7 @@ export function EthereumProvider({
   }, [sdk, provider]);
 
   return (
-    <EtheriumContext.Provider
-      value={{ chainId, setChainId, account, setAccount }}
-    >
+    <EtheriumContext.Provider value={{ isReady, signer }}>
       {children}
     </EtheriumContext.Provider>
   );

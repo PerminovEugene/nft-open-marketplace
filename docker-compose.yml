@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  blockchain:
+  node:
     build:
       context: .
       dockerfile: ./Dockerfile.node
@@ -15,12 +15,12 @@ services:
     env_file:
       - .env
 
-  deploy-blockchain:
+  deploy-contracts:
     build:
       context: .
       dockerfile: ./Dockerfile.node
     depends_on:
-      - blockchain
+      - node
     networks:
       - hardhat-net
     volumes:
@@ -40,7 +40,7 @@ services:
       - ./packages/ui:/app/packages/ui
       - ./shared:/app/shared
     depends_on:
-      - deploy-blockchain
+      - deploy-contracts
     command: "yarn run dev"
     env_file:
       - .env
@@ -53,7 +53,7 @@ services:
       - "8080:8080"
       - "40000:40000"
     depends_on:
-      - deploy-blockchain
+      - deploy-contracts
     cap_add:
       - SYS_PTRACE
     security_opt:
@@ -61,6 +61,65 @@ services:
     command: "air"
     volumes:
       - ./packages/backend:/app/packages/backend
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - hardhat-net
+
+  replicator:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.replicator
+    ports:
+      - "3001:3001"
+    environment:
+      - DATABASE_HOST=postgres
+      - DATABASE_PORT=${DATABASE_PORT}
+      - DATABASE_USERNAME=${DATABASE_USERNAME}
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+      - NODE_PORT=${NODE_PORT}
+      - NODE_ADDRESS=${NODE_ADDRESS}
+      - PINATA_JWT=${PINATA_JWT}
+      - IPFS_GATEWAY=${IPFS_GATEWAY}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_HOST=${REDIS_HOST}
+    depends_on:
+      - postgres
+      - node
+      - redis
+      - deploy-contracts
+    # restart: on-failure
+    networks:
+      - hardhat-net
+    command: "npm run start:dev"
+    volumes:
+      - ./packages/replica-server:/app/packages/replica-server
+      - ./shared:/app/shared
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redis-data:/data
+    networks:
+      - hardhat-net
+
+volumes:
+  postgres_data:
+  redis-data:
 
 networks:
   hardhat-net:

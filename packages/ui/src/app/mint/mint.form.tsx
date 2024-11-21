@@ -2,9 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { TextInput } from "@/components/form/text-input.component";
-import { AttributesInput } from "@/components/form/attribute-input-array.component";
-import { DropZoneInput } from "@/components/form/dropzone.component";
+import { TextInput } from "@/components/form/inputs/text-input.component";
+import { AttributesInput } from "@/components/form/inputs/attribute-input-array.component";
+import { DropZoneInput } from "@/components/form/inputs/dropzone-input.component";
+import SubmitButton from "@/components/form/submit-button";
 
 export type MintFormValues = {
   file: FileList;
@@ -25,7 +26,8 @@ const MintForm = ({
 }: {
   onSubmit: (data: MintFormValues) => Promise<void>;
 }) => {
-  const { register, handleSubmit, control, watch } = useForm<MintFormValues>();
+  const { register, handleSubmit, control, watch, formState } =
+    useForm<MintFormValues>();
   const { fields, append, remove } = useFieldArray({
     control,
     name: "attributes",
@@ -39,8 +41,10 @@ const MintForm = ({
     setFile(watchFileList?.length ? watchFileList[0] : null);
   }, [watchFileList?.length]);
 
+  const disabled = formState.isSubmitting || formState.isSubmitSuccessful;
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-4/5  mb-12">
+    <form onSubmit={handleSubmit(onSubmit)} className="mb-12">
       <div className="flex flex-col mb-6 md:grid-cols-2">
         <div className="mb-5 bg-blue-950 p-3 rounded-2xl">
           <div className="flex items-center justify-center text-xl mb-4">
@@ -54,6 +58,7 @@ const MintForm = ({
               label: "Nft name",
               required: true,
               placeholder: "Fancy cat",
+              disabled,
             }}
           />
           <TextInput<MintFormValues>
@@ -64,6 +69,7 @@ const MintForm = ({
               label: "Descripton",
               required: true,
               placeholder: "This cat NFT brings luck to its owner",
+              disabled,
             }}
           />
           <DropZoneInput
@@ -72,6 +78,7 @@ const MintForm = ({
               required: true,
               register,
               file,
+              disabled,
             }}
           />
         </div>
@@ -90,6 +97,7 @@ const MintForm = ({
               keyPlaceholder: "Attribute name",
               valuePlaceholder: "Attribute value",
               maxLength: 10,
+              disabled,
             }}
           />
         </div>
@@ -105,6 +113,7 @@ const MintForm = ({
               label: "External url",
               required: false,
               placeholder: "Off-chain info about NFT",
+              disabled,
             }}
           />
           <TextInput<MintFormValues>
@@ -115,6 +124,7 @@ const MintForm = ({
               label: "Animation url",
               required: false,
               placeholder: "Link to youtube video about NFT",
+              disabled,
             }}
           />
           <TextInput<MintFormValues>
@@ -125,15 +135,11 @@ const MintForm = ({
               label: "Youtube url",
               required: false,
               placeholder: "Link to animation related to NFT",
+              disabled,
             }}
           />
         </div>
-        <button
-          type="submit"
-          className="px-6 py-2 bg-blue-600 rounded hover:bg-blue-500 text-lg"
-        >
-          Mint
-        </button>
+        <SubmitButton {...{ disabled, text: "Mint" }} />
       </div>
     </form>
   );

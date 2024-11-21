@@ -33,6 +33,19 @@ export function getDeployerWallet(): NonceManager {
   return manager as NonceManager;
 }
 
+const isDeployed = async () => {
+  const contractsAddressessFolder = path.resolve("../../shared");
+  const contractsAddressessFile = path.join(
+    contractsAddressessFolder,
+    "contracts.deploy-data.json"
+  );
+  if (!existsSync(contractsAddressessFolder)) {
+    return false;
+  } else {
+    return existsSync(contractsAddressessFile);
+  }
+};
+
 async function saveContractsData(contractsDeployData: ContractsDeployData) {
   const contractsAddressessFolder = path.resolve("../../shared");
   const contractsAddressessFile = path.join(
@@ -190,6 +203,9 @@ export async function addFixtures(
 }
 
 async function main() {
+  if (await isDeployed()) {
+    return;
+  }
   const deployerWallet = getDeployerWallet();
 
   const {

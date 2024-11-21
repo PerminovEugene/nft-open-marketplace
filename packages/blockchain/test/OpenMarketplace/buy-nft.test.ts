@@ -10,9 +10,8 @@ describe("OpenMarketplace", function () {
 
   describe("Buy nft", function () {
     it("Should throw when listing does not exist", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
       openMarketplaceNFT.connect(owner);
 
       await expect(market.connect(owner).buyNft(tokenId))
@@ -21,9 +20,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw when value sent to the contract is not enough", async function () {
-      const { owner, other, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, other, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const buyingPrice = ethers.parseEther("0.9999999999");
       const sellingPrice = ethers.parseEther("1.0");
@@ -39,9 +37,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw when buyer already owns token", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const sellingPrice = ethers.parseEther("1.0");
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
@@ -54,9 +51,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw when listing is not active", async function () {
-      const { owner, other, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, other, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const sellingPrice = ethers.parseEther("1.0");
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
@@ -115,15 +111,14 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should check that pendingWithdrawals are cumulatively updated and market fee correctly calculated", async function () {
-      const { owner, buyer, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, buyer, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
       const ownerConnection = market.connect(owner);
       const buyerConnection = market.connect(buyer);
 
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
-      const marketPlaceFeePercent = 15;
-      await ownerConnection.setMarketFeePercent(BigInt(marketPlaceFeePercent));
+      const marketplaceFeePercent = 15;
+      await ownerConnection.setMarketFeePercent(BigInt(marketplaceFeePercent));
 
       // approve for all
       const marketContractAddres = await market.getAddress();

@@ -7,15 +7,14 @@ import { ethers } from "hardhat";
 describe("OpenMarketplace", function () {
   describe("Withdraw", function () {
     it("Should withdraw correct amount of eth", async function () {
-      const { owner, buyer, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, buyer, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
       const ownerConnection = market.connect(owner);
       const buyerConnection = market.connect(buyer);
 
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
-      const marketPlaceFeePercent = 25;
-      await ownerConnection.setMarketFeePercent(BigInt(marketPlaceFeePercent));
+      const marketplaceFeePercent = 25;
+      await ownerConnection.setMarketFeePercent(BigInt(marketplaceFeePercent));
 
       const ownerAddress = await owner.getAddress();
       const buyerAddress = await buyer.getAddress();
@@ -43,12 +42,10 @@ describe("OpenMarketplace", function () {
       await buyerConnection.buyNft(tokenId, { value: sellingPrice3 });
 
       // get balances before withdrawals
-      const initialOwnerBalance = await ethers.provider.getBalance(
-        ownerAddress
-      );
-      const initialBuyerBalance = await ethers.provider.getBalance(
-        buyerAddress
-      );
+      const initialOwnerBalance =
+        await ethers.provider.getBalance(ownerAddress);
+      const initialBuyerBalance =
+        await ethers.provider.getBalance(buyerAddress);
 
       // check updated pendingWithdrawals
       const pendingOwnerWithdrawal = await market.pendingWithdrawals(
@@ -57,14 +54,14 @@ describe("OpenMarketplace", function () {
       expect(pendingOwnerWithdrawal).to.eql(
         sellingPrice3 +
           sellingPrice +
-          (BigInt(marketPlaceFeePercent) * sellingPrice2) / BigInt(100)
+          (BigInt(marketplaceFeePercent) * sellingPrice2) / BigInt(100)
       );
 
       const pendingBuyerWithdrawal = await market.pendingWithdrawals(
         buyer.address
       );
       expect(pendingBuyerWithdrawal).to.eql(
-        ((BigInt(100) - BigInt(marketPlaceFeePercent)) * sellingPrice2) /
+        ((BigInt(100) - BigInt(marketplaceFeePercent)) * sellingPrice2) /
           BigInt(100)
       );
 
@@ -82,12 +79,10 @@ describe("OpenMarketplace", function () {
         buyerWithdrawReceipt?.gasUsed! * buyerWithdrawReceipt?.gasPrice!;
 
       // get updated balances
-      const updatedOwnerBalance = await ethers.provider.getBalance(
-        ownerAddress
-      );
-      const updatedBuyerBalance = await ethers.provider.getBalance(
-        buyerAddress
-      );
+      const updatedOwnerBalance =
+        await ethers.provider.getBalance(ownerAddress);
+      const updatedBuyerBalance =
+        await ethers.provider.getBalance(buyerAddress);
 
       // check
       expect(updatedOwnerBalance).to.equal(

@@ -14,7 +14,7 @@ type PinFileBody = {
   };
 };
 
-type PinFileResponse = {
+export type PinFileResponse = {
   IpfsHash: string;
   PinSize: number;
   Timestamp: string;
@@ -28,6 +28,7 @@ export async function pinFile({ file, data }: PinFileBody) {
 
   try {
     const response = await fetch("http://localhost:8080/ipfs/upload", {
+      // TODO change to backend url
       method: "POST",
       body: formData,
     });

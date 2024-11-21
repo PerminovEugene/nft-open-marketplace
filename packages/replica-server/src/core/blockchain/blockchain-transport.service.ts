@@ -26,6 +26,19 @@ export class BlockchainTransportService {
       'NODE_ADDRESS',
     )}:${this.configService.get('NODE_PORT')}/ws/v3`;
     this.wsProvider = new ethers.WebSocketProvider(wsProviderUrl);
+
+    this.wsProvider.on('debug', (data) => {
+      console.log('WS debug:', data); // TODO implement reconnect?
+      // setTimeout(() => {
+      //   this.wsProvider = new ethers.WebSocketProvider(wsProviderUrl);
+      //   startListening();
+      // }, 3000);
+    });
+    console.log('init ws provider');
+
+    this.wsProvider.on('error', (error) => {
+      console.log('WebSocket error: ', error);
+    });
   }
   private initHttpProvider() {
     // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';

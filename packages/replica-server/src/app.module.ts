@@ -3,8 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from './config/database.module';
 import { RedisModule } from 'src/config/redis.module';
 import { SyncModule } from './core/sync/sync.module';
-import { MarketplaceModule } from './core/marketplace/marketplace.module';
 import { TransactionModule } from './core/transaction/transaction.module';
+import { BusModule } from './core/bus/bus.module';
+import { TransferModule } from './core/event-transfer/transfer.module';
 
 @Module({
   imports: [
@@ -14,6 +15,8 @@ import { TransactionModule } from './core/transaction/transaction.module';
     }),
     DatabaseModule,
     RedisModule,
+    BusModule,
+    TransferModule,
     TransactionModule,
     SyncModule,
   ],

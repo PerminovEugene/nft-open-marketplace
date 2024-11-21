@@ -3,7 +3,8 @@ import { EventLog } from 'ethers';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
 import { NftEventJob } from './types';
-import { NftEventJobName, NftQueueName } from './consts';
+import { NftEventJobName } from './consts';
+import { QueueName } from '../bus/const';
 
 type LogData = Pick<
   EventLog,
@@ -17,9 +18,9 @@ type LogData = Pick<
 @Injectable()
 export class NftPublisherService {
   constructor(
-    @InjectQueue(NftQueueName.nftEvents)
+    @InjectQueue(QueueName.sync)
     private nftEventQueue: Queue<NftEventJob>,
-    @InjectQueue(NftQueueName.unsyncedNftEvents)
+    @InjectQueue(QueueName.unsync)
     private unsyncedNftEventQueue: Queue<NftEventJob>,
   ) {}
 
@@ -33,7 +34,7 @@ export class NftPublisherService {
     };
   }
 
-  private selectQueue(useUnsyncedQueue: boolean = false) {
+  private selectQueue(useUnsyncedQueue: boolean) {
     return useUnsyncedQueue ? this.unsyncedNftEventQueue : this.nftEventQueue;
   }
 

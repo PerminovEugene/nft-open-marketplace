@@ -11,4 +11,4 @@ Simple marketplace for buying and selling nfts.
 ### Redeploy contracts locally
 
 Deployed contracts data is saved in shared/contracts.deploy-data.json.
-If you want to redeploy everything - delete this file. Don't forget to clean up replication db.
+If you want to redeploy everything - delete this file. Don't forget to clean up replication db. Also If you want to restart node container - delete shared/\* folder.

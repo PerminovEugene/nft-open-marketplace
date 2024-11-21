@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { EventLog } from 'ethers';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { MarketplaceQueueName } from './consts';
 import { MarketplaceEventJob } from './types';
 import { MarketplaceJobName } from './consts';
+import { QueueName } from '../bus/const';
 
 type LogData = Pick<
   EventLog,
@@ -18,9 +18,9 @@ type LogData = Pick<
 @Injectable()
 export class MarketplacePublisherService {
   constructor(
-    @InjectQueue(MarketplaceQueueName.marketplaceEvents)
+    @InjectQueue(QueueName.sync)
     private marketplaceEventQueue: Queue<MarketplaceEventJob>,
-    @InjectQueue(MarketplaceQueueName.unsyncedMarketplaceEvents)
+    @InjectQueue(QueueName.unsync)
     private unsyncedMarketplaceEventQueue: Queue<MarketplaceEventJob>,
   ) {}
 

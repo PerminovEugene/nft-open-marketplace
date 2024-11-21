@@ -8,13 +8,15 @@ import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { PinataSDK } from 'pinata-web3';
+import { BlockchainTransportService } from 'src/core/blockchain/blockchain-transport.service';
+import { NftContractService } from '../nft-contract.service';
 
-const contractsData = JSON.parse(
-  readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
-);
-if (!contractsData) {
-  throw new Error('Invalid contracts data');
-}
+// const contractsData = JSON.parse(
+//   readFileSync(resolve('../../shared/contracts.deploy-data.json'), 'utf8'),
+// );
+// if (!contractsData) {
+//   throw new Error('Invalid contracts data');
+// }
 
 @Injectable()
 export class MetadataService {
@@ -24,23 +26,14 @@ export class MetadataService {
 
   constructor(
     private configService: ConfigService,
-    // TODO contract
-  ) {
-    // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
-    const httpProviderUrl = `http://${this.configService.get(
-      'NODE_ADDRESS', // TODO prod should use https
-    )}:${this.configService.get('NODE_PORT')}/`;
-    this.provider = new ethers.JsonRpcProvider(httpProviderUrl);
+    private blockchainTransportService: BlockchainTransportService,
+    private nftContact: NftContractService,
+  ) {}
 
-    const contractAddress = contractsData.contracts.find(
-      ({ name }) => name === 'OpenMarketplaceNFT',
-    ).address;
-
-    this.contract = new ethers.Contract(
-      contractAddress,
-      openMarketplaceNFTContractAbi.abi,
-      this.provider,
-    ) as unknown as OpenMarketplaceNFT;
+  async onModuleInit() {
+    this.contract = this.nftContact.initContract(
+      this.blockchainTransportService.getHttpProvider(),
+    );
 
     this.pinata = new PinataSDK({
       pinataJwt: this.configService.get('PINATA_JWT'),

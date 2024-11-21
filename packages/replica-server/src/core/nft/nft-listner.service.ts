@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ContractEventPayload, EventLog } from 'ethers';
+import { ContractEventPayload } from 'ethers';
 import { NftPublisherService } from './nft-publisher.service';
 import { BlockchainTransportService } from '../blockchain/blockchain-transport.service';
 import { NftContractService } from './nft-contract.service';
@@ -22,6 +22,7 @@ export class NftListnerService {
   }
 
   private async listenNode() {
+    console.log('LISTEN NODE: TRANSFER');
     this.contract.on(
       'Transfer' as any,
       async (
@@ -30,6 +31,8 @@ export class NftListnerService {
         tokenId: BigInt,
         eventPayload: ContractEventPayload,
       ) => {
+        console.log('transfer event -->', from, to, tokenId);
+
         await this.publisherService.publishTransferEventData({
           from,
           to,

@@ -147,9 +147,10 @@ export namespace MarketFeePercentChangedEvent {
 }
 
 export namespace MarketListingActiveStatusChangedEvent {
-  export type InputTuple = [isActive: boolean];
-  export type OutputTuple = [isActive: boolean];
+  export type InputTuple = [tokenId: BigNumberish, isActive: boolean];
+  export type OutputTuple = [tokenId: bigint, isActive: boolean];
   export interface OutputObject {
+    tokenId: bigint;
     isActive: boolean;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -445,7 +446,7 @@ export interface OpenMarketplace extends BaseContract {
       MarketFeePercentChangedEvent.OutputObject
     >;
 
-    "MarketListingActiveStatusChanged(bool)": TypedContractEvent<
+    "MarketListingActiveStatusChanged(uint256,bool)": TypedContractEvent<
       MarketListingActiveStatusChangedEvent.InputTuple,
       MarketListingActiveStatusChangedEvent.OutputTuple,
       MarketListingActiveStatusChangedEvent.OutputObject

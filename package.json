@@ -19,13 +19,19 @@
     "url": "git+https://github.com/PerminovEugene/openMarketplaceNFT-market.git"
   },
   "keywords": [
-    "etherium",
-    "blockchain",
-    "web3",
+    "Etherium",
+    "Blockchain",
+    "Web3",
     "NFT",
-    "Soldiity"
+    "Soldiity",
+    "NFT Marketplace",
+    "Smart Contracts",
+    "Ethers.js",
+    "Decentralized Applications (dApps)",
+    "Digital Assets",
+    "Open Source"
   ],
-  "author": "Evgenii Perminov",
+  "author": "Eugene Perminov",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/PerminovEugene/nft-open-marketplace/issues"

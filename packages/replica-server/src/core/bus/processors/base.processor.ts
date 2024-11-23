@@ -1,6 +1,6 @@
 import { WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { EventHandlersRegistry } from 'src/core/event-transfer/event-handler.registry';
+import { EventHandlersRegistry } from 'src/core/event-handler/event-handler.registry';
 
 export abstract class BaseQueueProcessor<JobData> extends WorkerHost {
   constructor(protected readonly handlersRegistry: EventHandlersRegistry) {

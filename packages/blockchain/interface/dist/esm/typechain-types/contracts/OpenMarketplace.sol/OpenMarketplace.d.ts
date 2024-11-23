@@ -42,9 +42,10 @@ export declare namespace MarketFeePercentChangedEvent {
     type LogDescription = TypedLogDescription<Event>;
 }
 export declare namespace MarketListingActiveStatusChangedEvent {
-    type InputTuple = [isActive: boolean];
-    type OutputTuple = [isActive: boolean];
+    type InputTuple = [tokenId: BigNumberish, isActive: boolean];
+    type OutputTuple = [tokenId: bigint, isActive: boolean];
     interface OutputObject {
+        tokenId: bigint;
         isActive: boolean;
     }
     type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -226,7 +227,7 @@ export interface OpenMarketplace extends BaseContract {
     filters: {
         "MarketFeePercentChanged(uint256)": TypedContractEvent<MarketFeePercentChangedEvent.InputTuple, MarketFeePercentChangedEvent.OutputTuple, MarketFeePercentChangedEvent.OutputObject>;
         MarketFeePercentChanged: TypedContractEvent<MarketFeePercentChangedEvent.InputTuple, MarketFeePercentChangedEvent.OutputTuple, MarketFeePercentChangedEvent.OutputObject>;
-        "MarketListingActiveStatusChanged(bool)": TypedContractEvent<MarketListingActiveStatusChangedEvent.InputTuple, MarketListingActiveStatusChangedEvent.OutputTuple, MarketListingActiveStatusChangedEvent.OutputObject>;
+        "MarketListingActiveStatusChanged(uint256,bool)": TypedContractEvent<MarketListingActiveStatusChangedEvent.InputTuple, MarketListingActiveStatusChangedEvent.OutputTuple, MarketListingActiveStatusChangedEvent.OutputObject>;
         MarketListingActiveStatusChanged: TypedContractEvent<MarketListingActiveStatusChangedEvent.InputTuple, MarketListingActiveStatusChangedEvent.OutputTuple, MarketListingActiveStatusChangedEvent.OutputObject>;
         "NftListed(address,uint256,uint256,uint256)": TypedContractEvent<NftListedEvent.InputTuple, NftListedEvent.OutputTuple, NftListedEvent.OutputObject>;
         NftListed: TypedContractEvent<NftListedEvent.InputTuple, NftListedEvent.OutputTuple, NftListedEvent.OutputObject>;

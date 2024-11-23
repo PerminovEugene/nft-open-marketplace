@@ -1,6 +1,6 @@
 {
   "name": "@nft-open-marketplace/interface",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "description": "Contract ABI and interfaces for nft-open-marketplace project",
   "keywords": [
     "solidity",

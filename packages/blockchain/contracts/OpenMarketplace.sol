@@ -7,7 +7,7 @@ event NftPurchased(address indexed buyer, uint256 indexed tokenId, uint256 price
 event NftListed(address indexed seller, uint256 indexed tokenId, uint256 price, uint256 marketplaceFee);
 event NftUnlisted(address indexed owner, uint256 indexed tokenId);
 event MarketFeePercentChanged(uint256 newFeePercent);
-event MarketListingActiveStatusChanged(bool isActive);
+event MarketListingActiveStatusChanged(uint256 indexed tokenId, bool isActive);
 
 interface OpenMarketplaceErrors {
   error MarketNonexistentToken(uint256 tokenId);
@@ -119,7 +119,7 @@ contract OpenMarketplace is Ownable {
       _checkNftOwnership(tokenId);
       Listing storage listing = _getListing(tokenId);
       listing.isActive = isActive;
-      emit MarketListingActiveStatusChanged(isActive);
+      emit MarketListingActiveStatusChanged(tokenId, isActive);
     }
 
     function setMarketFeePercent(uint16 newFeePercent) public onlyOwner {

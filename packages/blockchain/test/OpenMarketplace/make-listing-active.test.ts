@@ -8,9 +8,8 @@ describe("OpenMarketplace", function () {
 
   describe("MakeListingActive", function () {
     it("Should throw when not nft owner perform activation", async function () {
-      const { owner, other, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, other, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, 10000);
@@ -22,9 +21,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw when token does not exist", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       await expect(
         market.connect(owner).changeListingActiveStatus(tokenId, false)
@@ -32,9 +30,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should throw when listing does not exist", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
 
@@ -44,9 +41,8 @@ describe("OpenMarketplace", function () {
     });
 
     it("Should change listing isActive status to false", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, 10000);
@@ -55,16 +51,15 @@ describe("OpenMarketplace", function () {
         market.connect(owner).changeListingActiveStatus(tokenId, false)
       )
         .to.emit(market, "MarketListingActiveStatusChanged")
-        .withArgs(false);
+        .withArgs(false, tokenId);
 
       const listing = await market.listings(tokenId);
       expect(listing.isActive).to.be.false;
     });
 
     it("Should change listing isActive status to true", async function () {
-      const { owner, openMarketplaceNFT, market } = await loadFixture(
-        deployMarket
-      );
+      const { owner, openMarketplaceNFT, market } =
+        await loadFixture(deployMarket);
 
       const tokenId = await mintAndApprove(market, openMarketplaceNFT, owner);
       await market.connect(owner).listNft(tokenId, 10000);
@@ -75,7 +70,7 @@ describe("OpenMarketplace", function () {
         market.connect(owner).changeListingActiveStatus(tokenId, true)
       )
         .to.emit(market, "MarketListingActiveStatusChanged")
-        .withArgs(true);
+        .withArgs(true, tokenId);
 
       const listing = await market.listings(tokenId);
       expect(listing.isActive).to.be.true;

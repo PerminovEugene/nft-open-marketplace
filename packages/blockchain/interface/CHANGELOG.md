@@ -1,4 +1,10 @@
-# nft marketplace contracts interfaces and ABI
+# NFT Open Marketplace: contracts interfaces and ABI
+
+## [0.5.0] - 2024-11-22
+
+### Changed
+
+- Add token id to event MarketListingActiveStatusChanged.
 
 ## [0.4.1] - 2024-11-19
 

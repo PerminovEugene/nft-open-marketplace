@@ -1,7 +1,7 @@
 import { Processor } from '@nestjs/bullmq';
 import { Inject } from '@nestjs/common';
 import { Job } from 'bullmq';
-import { EventHandlersRegistry } from '../../event-transfer/event-handler.registry';
+import { EventHandlersRegistry } from '../../event-handler/event-handler.registry';
 import { QueueName } from '../const';
 import { BaseQueueProcessor } from './base.processor';
 

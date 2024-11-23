@@ -1,11 +1,13 @@
 import { Module } from '@nestjs/common';
-import { TransferModule } from '../event-transfer/transfer.module';
 import { QueueModule } from '../../config/queue.module';
 import { SyncQueueProcessor } from './processors/sync-queue.processor';
-import { UnsyncQueueProcessor } from './processors/unsynced-queue.processor';
+import { UnsyncQueueProcessor } from './processors/unsync-queue.processor';
+import { EventHandlersModule } from 'src/core/event-handler/event-handlers.module';
+import { PublisherService } from './publisher.service';
 
 @Module({
-  imports: [QueueModule, TransferModule],
-  providers: [SyncQueueProcessor, UnsyncQueueProcessor],
+  imports: [QueueModule, EventHandlersModule],
+  providers: [SyncQueueProcessor, UnsyncQueueProcessor, PublisherService],
+  exports: [PublisherService],
 })
 export class BusModule {}

@@ -14,7 +14,7 @@ import { CoreModule } from './core/core.module';
     }),
     DatabaseModule,
     RedisModule,
-    BusModule,
+    // BusModule,
 
     CoreModule,
     DomainModule,

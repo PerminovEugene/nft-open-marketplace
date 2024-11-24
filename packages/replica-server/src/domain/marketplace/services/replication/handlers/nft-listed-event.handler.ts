@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { MarketplaceEventService } from '../services/replication/marketplace-event.service';
-import { ContractEventHandler } from '../../../core/bus/types';
+import { MarketplaceEventService } from '../marketplace-event.service';
+import { ContractEventHandler } from '../../../../../core/bus/types';
 
 @Injectable()
 export class NftListedHandler implements ContractEventHandler {

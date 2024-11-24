@@ -3,19 +3,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { MarketplaceEventService } from './services/replication/marketplace-event.service';
 import { Transaction } from 'ethers';
 import { ConfigModule } from '@nestjs/config';
-import { MarketplaceSyncService } from './services/replication/marketplace-sync.service';
 import { MarketplaceContractService } from './services/replication/marketplace-contract.service';
 import { RedisModule } from 'src/config/redis.module';
 import { Listing } from './entities/listing.entity';
-import { MarketplaceListnerService } from './services/replication/marketplace-listner.service';
-import { NftListedHandler } from './handlers/nft-listed-event.handler';
+import { NftListedHandler } from './services/replication/handlers/nft-listed-event.handler';
 import { QueueModule } from '../../config/queue.module';
 import { EventHandlersRegistry } from 'src/core/event-handler/event-handler.registry';
-import { CoreModule } from 'src/core/core.module';
 import { NftListedEvent } from './entities/nft-listed-event.entity';
-import { NftPurchasedHandler } from './handlers/nft-purchases-event.handler';
-import { PublisherService } from 'src/core/bus/publisher.service';
-import { BusModule } from 'src/core/bus/bus.module';
+import { NftPurchasedHandler } from './services/replication/handlers/nft-purchases-event.handler';
+import { EventHandlersModule } from 'src/core/event-handler/event-handlers.module';
+import { PublisherModule } from 'src/core/bus/publisher.module';
 
 @Module({
   imports: [
@@ -23,7 +20,8 @@ import { BusModule } from 'src/core/bus/bus.module';
     ConfigModule,
     RedisModule,
     QueueModule,
-    CoreModule,
+    EventHandlersModule,
+    PublisherModule,
   ],
   providers: [
     {
@@ -32,7 +30,7 @@ import { BusModule } from 'src/core/bus/bus.module';
         registry: EventHandlersRegistry,
         handler: NftListedHandler,
       ) => {
-        registry.registerHandler('nftListed', handler);
+        registry.registerHandler('NftListed', handler);
         return handler;
       },
       inject: [EventHandlersRegistry, NftListedHandler],
@@ -43,7 +41,7 @@ import { BusModule } from 'src/core/bus/bus.module';
         registry: EventHandlersRegistry,
         handler: NftPurchasedHandler,
       ) => {
-        registry.registerHandler('nftPurchased', handler);
+        registry.registerHandler('NftPurchased', handler);
         return handler;
       },
       inject: [EventHandlersRegistry, NftPurchasedHandler],
@@ -51,10 +49,7 @@ import { BusModule } from 'src/core/bus/bus.module';
     NftListedHandler,
     NftPurchasedHandler,
     MarketplaceContractService,
-    PublisherService,
-    MarketplaceSyncService,
     MarketplaceEventService,
-    MarketplaceListnerService,
   ],
   exports: [
     TypeOrmModule,

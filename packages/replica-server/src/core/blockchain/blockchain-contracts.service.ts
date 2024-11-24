@@ -16,6 +16,7 @@ export class BlockchainContractsService {
   constructor() {}
 
   async onModuleInit() {
+    console.log('Init BlockchainContractsService');
     await this.initContractsDeployData();
   }
 
@@ -27,6 +28,7 @@ export class BlockchainContractsService {
     const maxAttempts = 10;
     while (attempts < maxAttempts) {
       try {
+        console.log();
         this.contractsDeployData = JSON.parse(
           readFileSync(
             resolve('../../shared/contracts.deploy-data.json'),
@@ -43,6 +45,7 @@ export class BlockchainContractsService {
       } finally {
         attempts += 1;
       }
+      console.log('Reading config. Attempt', attempts);
     }
     if (!this.contractsDeployData) {
       throw new Error('Invalid contracts deploy data');

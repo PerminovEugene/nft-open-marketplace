@@ -1,18 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { ethers } from 'ethers';
-import {
-  OpenMarketplaceNFT,
-  OpenMarketplace,
-} from '@nft-open-marketplace/interface';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class BlockchainTransportService {
   private httpProvider: ethers.JsonRpcProvider;
   private wsProvider: ethers.WebSocketProvider;
-
-  public nftContract: OpenMarketplaceNFT;
-  public marketplaceContract: OpenMarketplace;
 
   constructor(private configService: ConfigService) {}
 
@@ -26,10 +19,6 @@ export class BlockchainTransportService {
       'NODE_ADDRESS',
     )}:${this.configService.get('NODE_PORT')}/ws/v3`;
     this.wsProvider = new ethers.WebSocketProvider(wsProviderUrl);
-
-    this.wsProvider.on('debug', (data) => {
-      console.log('WS debug:', data);
-    });
 
     this.wsProvider.on('error', (error) => {
       console.log('WebSocket error: ', error);

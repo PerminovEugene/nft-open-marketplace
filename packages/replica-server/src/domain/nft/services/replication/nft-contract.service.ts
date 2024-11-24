@@ -5,9 +5,14 @@ import {
   OpenMarketplaceNFT,
 } from '@nft-open-marketplace/interface';
 import { BlockchainContractsService } from '../../../../core/blockchain/blockchain-contracts.service';
+import { RegisterContract } from 'src/core/contract-registry/contract-registry.decorators';
+import { ContractService } from 'src/core/contract-registry/types';
+import { nftEventsArray } from '../../consts';
+import { nftEventBusProcessingConfig } from '../../nft-event.mapper';
 
 @Injectable()
-export class NftContractService {
+@RegisterContract()
+export class NftContractService implements ContractService {
   private abi = openMarketplaceNFTContractAbi.abi;
   private name = openMarketplaceNFTContractAbi.contractName;
 
@@ -27,5 +32,13 @@ export class NftContractService {
 
   public getInterface() {
     return new ethers.Interface(this.abi);
+  }
+
+  public getEventBusProcessorConfig() {
+    return nftEventBusProcessingConfig;
+  }
+
+  public getEvents() {
+    return nftEventsArray;
   }
 }

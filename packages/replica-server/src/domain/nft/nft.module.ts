@@ -6,23 +6,24 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Transaction } from '../transaction/transaction.entity';
 import { Token } from './entities/token.entity';
 import { TransferEvent } from './entities/transfer-event.entity';
-import { MetadataService } from './services/metadata.service';
-import { TransferEventService } from './services/transfer-event.service';
-import { NftSyncService } from './services/replication/nft-sync.service';
+import { MetadataService } from './services/replication/metadata.service';
+import { TransferEventService } from './services/replication/transfer-event.service';
 import { NftContractService } from './services/replication/nft-contract.service';
-import { NftListnerService } from './services/replication/nft-listner.service';
-import { TransferEventHandler } from './handlers/transfer-event.handler';
+import { TransferEventHandler } from './services/replication/handlers/transfer-event.handler';
 import { QueueModule } from '../../config/queue.module';
 import { EventHandlersRegistry } from '../../core/event-handler/event-handler.registry';
-import { CoreModule } from 'src/core/core.module';
-import { PublisherService } from 'src/core/bus/publisher.service';
+import { BlockchainModule } from 'src/core/blockchain/blockchain.module';
+import { EventHandlersModule } from 'src/core/event-handler/event-handlers.module';
+import { PublisherModule } from 'src/core/bus/publisher.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Transaction, Token, TransferEvent]),
     ConfigModule,
     QueueModule,
-    CoreModule,
+    BlockchainModule,
+    EventHandlersModule,
+    PublisherModule,
   ],
   controllers: [NftController],
   providers: [
@@ -32,7 +33,7 @@ import { PublisherService } from 'src/core/bus/publisher.service';
         registry: EventHandlersRegistry,
         handler: TransferEventHandler,
       ) => {
-        registry.registerHandler('transfer', handler);
+        registry.registerHandler('Transfer', handler); // change string to jobName
         return handler;
       },
       inject: [EventHandlersRegistry, TransferEventHandler],
@@ -40,9 +41,6 @@ import { PublisherService } from 'src/core/bus/publisher.service';
     MetadataService,
     NftContractService,
     NftService,
-    PublisherService,
-    NftSyncService,
-    NftListnerService,
     TransferEventHandler,
     TransferEventService,
   ],

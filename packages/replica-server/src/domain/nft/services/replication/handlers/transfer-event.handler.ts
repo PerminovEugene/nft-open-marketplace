@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TransferEventService } from '../services/transfer-event.service';
+import { TransferEventService } from '../transfer-event.service';
 import { ContractEventHandler } from 'src/core/bus/types';
 
 @Injectable()

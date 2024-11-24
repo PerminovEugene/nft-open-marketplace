@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { TransferEvent } from '../entities/transfer-event.entity';
-import { Token } from '../entities/token.entity';
-import { Transaction } from '../../transaction/transaction.entity';
-import { Metadata } from '../entities/metadata.entity';
-import { MetadataService } from 'src/domain/nft/services/metadata.service';
-import { TransferEventJob } from '../types';
+import { TransferEvent } from '../../entities/transfer-event.entity';
+import { Token } from '../../entities/token.entity';
+import { Transaction } from '../../../transaction/transaction.entity';
+import { Metadata } from '../../entities/metadata.entity';
+import { MetadataService } from 'src/domain/nft/services/replication/metadata.service';
+import { TransferEventJobData } from '../../types';
 
 type NftAttribute = {
   TraitType: string;
@@ -30,7 +30,7 @@ export class TransferEventService {
   ) {}
 
   async save(
-    { from, to, tokenId, log }: TransferEventJob,
+    { from, to, tokenId, log }: TransferEventJobData,
     isUnsyncedRecord: boolean = false,
   ): Promise<void> {
     const queryRunner = this.dataSource.createQueryRunner();

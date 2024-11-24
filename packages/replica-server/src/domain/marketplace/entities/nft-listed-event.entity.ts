@@ -18,15 +18,12 @@ export class NftListedEvent {
   seller: string;
 
   @Column()
-  tokenId: number;
-
-  @Column()
   price: number;
 
   @Column()
   marketplaceFee: number;
 
-  @OneToOne(() => Listing, { cascade: ['soft-remove', 'recover'] })
+  @ManyToOne(() => Listing, { cascade: ['soft-remove', 'recover'] })
   @JoinColumn()
   listing: Listing;
 

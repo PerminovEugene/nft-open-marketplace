@@ -1,5 +1,4 @@
 import { EventJob } from 'src/core/bus/types';
-import { EventTxLog } from '../transaction/types';
 
 export type NftListedEventJob = {
   seller: string;

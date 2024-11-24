@@ -3,7 +3,7 @@ import { OpenMarketplaceNFT } from '@nft-open-marketplace/interface';
 import { ConfigService } from '@nestjs/config';
 import { PinataSDK } from 'pinata-web3';
 import { BlockchainTransportService } from 'src/core/blockchain/blockchain-transport.service';
-import { NftContractService } from './replication/nft-contract.service';
+import { NftContractService } from './nft-contract.service';
 
 @Injectable()
 export class MetadataService {

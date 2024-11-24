@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { SyncService } from './sync.service';
 import { DiscoveryService } from '@nestjs/core';
-import { BlockchainModule } from '../blockchain/blockchain.module';
+import { BusModule } from '../bus/bus.module';
+import { ContractRegistryModule } from '../contract-registry/contract-registry.module';
+import { PublisherModule } from '../bus/publisher.module';
 
 @Module({
-  imports: [BlockchainModule],
+  imports: [BusModule, PublisherModule, ContractRegistryModule],
   providers: [DiscoveryService, SyncService],
 })
 export class SyncModule {}

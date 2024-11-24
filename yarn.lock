@@ -2034,9 +2034,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/testing@npm:^10.0.0":
-  version: 10.4.7
-  resolution: "@nestjs/testing@npm:10.4.7"
+"@nestjs/testing@npm:^10.4.8":
+  version: 10.4.8
+  resolution: "@nestjs/testing@npm:10.4.8"
   dependencies:
     tslib: "npm:2.7.0"
   peerDependencies:
@@ -2049,7 +2049,7 @@ __metadata:
       optional: true
     "@nestjs/platform-express":
       optional: true
-  checksum: 10c0/8bd59a951e2513721bbd683225f1f834db3f40ef8fc1f77213b3c854acd042e5f012c43d81d71b477582f522ef248932b6579c273e9622c82eaa5652178a0ee1
+  checksum: 10c0/a51518514fb3ccab56e91aee54506cd0f8fdf88113ff58442c734473a65beffb75174c09c1dd0b70a35915a2d9b5b639f4ae0ecf2b9932647e3edab56c8e22dd
   languageName: node
   linkType: hard
 
@@ -2209,7 +2209,7 @@ __metadata:
     "@nestjs/core": "npm:^10.0.0"
     "@nestjs/platform-express": "npm:^10.0.0"
     "@nestjs/schematics": "npm:^10.0.0"
-    "@nestjs/testing": "npm:^10.0.0"
+    "@nestjs/testing": "npm:^10.4.8"
     "@nestjs/typeorm": "npm:^10.0.2"
     "@nft-open-marketplace/interface": "npm:^0.5.0"
     "@types/express": "npm:^5.0.0"

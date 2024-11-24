@@ -39,7 +39,6 @@ export class MarketplaceEventService {
             transactionHash: log.transactionHash,
             transactionIndex: log.transactionIndex,
           },
-          relations: ['nft_listed'],
         });
       }
       if (!existedTransaction) {
@@ -68,6 +67,7 @@ export class MarketplaceEventService {
           isActive: true,
           transaction,
           listing,
+          tokenId,
         });
         await queryRunner.manager.save(nftListedEvent);
       }

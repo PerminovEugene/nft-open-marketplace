@@ -1,10 +1,10 @@
-import { EventTxLog } from '../transaction/types';
+import { TransactionJobData } from '../transaction/types';
 
-export type TransferEventJob = {
+export type TransferEventJobData = {
   from: string;
   to: string;
   tokenId: number;
-  log: EventTxLog;
+  log: TransactionJobData;
 };
 
-export type NftEventJob = TransferEventJob; // add other events here
+export type NftEventJobData = TransferEventJobData; // add other events here

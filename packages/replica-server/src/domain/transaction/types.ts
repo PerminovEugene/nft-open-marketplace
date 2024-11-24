@@ -1,4 +1,4 @@
-export type EventTxLog = {
+export type TransactionJobData = {
   blockHash: string;
   blockNumber: number;
   address: string;

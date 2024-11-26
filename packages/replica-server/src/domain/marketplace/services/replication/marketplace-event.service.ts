@@ -2,29 +2,40 @@ import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Token } from '../../../nft/entities/token.entity';
 import { Transaction } from '../../../transaction/transaction.entity';
-import {
-  NftListedEventJob,
-  NftPurchasedEventJob,
-} from 'src/domain/marketplace/types';
 import { Listing } from '../../entities/listing.entity';
-import { NftListedEvent } from '../../entities/nft-listed-event.entity';
-import { NftPurchasedEvent } from '../../entities/nft-purchases-event.entity';
+import {
+  NftListedEvent,
+  NftPurchasedEvent,
+} from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplace.sol/OpenMarketplace';
+import { NftPurchasedEventEntity } from '../../entities/nft-purchases-event.entity';
+import { NftListedEventEntity } from '../../entities/nft-listed-event.entity';
+import { TxData } from 'src/domain/transaction/types';
 
 @Injectable()
 export class MarketplaceEventService {
   constructor(private readonly dataSource: DataSource) {}
 
   async saveNftListed(
-    { tokenId, seller, price, marketplaceFee, log }: NftListedEventJob,
+    [
+      sellerRaw,
+      tokenIdBigInt,
+      priceBigInt,
+      marketplaceFeeBigInt,
+    ]: NftListedEvent.OutputTuple,
+    txData: TxData,
     isUnsyncedListing: boolean = false,
   ): Promise<void> {
+    const seller = sellerRaw.toLowerCase();
+    const tokenId = tokenIdBigInt.toString();
+    const price = priceBigInt.toString();
+    const marketplaceFee = marketplaceFeeBigInt.toString();
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
-
     try {
       let token = await queryRunner.manager.findOne(Token, {
-        where: { contractId: tokenId.toString() },
+        where: { contractId: tokenId },
       });
       if (!token) {
         throw new Error('Token is not found. Token id ' + tokenId);
@@ -33,42 +44,45 @@ export class MarketplaceEventService {
       if (isUnsyncedListing) {
         existedTransaction = await queryRunner.manager.findOne(Transaction, {
           where: {
-            blockHash: log.blockHash,
-            blockNumber: log.blockNumber,
-            address: log.address,
-            transactionHash: log.transactionHash,
-            transactionIndex: log.transactionIndex,
+            blockHash: txData.blockHash,
+            blockNumber: txData.blockNumber,
+            address: txData.address,
+            transactionHash: txData.transactionHash,
+            transactionIndex: txData.transactionIndex,
           },
         });
       }
       if (!existedTransaction) {
         const transaction = queryRunner.manager.create(Transaction, {
-          blockHash: log.blockHash,
-          blockNumber: log.blockNumber,
-          address: log.address,
-          transactionHash: log.transactionHash,
-          transactionIndex: log.transactionIndex,
+          blockHash: txData.blockHash,
+          blockNumber: txData.blockNumber,
+          address: txData.address,
+          transactionHash: txData.transactionHash,
+          transactionIndex: txData.transactionIndex,
         });
         await queryRunner.manager.save(transaction);
 
         const listing = queryRunner.manager.create(Listing, {
           price,
-          seller: seller.toLowerCase(),
+          seller: seller,
           marketplaceFee,
           isActive: true,
           token,
         });
         await queryRunner.manager.save(listing);
 
-        const nftListedEvent = queryRunner.manager.create(NftListedEvent, {
-          price,
-          seller: seller.toLowerCase(),
-          marketplaceFee,
-          isActive: true,
-          transaction,
-          listing,
-          tokenId,
-        });
+        const nftListedEvent = queryRunner.manager.create(
+          NftListedEventEntity,
+          {
+            price,
+            seller: seller,
+            marketplaceFee,
+            isActive: true,
+            transaction,
+            listing,
+            tokenId,
+          },
+        );
         await queryRunner.manager.save(nftListedEvent);
       }
 
@@ -83,16 +97,21 @@ export class MarketplaceEventService {
   }
 
   async saveNftPurchased(
-    { buyer, tokenId, price, log }: NftPurchasedEventJob,
+    [buyerRaw, tokenIdBigInt, priceBigInt]: NftPurchasedEvent.OutputTuple,
+    txData: TxData,
     isUnsyncedListing: boolean = false,
   ): Promise<void> {
+    const buyer = buyerRaw.toLowerCase();
+    const tokenId = tokenIdBigInt.toString();
+    const price = priceBigInt.toString();
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       let token = await queryRunner.manager.findOne(Token, {
-        where: { contractId: tokenId.toString() },
+        where: { contractId: tokenId },
         relations: ['listing'],
       });
       if (!token) {
@@ -105,27 +124,27 @@ export class MarketplaceEventService {
       if (isUnsyncedListing) {
         existedTransaction = await queryRunner.manager.findOne(Transaction, {
           where: {
-            blockHash: log.blockHash,
-            blockNumber: log.blockNumber,
-            address: log.address,
-            transactionHash: log.transactionHash,
-            transactionIndex: log.transactionIndex,
+            blockHash: txData.blockHash,
+            blockNumber: txData.blockNumber,
+            address: txData.address,
+            transactionHash: txData.transactionHash,
+            transactionIndex: txData.transactionIndex,
           },
           relations: ['nft_purchased'],
         });
       }
       if (!existedTransaction) {
         const transaction = queryRunner.manager.create(Transaction, {
-          blockHash: log.blockHash,
-          blockNumber: log.blockNumber,
-          address: log.address,
-          transactionHash: log.transactionHash,
-          transactionIndex: log.transactionIndex,
+          blockHash: txData.blockHash,
+          blockNumber: txData.blockNumber,
+          address: txData.address,
+          transactionHash: txData.transactionHash,
+          transactionIndex: txData.transactionIndex,
         });
         await queryRunner.manager.save(transaction);
 
         const listing = await queryRunner.manager.findOne(Listing, {
-          where: { token: { id: tokenId } },
+          where: { token: { contractId: tokenId } },
           select: ['id'],
         });
         if (!listing) {
@@ -140,12 +159,15 @@ export class MarketplaceEventService {
           },
         );
 
-        const nftListedEvent = queryRunner.manager.create(NftPurchasedEvent, {
-          buyer,
-          isActive: true,
-          transaction,
-          listing,
-        });
+        const nftListedEvent = queryRunner.manager.create(
+          NftPurchasedEventEntity,
+          {
+            buyer,
+            isActive: true,
+            transaction,
+            listing,
+          },
+        );
         await queryRunner.manager.save(nftListedEvent);
       }
 

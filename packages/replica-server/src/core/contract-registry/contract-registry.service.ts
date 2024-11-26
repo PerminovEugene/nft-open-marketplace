@@ -2,7 +2,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DiscoveryService, Reflector } from '@nestjs/core';
 import { REGISTER_CONTRACT_KEY } from './contract-registry.decorators';
 import { ContractService } from './types';
-import { BlockchainContractsService } from '../blockchain/blockchain-contracts.service';
 
 @Injectable()
 export class ContractRegistryService {
@@ -23,7 +22,7 @@ export class ContractRegistryService {
   }
 
   getAllContractsAddresses(): string[] {
-    return Array.from(this.contracts.keys());
+    return Array.from(this.contracts.keys()).map((s) => s.toLowerCase());
   }
 
   async onModuleInit() {
@@ -40,12 +39,12 @@ export class ContractRegistryService {
       );
 
       if (isContractService) {
+        console.log('Found contractService');
         const instance = provider.instance; // Use the actual instance
         if (!instance) {
           throw new Error(`Provider instance not found for ${provider.name}`);
         }
 
-        // Call getAddress on the instance, not the metatype
         if (typeof instance.getContactAddress === 'function') {
           const address = instance.getContactAddress();
           this.registerContract(address, instance);

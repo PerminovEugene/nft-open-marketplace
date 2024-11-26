@@ -20,7 +20,8 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
-    "typeorm:migration:run": "typeorm -- migration:run -d --dataSource ./src/config/datasource.ts"
+    "typeorm:migration:run": "typeorm -- migration:run -d --dataSource ./src/config/datasource.ts",
+    "find-deadcode": "ts-prune"
   },
   "dependencies": {
     "@nestjs/bull": "^10.2.2",
@@ -63,6 +64,7 @@
     "ts-jest": "^29.1.0",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
+    "ts-prune": "^0.10.3",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
   },

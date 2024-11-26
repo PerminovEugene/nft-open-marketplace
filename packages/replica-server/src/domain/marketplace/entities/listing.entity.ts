@@ -6,8 +6,9 @@ import {
   OneToOne,
   JoinColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
-import { NftListedEvent } from './nft-listed-event.entity';
+import { NftListedEventEntity } from './nft-listed-event.entity';
 
 @Entity()
 export class Listing {
@@ -18,20 +19,23 @@ export class Listing {
   @JoinColumn()
   token: Token;
 
-  @Column({ nullable: false })
-  price: number;
+  @Column({ type: 'bigint', nullable: false })
+  price: string;
 
-  @Column({ nullable: false })
-  marketplaceFee: number;
+  @Column({ type: 'bigint', nullable: false })
+  marketplaceFee: string;
 
   @Column()
   isActive: boolean;
 
-  @OneToOne(() => NftListedEvent, {
-    cascade: ['soft-remove', 'recover'],
-    nullable: false,
-  })
-  nftListedEvent: NftListedEvent;
+  @OneToMany(
+    () => NftListedEventEntity,
+    (nftListedEvent: NftListedEventEntity) => nftListedEvent.listing,
+    {
+      cascade: ['soft-remove', 'recover'],
+    },
+  )
+  nftListedEvents: NftListedEventEntity;
 
   @Column({ nullable: false })
   seller: string;

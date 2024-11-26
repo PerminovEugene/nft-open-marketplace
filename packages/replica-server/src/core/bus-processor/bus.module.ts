@@ -3,10 +3,11 @@ import { QueueModule } from '../../config/queue.module';
 import { SyncQueueProcessor } from './processors/sync-queue.processor';
 import { UnsyncQueueProcessor } from './processors/unsync-queue.processor';
 import { EventHandlersModule } from 'src/core/event-handler/event-handlers.module';
+import { SerializationModule } from '../serializer/serialization.module';
 
 @Module({
-  imports: [QueueModule, EventHandlersModule],
+  imports: [QueueModule, EventHandlersModule, SerializationModule],
   providers: [SyncQueueProcessor, UnsyncQueueProcessor],
   exports: [EventHandlersModule],
 })
-export class BusModule {}
+export class BusProcessorModule {}

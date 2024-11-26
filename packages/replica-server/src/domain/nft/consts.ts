@@ -1,7 +1,3 @@
-export enum NftEventJobName {
-  Transfer = 'Transfer',
-}
-
 export enum NftEvents {
   Transfer = 'Transfer',
 }

@@ -9,8 +9,8 @@ import {
 import { Token } from './token.entity';
 import { Transaction } from '../../transaction/transaction.entity';
 
-@Entity()
-export class TransferEvent {
+@Entity({ name: 'transfer_event' })
+export class TransferEventEntity {
   @PrimaryGeneratedColumn()
   id: number;
 

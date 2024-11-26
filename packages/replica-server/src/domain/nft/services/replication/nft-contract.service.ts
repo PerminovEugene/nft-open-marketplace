@@ -8,7 +8,6 @@ import { BlockchainContractsService } from '../../../../core/blockchain/blockcha
 import { RegisterContract } from 'src/core/contract-registry/contract-registry.decorators';
 import { ContractService } from 'src/core/contract-registry/types';
 import { nftEventsArray } from '../../consts';
-import { nftEventBusProcessingConfig } from '../../nft-event.mapper';
 
 @Injectable()
 @RegisterContract()
@@ -26,16 +25,16 @@ export class NftContractService implements ContractService {
     ) as unknown as OpenMarketplaceNFT;
   }
 
+  public getName() {
+    return this.name;
+  }
+
   public getContactAddress() {
     return this.contractsDeployDataService.getContactAddress(this.name);
   }
 
   public getInterface() {
     return new ethers.Interface(this.abi);
-  }
-
-  public getEventBusProcessorConfig() {
-    return nftEventBusProcessingConfig;
   }
 
   public getEvents() {

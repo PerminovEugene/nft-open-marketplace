@@ -9,14 +9,22 @@ import { Listing } from './entities/listing.entity';
 import { NftListedHandler } from './services/replication/handlers/nft-listed-event.handler';
 import { QueueModule } from '../../config/queue.module';
 import { EventHandlersRegistry } from 'src/core/event-handler/event-handler.registry';
-import { NftListedEvent } from './entities/nft-listed-event.entity';
+import { NftListedEventEntity } from './entities/nft-listed-event.entity';
 import { NftPurchasedHandler } from './services/replication/handlers/nft-purchases-event.handler';
 import { EventHandlersModule } from 'src/core/event-handler/event-handlers.module';
-import { PublisherModule } from 'src/core/bus/publisher.module';
+import { PublisherModule } from 'src/core/bus-publisher/publisher.module';
+import { NftPurchasedEventEntity } from './entities/nft-purchases-event.entity';
+import { MarketplaceEvents } from './consts';
+import { openMarketplaceContractAbi } from '@nft-open-marketplace/interface';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Transaction, Listing, NftListedEvent]),
+    TypeOrmModule.forFeature([
+      Transaction,
+      Listing,
+      NftListedEventEntity,
+      NftPurchasedEventEntity,
+    ]),
     ConfigModule,
     RedisModule,
     QueueModule,
@@ -30,8 +38,11 @@ import { PublisherModule } from 'src/core/bus/publisher.module';
         registry: EventHandlersRegistry,
         handler: NftListedHandler,
       ) => {
-        registry.registerHandler('NftListed', handler);
-        return handler;
+        registry.registerHandler(
+          openMarketplaceContractAbi.contractName,
+          MarketplaceEvents.NftListed,
+          handler,
+        );
       },
       inject: [EventHandlersRegistry, NftListedHandler],
     },
@@ -41,14 +52,18 @@ import { PublisherModule } from 'src/core/bus/publisher.module';
         registry: EventHandlersRegistry,
         handler: NftPurchasedHandler,
       ) => {
-        registry.registerHandler('NftPurchased', handler);
+        registry.registerHandler(
+          openMarketplaceContractAbi.contractName,
+          MarketplaceEvents.NftPurchased,
+          handler,
+        );
         return handler;
       },
       inject: [EventHandlersRegistry, NftPurchasedHandler],
     },
+    MarketplaceContractService,
     NftListedHandler,
     NftPurchasedHandler,
-    MarketplaceContractService,
     MarketplaceEventService,
   ],
   exports: [

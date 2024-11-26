@@ -9,19 +9,19 @@ import {
 import { Transaction } from '../../transaction/transaction.entity';
 import { Listing } from './listing.entity';
 
-@Entity()
-export class NftListedEvent {
+@Entity({ name: 'nft_listed_event' })
+export class NftListedEventEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
   seller: string;
 
-  @Column()
-  price: number;
+  @Column({ type: 'bigint' })
+  price: string;
 
-  @Column()
-  marketplaceFee: number;
+  @Column({ type: 'bigint' })
+  marketplaceFee: string;
 
   @ManyToOne(() => Listing, { cascade: ['soft-remove', 'recover'] })
   @JoinColumn()

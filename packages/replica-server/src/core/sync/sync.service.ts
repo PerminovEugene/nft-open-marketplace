@@ -1,15 +1,18 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BlockchainTransportService } from '../blockchain/blockchain-transport.service';
-import { ethers, Filter, Log, LogDescription } from 'ethers';
+import { ethers, Filter, Interface, Log, LogDescription } from 'ethers';
 import { DiscoveryService, Reflector } from '@nestjs/core';
-import { Address, ContractInterface, GetInterface } from './sync.types';
 import {
   GET_LATEST_BLOCK_NUMBER_METHOD,
   WITH_BLOCK_NUMBER_SERVICE_KEY,
 } from './sync.decorators';
 import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
-import { PublisherService } from '../bus/publisher.service';
+import { PublisherService } from '../bus-publisher/publisher.service';
 import { ContractRegistryService } from '../contract-registry/contract-registry.service';
+import { buildJobName } from '../bus-processor/utils/job-names';
+import { argToTxData } from 'src/domain/transaction/args-to-tx.helper';
+import { ContractService } from '../contract-registry/types';
+import { Address } from '../blockchain/types';
 
 @Injectable()
 export class SyncService {
@@ -17,11 +20,13 @@ export class SyncService {
     private nodeHttpProviderService: BlockchainTransportService,
     private reflector: Reflector,
     @Inject(DiscoveryService) private discoveryService: DiscoveryService,
-    private publisherService: PublisherService<any, any>,
+    private publisherService: PublisherService,
     protected contractRegistry: ContractRegistryService,
   ) {}
 
-  private addressToInterfaceMap: { [key in Address]: ContractInterface } = {};
+  private addressToInterfaceMap: { [key in Address]: Interface } = {};
+  private addressToName: { [key in Address]: string } = {};
+
   private getLatestProcessedBlockNumber?: () => Promise<number>;
 
   async onModuleInit() {
@@ -50,6 +55,7 @@ export class SyncService {
     for (const address of allAddresses) {
       const contract = this.contractRegistry.getContract(address);
       this.addressToInterfaceMap[address] = contract.getInterface();
+      this.addressToName[address] = contract.getName();
     }
   }
 
@@ -64,11 +70,9 @@ export class SyncService {
       const method = instance[methodName];
       if (typeof method !== 'function') return;
 
-      const getLatestProcessedBlockNumberMethod =
-        this.reflector.get<GetInterface>(
-          GET_LATEST_BLOCK_NUMBER_METHOD,
-          method,
-        );
+      const getLatestProcessedBlockNumberMethod = this.reflector.get<
+        ContractService['getInterface']
+      >(GET_LATEST_BLOCK_NUMBER_METHOD, method);
       if (getLatestProcessedBlockNumberMethod) {
         console.log(
           `Discovered getLatestProcessedBlockNumber method: ${methodName} in ${provider.name}`,
@@ -90,7 +94,7 @@ export class SyncService {
   }
 
   private parseLog(log: Log) {
-    const iface = this.addressToInterfaceMap[log.address];
+    const iface = this.addressToInterfaceMap[log.address.toLowerCase()];
 
     if (!iface) {
       throw new Error('Log doesnt have interface for address: ' + log.address);
@@ -115,18 +119,17 @@ export class SyncService {
     logDescription: LogDescription,
   ) {
     const eventName = logDescription.name;
-    const contract = this.contractRegistry.getContract(log.address);
-    const eventBusProcessorConfig = contract.getEventBusProcessorConfig(
-      log.address,
+    const jobData = {
+      args: logDescription.args,
+      txData: argToTxData(log),
+    };
+
+    const address = log.address.toLocaleLowerCase();
+    await this.publisherService.publish(
+      buildJobName(this.addressToName[address], eventName),
+      jobData,
+      true,
     );
-    const processorConfig = eventBusProcessorConfig[eventName];
-    if (!processorConfig) {
-      console.warn('Undhandled contract event: ', eventName);
-      return;
-    }
-    const args = logDescription.args;
-    const data = processorConfig.argsMapper([...args, { log }]);
-    await this.publisherService.publish(processorConfig.jobName, data, true);
     console.log('Publish unsynced event ', eventName);
   }
 }

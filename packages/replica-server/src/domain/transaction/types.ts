@@ -1,7 +1,9 @@
-export type TransactionJobData = {
+import { Address } from 'src/core/blockchain/types';
+
+export type TxData = {
   blockHash: string;
   blockNumber: number;
-  address: string;
+  address: Address;
   transactionHash: string;
   transactionIndex: number;
 };

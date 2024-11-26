@@ -9,14 +9,14 @@ import {
 } from 'typeorm';
 import { Metadata } from './metadata.entity';
 import { Listing } from 'src/domain/marketplace/entities/listing.entity';
-import { TransferEvent } from './transfer-event.entity';
+import { TransferEventEntity } from './transfer-event.entity';
 
 @Entity()
 export class Token {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'bigint' })
   contractId: string; // id from the contract
 
   @Column()
@@ -31,14 +31,14 @@ export class Token {
   listing: Listing[];
 
   @OneToMany(
-    () => TransferEvent,
-    (transferEvent: TransferEvent) => transferEvent.token,
+    () => TransferEventEntity,
+    (transferEvent: TransferEventEntity) => transferEvent.token,
     {
       cascade: false,
     },
   )
   @JoinColumn()
-  transferEvent: TransferEvent[];
+  transferEvent: TransferEventEntity[];
 
   @DeleteDateColumn()
   deletedAt?: Date;

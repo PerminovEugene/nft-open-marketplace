@@ -1,13 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
-
-type ContractsDeployData = {
-  contracts: {
-    name: string;
-    address: string;
-  }[];
-};
+import { ContractsDeployData } from './types';
 
 @Injectable()
 export class BlockchainContractsService {
@@ -16,7 +10,6 @@ export class BlockchainContractsService {
   constructor() {}
 
   async onModuleInit() {
-    console.log('Init BlockchainContractsService');
     await this.initContractsDeployData();
   }
 
@@ -28,7 +21,6 @@ export class BlockchainContractsService {
     const maxAttempts = 10;
     while (attempts < maxAttempts) {
       try {
-        console.log();
         this.contractsDeployData = JSON.parse(
           readFileSync(
             resolve('../../shared/contracts.deploy-data.json'),
@@ -60,8 +52,8 @@ export class BlockchainContractsService {
   }
 
   public getContactAddress(contractName: string) {
-    return this.contractsDeployData.contracts.find(
-      ({ name }) => name === contractName,
-    ).address;
+    return this.contractsDeployData.contracts
+      .find(({ name }) => name === contractName)
+      .address.toLowerCase();
   }
 }

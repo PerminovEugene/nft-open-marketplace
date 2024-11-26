@@ -4,12 +4,13 @@ import {
   PrimaryGeneratedColumn,
   OneToOne,
   JoinColumn,
+  ManyToOne,
 } from 'typeorm';
 import { Transaction } from '../../transaction/transaction.entity';
 import { Listing } from './listing.entity';
 
-@Entity()
-export class NftPurchasedEvent {
+@Entity({ name: 'nft_purchased_event' })
+export class NftPurchasedEventEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,7 +26,7 @@ export class NftPurchasedEvent {
   @Column()
   marketplaceFee: number;
 
-  @OneToOne(() => Listing, { cascade: ['soft-remove', 'recover'] })
+  @ManyToOne(() => Listing, { cascade: ['soft-remove', 'recover'] })
   @JoinColumn()
   listing: Listing;
 

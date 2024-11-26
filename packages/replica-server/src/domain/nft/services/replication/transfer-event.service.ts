@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { TransferEvent } from '../../entities/transfer-event.entity';
+import { TransferEventEntity } from '../../entities/transfer-event.entity';
 import { Token } from '../../entities/token.entity';
 import { Transaction } from '../../../transaction/transaction.entity';
 import { Metadata } from '../../entities/metadata.entity';
 import { MetadataService } from 'src/domain/nft/services/replication/metadata.service';
-import { TransferEventJobData } from '../../types';
+import { TransferEvent } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
+import { TxData } from 'src/domain/transaction/types';
 
 type NftAttribute = {
   TraitType: string;
@@ -30,16 +31,21 @@ export class TransferEventService {
   ) {}
 
   async save(
-    { from, to, tokenId, log }: TransferEventJobData,
+    [fromRaw, toRaw, tokenIdBigInt]: TransferEvent.OutputTuple,
+    txData: TxData,
     isUnsyncedRecord: boolean = false,
   ): Promise<void> {
+    const from = fromRaw.toLowerCase();
+    const to = toRaw.toLowerCase();
+    const tokenId = tokenIdBigInt.toString();
+
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
       let token = await queryRunner.manager.findOne(Token, {
-        where: { contractId: tokenId.toString() },
+        where: { contractId: tokenId },
       });
       if (!token) {
         const metadataJson = (await this.metadataService.getMetadata(
@@ -74,23 +80,23 @@ export class TransferEventService {
       if (isUnsyncedRecord) {
         transaction = await queryRunner.manager.findOne(Transaction, {
           where: {
-            blockHash: log.blockHash,
-            blockNumber: log.blockNumber,
+            blockHash: txData.blockHash,
+            blockNumber: txData.blockNumber,
           },
         });
       }
 
       if (!transaction) {
         transaction = queryRunner.manager.create(Transaction, {
-          blockHash: log.blockHash,
-          blockNumber: log.blockNumber,
-          address: log.address,
-          transactionHash: log.transactionHash,
-          transactionIndex: log.transactionIndex,
+          blockHash: txData.blockHash,
+          blockNumber: txData.blockNumber,
+          address: txData.address,
+          transactionHash: txData.transactionHash,
+          transactionIndex: txData.transactionIndex,
         });
         await queryRunner.manager.save(transaction);
 
-        const transferEvent = queryRunner.manager.create(TransferEvent, {
+        const transferEvent = queryRunner.manager.create(TransferEventEntity, {
           from: from.toLowerCase(),
           to: to.toLowerCase(),
           transaction,

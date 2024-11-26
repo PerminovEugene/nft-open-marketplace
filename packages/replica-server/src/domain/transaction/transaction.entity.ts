@@ -1,3 +1,4 @@
+import { Address } from 'src/core/blockchain/types';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
@@ -18,5 +19,5 @@ export class Transaction {
   blockNumber: number;
 
   @Column()
-  address: string;
+  address: Address;
 }

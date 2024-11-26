@@ -4,9 +4,10 @@ import { Job, Queue } from 'bullmq';
 import { EventHandlersRegistry } from '../../event-handler/event-handler.registry';
 import { QueueName } from '../const';
 import { BaseQueueProcessor } from './base.processor';
+import { SerializationService } from 'src/core/serializer/serialization.service';
 
 @Processor(QueueName.unsync, { concurrency: 1 })
-export class UnsyncQueueProcessor extends BaseQueueProcessor<any> {
+export class UnsyncQueueProcessor extends BaseQueueProcessor {
   private isLiveQueueActive: boolean = true;
   private inQueue: number = 0;
 
@@ -17,11 +18,13 @@ export class UnsyncQueueProcessor extends BaseQueueProcessor<any> {
     private syncQueue: Queue<any>,
     @InjectQueue(QueueName.unsync)
     private unsyncQueue: Queue<any>,
+    @Inject(SerializationService)
+    serializationService: SerializationService,
   ) {
-    super(handlersRegistry);
+    super(handlersRegistry, serializationService);
   }
 
-  async process(job: Job<any>): Promise<any> {
+  async process(job: Job<string>): Promise<void> {
     if (this.isLiveQueueActive) {
       this.isLiveQueueActive = false;
       await this.syncQueue.pause();
@@ -36,7 +39,5 @@ export class UnsyncQueueProcessor extends BaseQueueProcessor<any> {
     } else {
       this.inQueue -= 1;
     }
-
-    return { done: true };
   }
 }

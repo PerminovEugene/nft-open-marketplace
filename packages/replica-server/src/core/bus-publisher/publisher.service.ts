@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { QueueName } from '../bus-processor/const';
-import { JobData } from '../bus-processor/types';
+import { QueueName } from '../../replicator/bus-processor/const';
+import { JobData } from '../../replicator/bus-processor/types';
 import { SerializationService } from '../serializer/serialization.service';
 
 @Injectable()

@@ -24,7 +24,7 @@ type NftMetadata = {
 };
 
 @Injectable()
-export class TransferEventService {
+export class TransferEventReplicationService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly metadataService: MetadataService,

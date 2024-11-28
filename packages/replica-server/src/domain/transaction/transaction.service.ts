@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import {
   GetLatestBlockNumber,
   WithBlockNumberService,
-} from '../../core/sync/sync.decorators';
+} from '../../synchronizer/sync/sync.decorators';
 
 @WithBlockNumberService()
 @Injectable({

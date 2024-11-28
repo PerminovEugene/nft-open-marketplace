@@ -26,7 +26,6 @@ export class BlockchainTransportService {
     });
   }
   private initHttpProvider() {
-    // const wsProviderUrl = 'wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID';
     const httpProviderUrl = `http://${this.configService.get(
       'NODE_ADDRESS', // TODO prod should use https
     )}:${this.configService.get('NODE_PORT')}/`;

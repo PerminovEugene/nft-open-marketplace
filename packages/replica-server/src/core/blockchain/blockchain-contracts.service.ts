@@ -29,6 +29,7 @@ export class BlockchainContractsService {
         );
         if (this.contractsDeployData) {
           attempts = maxAttempts;
+          console.log('Contract config has been initialized');
         } else {
           await this.sleep(5000);
         }
@@ -37,10 +38,9 @@ export class BlockchainContractsService {
       } finally {
         attempts += 1;
       }
-      console.log('Reading config. Attempt', attempts);
     }
     if (!this.contractsDeployData) {
-      throw new Error('Invalid contracts deploy data');
+      throw new Error('Error during reading contracts deploy data');
     }
   }
 
@@ -51,7 +51,7 @@ export class BlockchainContractsService {
     return this.contractsDeployData;
   }
 
-  public getContactAddress(contractName: string) {
+  public getContractAddress(contractName: string) {
     return this.contractsDeployData.contracts
       .find(({ name }) => name === contractName)
       .address.toLowerCase();

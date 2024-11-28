@@ -11,13 +11,16 @@ export class ContractRegistryService {
     @Inject(DiscoveryService) private discoveryService: DiscoveryService,
   ) {}
 
-  registerContract(address: string, contractService: ContractService): void {
+  private registerContract(
+    address: string,
+    contractService: ContractService,
+  ): void {
     this.contracts.set(address, contractService);
     console.log('Registred contract for address', address);
   }
 
-  getContract(address: string): ContractService | undefined {
-    console.log('get contract from regsitry by address', address);
+  public getContract(address: string): ContractService | undefined {
+    console.log('Get contract from regsitry by address', address);
     return this.contracts.get(address);
   }
 
@@ -45,12 +48,12 @@ export class ContractRegistryService {
           throw new Error(`Provider instance not found for ${provider.name}`);
         }
 
-        if (typeof instance.getContactAddress === 'function') {
-          const address = instance.getContactAddress();
+        if (typeof instance.getContractAddress === 'function') {
+          const address = instance.getContractAddress();
           this.registerContract(address, instance);
         } else {
           throw new Error(
-            `getContactAddress is not a function in ${provider.name}`,
+            `getContractAddress is not a function in ${provider.name}`,
           );
         }
       }

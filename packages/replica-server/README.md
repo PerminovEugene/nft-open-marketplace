@@ -4,11 +4,12 @@ Ethereum Replication Server
 The Ethereum Replication Server is a robust service for replicating and synchronizing Ethereum blockchain data in real-time. It enables applications to process on-chain events, store relevant data, and ensure consistency even during downtime by handling live and unsynced events.
 
 Features
-Live Event Handling: Continuously fetches events from an Ethereum node via WebSockets.
-Unsynced Event Synchronization: Replays missed events during downtime to maintain data consistency.
-Event Handlers: Dynamically maps contracts to custom handlers for processing specific event types.
-Queue-Based Architecture: Ensures event processing order using prioritized and concurrent queues.
-Scalability: Designed for modularity and extensibility to support multiple contracts and complex logic.
+
+- Live Event Handling: Continuously fetches events from an Ethereum node via WebSockets.
+- Unsynced Event Synchronization: Replays missed events during downtime to maintain data consistency.
+- Event Handlers: Dynamically maps contracts to custom handlers for processing specific event types.
+- Queue-Based Architecture: Ensures event processing order using prioritized and concurrent queues.
+- Scalability: Designed for modularity and extensibility to support multiple contracts and complex logic.
 
 # Usage
 
@@ -18,6 +19,7 @@ Currently partially supports NFT and Marketplace contracts.
 
 ## To create migation
 
+Currently is not set up
 `npm run typeorm migration:create ./src/migrations/add-owner-to-token`
 
 ## TODO
@@ -26,3 +28,5 @@ Currently partially supports NFT and Marketplace contracts.
 2. Move metadata replication to metadata update event
 3. Add custom logger
 4. Add tests
+5. Support db migrations
+6. Provide better gateway experience

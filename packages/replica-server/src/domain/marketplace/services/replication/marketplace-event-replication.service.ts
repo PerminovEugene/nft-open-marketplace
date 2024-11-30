@@ -9,7 +9,7 @@ import {
 } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplace.sol/OpenMarketplace';
 import { NftPurchasedEventEntity } from '../../entities/nft-purchases-event.entity';
 import { NftListedEventEntity } from '../../entities/nft-listed-event.entity';
-import { TxData } from 'src/domain/transaction/types';
+import { TxData } from '../../../../domain/transaction/types';
 
 @Injectable()
 export class MarketplaceEventReplicationService {

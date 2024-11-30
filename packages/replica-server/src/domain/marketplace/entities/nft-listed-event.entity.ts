@@ -23,7 +23,7 @@ export class NftListedEventEntity {
   @Column({ type: 'bigint' })
   marketplaceFee: string;
 
-  @ManyToOne(() => Listing, { cascade: ['soft-remove', 'recover'] })
+  @OneToOne(() => Listing, { cascade: ['soft-remove', 'recover'] })
   @JoinColumn()
   listing: Listing;
 

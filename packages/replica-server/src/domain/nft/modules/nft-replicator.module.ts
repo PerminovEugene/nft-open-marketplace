@@ -9,8 +9,8 @@ import { TransferEventReplicationService } from '../services/replication/transfe
 import { TransferEventHandler } from '../services/handlers/transfer-event.handler';
 import { QueueModule } from '../../../config/queue.module';
 import { EventHandlersRegistry } from '../../../replicator/event-handler/event-handler.registry';
-import { BlockchainModule } from 'src/core/blockchain/blockchain.module';
-import { EventHandlersModule } from 'src/replicator/event-handler/event-handlers.module';
+import { BlockchainModule } from '../../../core/blockchain/blockchain.module';
+import { EventHandlersModule } from '../../../replicator/event-handler/event-handlers.module';
 import { NftEvents } from '../consts';
 import { openMarketplaceNFTContractAbi } from '@nft-open-marketplace/interface';
 import { NftModule } from './nft-contract.module';

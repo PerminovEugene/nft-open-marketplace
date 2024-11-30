@@ -1,4 +1,4 @@
-import { TxData } from 'src/domain/transaction/types';
+import { TxData } from '../../domain/transaction/types';
 
 type EventArg = string | BigInt | boolean;
 

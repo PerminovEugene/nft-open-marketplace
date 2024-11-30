@@ -4,7 +4,7 @@ import { Job } from 'bullmq';
 import { EventHandlersRegistry } from '../../event-handler/event-handler.registry';
 import { QueueName } from '../const';
 import { BaseQueueProcessor } from './base.processor';
-import { SerializationService } from 'src/core/serializer/serialization.service';
+import { SerializationService } from '../../../core/serializer/serialization.service';
 
 @Processor(QueueName.sync, { concurrency: 1 })
 export class SyncQueueProcessor extends BaseQueueProcessor {

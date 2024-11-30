@@ -2,8 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { OpenMarketplaceNFT } from '@nft-open-marketplace/interface';
 import { ConfigService } from '@nestjs/config';
 import { PinataSDK } from 'pinata-web3';
-import { BlockchainTransportService } from 'src/core/blockchain/blockchain-transport.service';
+import { BlockchainTransportService } from '../../../../core/blockchain/blockchain-transport.service';
 import { NftContractService } from './nft-contract.service';
+
+export type NftAttributeDto = {
+  TraitType: string;
+  Value: string;
+};
+export type NftMetadataDto = {
+  name: string;
+  description: string;
+  image: string;
+  attributes?: NftAttributeDto[];
+  youtube_url?: string;
+  animation_url?: string;
+  background_color?: string;
+  external_url?: string;
+};
 
 @Injectable()
 export class MetadataService {

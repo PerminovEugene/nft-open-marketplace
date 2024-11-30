@@ -4,24 +4,12 @@ import { TransferEventEntity } from '../../entities/transfer-event.entity';
 import { Token } from '../../entities/token.entity';
 import { Transaction } from '../../../transaction/transaction.entity';
 import { Metadata } from '../../entities/metadata.entity';
-import { MetadataService } from 'src/domain/nft/services/replication/metadata.service';
+import {
+  MetadataService,
+  NftMetadataDto,
+} from '../../../../domain/nft/services/replication/metadata.service';
 import { TransferEvent } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
-import { TxData } from 'src/domain/transaction/types';
-
-type NftAttribute = {
-  TraitType: string;
-  Value: string;
-};
-type NftMetadata = {
-  name: string;
-  description: string;
-  image: string;
-  youtubeUrl?: string;
-  attributes?: NftAttribute[];
-  animation_url: string;
-  background_color?: string;
-  external_url?: string;
-};
+import { TxData } from '../../../../domain/transaction/types';
 
 @Injectable()
 export class TransferEventReplicationService {
@@ -50,7 +38,7 @@ export class TransferEventReplicationService {
       if (!token) {
         const metadataJson = (await this.metadataService.getMetadata(
           tokenId,
-        )) as unknown as NftMetadata;
+        )) as unknown as NftMetadataDto;
 
         const metadata = queryRunner.manager.create(Metadata, {
           name: metadataJson.name,
@@ -60,6 +48,10 @@ export class TransferEventReplicationService {
             traitType: a.TraitType,
             value: a.Value,
           })),
+          youtubeUrl: metadataJson.youtube_url,
+          animationUrl: metadataJson.animation_url,
+          backgroundColor: metadataJson.background_color,
+          externalUrl: metadataJson.external_url,
         });
 
         await queryRunner.manager.save(metadata);

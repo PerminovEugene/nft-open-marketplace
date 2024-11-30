@@ -10,7 +10,7 @@ import { InstanceWrapper } from '@nestjs/core/injector/instance-wrapper';
 import { PublisherService } from '../../core/bus-publisher/publisher.service';
 import { ContractRegistryService } from '../../core/contract-registry/contract-registry.service';
 import { buildJobName } from '../../replicator/bus-processor/utils/job-names';
-import { argToTxData } from 'src/domain/transaction/args-to-tx.helper';
+import { argToTxData } from '../../domain/transaction/args-to-tx.helper';
 import { ContractService } from '../../core/contract-registry/types';
 import { Address } from '../../core/blockchain/types';
 

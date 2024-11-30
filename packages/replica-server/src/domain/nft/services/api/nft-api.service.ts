@@ -21,9 +21,7 @@ export class NftApiService {
       })
       .andWhere(
         new Brackets((qb) => {
-          qb.where('listing.seller != :owner').orWhere(
-            'listing.seller IS NULL',
-          );
+          qb.where('listing.seller != :owner').orWhere('listing IS NULL');
         }),
       )
       .getMany();

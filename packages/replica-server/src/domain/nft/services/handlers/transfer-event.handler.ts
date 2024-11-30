@@ -3,7 +3,7 @@ import { TransferEventReplicationService } from '../replication/transfer-event.s
 import {
   ContractEventHandler,
   JobData,
-} from 'src/replicator/bus-processor/types';
+} from '../../../../replicator/bus-processor/types';
 import { TransferEvent } from '@nft-open-marketplace/interface/dist/esm/typechain-types/contracts/OpenMarketplaceNFT';
 
 @Injectable()

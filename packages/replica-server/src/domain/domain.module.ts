@@ -1,11 +1,12 @@
 import { Module } from '@nestjs/common';
-import { TransactionModule } from 'src/domain/transaction/transaction.module';
+import { TransactionModule } from '../domain/transaction/transaction.module';
 import { NftNodeListenerModule } from './nft/modules/nft-node-listner.module';
 import { NftReplicationModule } from './nft/modules/nft-replicator.module';
 import { NftSynchronizerModule } from './nft/modules/nft-synchronizer.module';
 import { MarketplaceNodeListenerModule } from './marketplace/modules/marketplace-node-listner.module';
 import { MarketplaceSynchronizerModule } from './marketplace/modules/markerplace-synchronizer.module';
 import { MarketplaceReplicationModule } from './marketplace/modules/marketplace-replicator.module';
+import { NftApiModule } from './nft/modules/nft-gateway.module';
 
 // Workers
 
@@ -43,6 +44,11 @@ export class DomainSynchronizerModule {}
 })
 export class DomainReplicationModule {}
 
+@Module({
+  imports: [NftApiModule],
+})
+export class DomainApiModule {}
+
 // Monolith
 
 @Module({
@@ -50,11 +56,7 @@ export class DomainReplicationModule {}
     DomainNodeListenerModule,
     DomainSynchronizerModule,
     DomainReplicationModule,
-  ],
-  exports: [
-    DomainNodeListenerModule,
-    DomainSynchronizerModule,
-    DomainReplicationModule,
+    DomainApiModule,
   ],
 })
 export class DomainModule {}

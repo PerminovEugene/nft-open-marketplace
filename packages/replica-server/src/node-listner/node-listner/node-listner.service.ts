@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { BlockchainTransportService } from '../../core/blockchain/blockchain-transport.service';
-import { PublisherService } from 'src/core/bus-publisher/publisher.service';
-import { ContractRegistryService } from 'src/core/contract-registry/contract-registry.service';
+import { PublisherService } from '../../core/bus-publisher/publisher.service';
+import { ContractRegistryService } from '../../core/contract-registry/contract-registry.service';
 import { BaseContract, WebSocketProvider } from 'ethers';
 import { buildJobName } from '../../replicator/bus-processor/utils/job-names';
-import { argToTxData } from 'src/domain/transaction/args-to-tx.helper';
+import { argToTxData } from '../../domain/transaction/args-to-tx.helper';
 import { Address } from '../../core/blockchain/types';
 
 @Injectable()

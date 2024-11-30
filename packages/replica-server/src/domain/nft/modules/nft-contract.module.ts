@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { NftContractService } from '../services/replication/nft-contract.service';
-import { BlockchainModule } from 'src/core/blockchain/blockchain.module';
+import { BlockchainModule } from '../../../core/blockchain/blockchain.module';
 
 @Module({
   imports: [BlockchainModule],

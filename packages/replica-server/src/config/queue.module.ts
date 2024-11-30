@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { BullModule } from '@nestjs/bullmq';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { getRedisConfig } from 'src/config/datasource';
+import { getRedisConfig } from '../config/datasource';
 import { QueueName } from '../replicator/bus-processor/const';
 
 @Module({

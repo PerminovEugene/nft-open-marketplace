@@ -1,4 +1,4 @@
-import { Address } from 'src/core/blockchain/types';
+import { Address } from '../../core/blockchain/types';
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

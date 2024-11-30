@@ -8,7 +8,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Metadata } from './metadata.entity';
-import { Listing } from 'src/domain/marketplace/entities/listing.entity';
+import { Listing } from '../../../domain/marketplace/entities/listing.entity';
 import { TransferEventEntity } from './transfer-event.entity';
 
 @Entity()
@@ -22,12 +22,19 @@ export class Token {
   @Column()
   owner: string;
 
-  @OneToOne(() => Metadata, { cascade: ['soft-remove', 'recover'] })
+  // @OneToOne(() => Metadata, { cascade: ['soft-remove', 'recover'] })
+  // metadata: Metadata;
+
+  // @OneToMany(() => Listing, (listing: Listing) => listing.token, {
+  //   cascade: false,
+  // })
+  // listing: Listing[];
+
+  @OneToOne(() => Metadata, (metadata) => metadata.token)
   metadata: Metadata;
 
-  @OneToMany(() => Listing, (listing: Listing) => listing.token, {
-    cascade: false,
-  })
+  // One Token can have many Listings
+  @OneToMany(() => Listing, (listing) => listing.token)
   listing: Listing[];
 
   @OneToMany(

@@ -4,6 +4,7 @@ import {
   PrimaryGeneratedColumn,
   ManyToOne,
   DeleteDateColumn,
+  JoinColumn,
 } from 'typeorm';
 import { Metadata } from './metadata.entity';
 
@@ -19,6 +20,7 @@ export class Attribute {
   value: string;
 
   @ManyToOne(() => Metadata, (metadata: Metadata) => metadata.attributes)
+  @JoinColumn()
   metadata: Metadata;
 
   @DeleteDateColumn()

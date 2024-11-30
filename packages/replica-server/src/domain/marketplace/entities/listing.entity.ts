@@ -1,4 +1,4 @@
-import { Token } from 'src/domain/nft/entities/token.entity';
+import { Token } from '../../../domain/nft/entities/token.entity';
 import {
   Entity,
   Column,
@@ -6,7 +6,7 @@ import {
   OneToOne,
   JoinColumn,
   DeleteDateColumn,
-  OneToMany,
+  ManyToOne,
 } from 'typeorm';
 import { NftListedEventEntity } from './nft-listed-event.entity';
 
@@ -15,7 +15,9 @@ export class Listing {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToOne(() => Token, { cascade: ['soft-remove', 'recover'] })
+  @ManyToOne(() => Token, (token) => token.listing, {
+    cascade: ['soft-remove', 'recover'],
+  })
   @JoinColumn()
   token: Token;
 
@@ -28,13 +30,9 @@ export class Listing {
   @Column()
   isActive: boolean;
 
-  @OneToMany(
-    () => NftListedEventEntity,
-    (nftListedEvent: NftListedEventEntity) => nftListedEvent.listing,
-    {
-      cascade: ['soft-remove', 'recover'],
-    },
-  )
+  @OneToOne(() => NftListedEventEntity, {
+    cascade: ['soft-remove', 'recover'],
+  })
   nftListedEvents: NftListedEventEntity;
 
   @Column({ nullable: false })

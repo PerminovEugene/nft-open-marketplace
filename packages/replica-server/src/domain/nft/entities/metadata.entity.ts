@@ -25,19 +25,19 @@ export class Metadata {
   image: string;
 
   @Column({ nullable: true })
-  external_url: string;
+  externalUrl: string;
 
   @Column({ nullable: true })
-  animation_url: string;
+  animationUrl: string;
 
   @Column({ nullable: true })
-  background_color: string;
+  backgroundColor: string;
 
   @Column({ nullable: true })
-  youtube_url: string;
+  youtubeUrl: string;
 
   @OneToMany(() => Attribute, (attribute: Attribute) => attribute.metadata, {
-    cascade: ['soft-remove', 'recover'],
+    cascade: ['soft-remove', 'recover', 'insert'],
   })
   attributes: Attribute[];
 

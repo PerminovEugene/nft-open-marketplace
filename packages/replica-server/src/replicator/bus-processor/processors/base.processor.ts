@@ -1,8 +1,8 @@
 import { WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
-import { EventHandlersRegistry } from 'src/replicator/event-handler/event-handler.registry';
+import { EventHandlersRegistry } from '../../../replicator/event-handler/event-handler.registry';
 import { JobData } from '../types';
-import { SerializationService } from 'src/core/serializer/serialization.service';
+import { SerializationService } from '../../../core/serializer/serialization.service';
 
 export abstract class BaseQueueProcessor extends WorkerHost {
   constructor(

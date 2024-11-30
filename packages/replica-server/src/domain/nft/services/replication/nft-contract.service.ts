@@ -5,8 +5,8 @@ import {
   OpenMarketplaceNFT,
 } from '@nft-open-marketplace/interface';
 import { BlockchainContractsService } from '../../../../core/blockchain/blockchain-contracts.service';
-import { RegisterContract } from 'src/core/contract-registry/contract-registry.decorators';
-import { ContractService } from 'src/core/contract-registry/types';
+import { RegisterContract } from '../../../../core/contract-registry/contract-registry.decorators';
+import { ContractService } from '../../../../core/contract-registry/types';
 import { nftEventsArray } from '../../consts';
 
 @Injectable()

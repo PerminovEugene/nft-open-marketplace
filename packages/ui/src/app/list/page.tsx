@@ -14,6 +14,7 @@ import {
 } from "@/components/ethereum/nft/actions/approval";
 import { EtheriumContext } from "@/providers/etherium.provider";
 import ListDetails from "@/components/ethereum/nft/listi-details";
+import classNames from "classnames";
 
 const steps = [
   {
@@ -93,22 +94,29 @@ const ListingPage = () => {
       {!connected ? (
         <ConnectWalletButton />
       ) : (
-        <div className="grid grid-cols-3">
-          <div className="col-span-2">
+        <div className="grid grid-cols-4 gap-4">
+          <div className="hidden md:block" />
+          <div className="col-span-3 md:col-span-2">
             {listingData && (
               <ListDetails listData={listingData} nftData={nftData} />
             )}
 
             <ListingForm onSubmit={onSubmit} />
           </div>
-          <div className="p-3">
-            <Stepper
-              {...{
-                currentStep: formStep,
-                steps,
-                visibilityConfig: { isApproved },
-              }}
-            />
+          <div
+            className={classNames("p-3", {
+              "md:block": !!listingData,
+            })}
+          >
+            <div className="sticky top-7">
+              <Stepper
+                {...{
+                  currentStep: formStep,
+                  steps,
+                  visibilityConfig: { isApproved },
+                }}
+              />
+            </div>
           </div>
         </div>
       )}

@@ -56,7 +56,7 @@ const ListingForm = ({
   const disabled = isSubmitting || isSubmitSuccessful;
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-4/5 mb-12">
+    <form onSubmit={handleSubmit(onSubmit)} className="mb-12">
       <div className="flex flex-col mb-6 md:grid-cols-2">
         <div className="mb-5 bg-blue-950 p-3 rounded-2xl">
           <div className="flex items-center justify-center text-xl mb-4">
